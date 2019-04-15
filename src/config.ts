@@ -1,3 +1,7 @@
+import path from 'path'
+import * as LANG_CONFIG from './configs/lang.json'
+
+
 enum Verdict {
   Waiting = -3,
   Judging,
@@ -11,4 +15,15 @@ enum Verdict {
   CompileError,
 }
 
-export { Verdict };
+const PROJECT_PATH = __dirname;
+// const CONFIG_PATH = path.join(PROJECT_PATH, 'config');
+const RUN_PATH = path.join(PROJECT_PATH, 'run');
+const DATA_PATH = path.join(RUN_PATH, 'data');
+
+export {
+  Verdict, 
+  PROJECT_PATH, 
+  RUN_PATH, 
+  DATA_PATH,
+  LANG_CONFIG
+};

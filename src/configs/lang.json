@@ -1,0 +1,47 @@
+{
+  "c": {
+    "compile": {
+      "cmd": "gcc",
+      "args": [
+        "-O2", "-std=c99", "-DONLINE_JUDGE", "-lm", "-fmax-errors=3", "-o"
+      ]
+    }
+
+  },
+  "cpp": {
+    "compile": {
+      "cmd": "g++",
+      "args": [
+        "-O2", "-std=c++11", "-DONLINE_JUDGE", "-lm", "-fmax-errors=3", "-o"
+      ]
+    }
+
+  },
+  "cc14": {
+    "compile": {
+      "cmd": "g++",
+      "args": [
+        "-O2", "-std=c++14", "-DONLINE_JUDGE", "-lm", "-fmax-errors=3", "-o"
+      ]
+    }
+
+  },
+  "cc17": {
+    "compile": {
+      "cmd": "g++",
+      "args": [
+        "-O2", "-std=c++17", "-DONLINE_JUDGE", "-lm", "-fmax-errors=3", "-o"
+      ]
+    }
+
+  },
+  "java": {
+    
+  },
+  "py2": {
+
+  },
+  "python": {
+
+  }
+}
