@@ -1,38 +1,42 @@
 {
   "c": {
     "compile": {
-      "cmd": "gcc",
+      "cmd": "/usr/bin/gcc",
       "args": [
-        "-O2", "-std=c99", "-DONLINE_JUDGE", "-lm", "-fmax-errors=3", "-o"
+        "-static", "-O2", "-std=c99", "-DONLINE_JUDGE", "-lm", "-o", "{exe_file}", "{code_file}"
       ]
-    }
-
+    },
+    "code_file": "foo.c",
+    "execute_prefix": "./"
   },
   "cpp": {
     "compile": {
-      "cmd": "g++",
+      "cmd": "/usr/bin/g++",
       "args": [
-        "-O2", "-std=c++11", "-DONLINE_JUDGE", "-lm", "-fmax-errors=3", "-o"
+        "-static", "-O2", "-std=c++11", "-DONLINE_JUDGE", "-lm", "-o", "{exe_file}", "{code_file}"
       ]
-    }
+    },
+    "code_file": "foo.cpp"
 
   },
   "cc14": {
     "compile": {
-      "cmd": "g++",
+      "cmd": "/usr/bin/g++",
       "args": [
-        "-O2", "-std=c++14", "-DONLINE_JUDGE", "-lm", "-fmax-errors=3", "-o"
+        "-static", "-O2", "-std=c++14", "-DONLINE_JUDGE", "-lm", "-o", "{exe_file}", "{code_file}"
       ]
-    }
+    },
+    "code_file": "foo.cpp"
 
   },
   "cc17": {
     "compile": {
-      "cmd": "g++",
+      "cmd": "/usr/bin/g++",
       "args": [
-        "-O2", "-std=c++17", "-DONLINE_JUDGE", "-lm", "-fmax-errors=3", "-o"
+        "-static", "-O2", "-std=c++17", "-DONLINE_JUDGE", "-lm", "-o", "{exe_file}", "{code_file}"
       ]
-    }
+    },
+    "code_file": "foo.cpp"
 
   },
   "java": {

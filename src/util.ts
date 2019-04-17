@@ -1,3 +1,8 @@
+import path from 'path'
+import { spawn, ChildProcess } from 'child_process'
+import { mkdirSync, promises } from 'fs'
+import { TEMP_PATH } from './config'
+
 function rand(l: number, r: number): number {
   return l + Math.round(Math.random() * (r - l));
 }
@@ -7,8 +12,33 @@ function random_string(length = 32): string {
   return Array.apply(null, Array(length)).map(() => character_table[rand(0, character_table.length - 1)]).join('');
 }
 
-function make_temp_dir(): void {
-  
+async function make_temp_dir(): Promise<string> {
+  return new Promise(async (res, rej) => {
+    while (true) {
+      let dir = path.join(TEMP_PATH, random_string());
+      try {
+        await promises.mkdir(dir);
+        res(dir);
+        break;
+      } catch(ex) {
+
+      }
+    }
+  });
 }
 
-export { rand, random_string }
+async function exec(command: string, args: Array<any> = [], options: object = {}): Promise<number> {
+  return new Promise((res, rej) => {
+    let p = spawn(command, args, options);  
+    p.on('close', (code) => {
+      if (code === 0) {
+        res(1);
+      } else {
+        rej(new Error(`${command} failed with code ${code}`));
+      }
+    });
+    p.on('error', rej);
+  });
+}
+
+export { rand, random_string, make_temp_dir, exec }
