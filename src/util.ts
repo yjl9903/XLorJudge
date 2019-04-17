@@ -27,15 +27,17 @@ async function make_temp_dir(): Promise<string> {
   });
 }
 
-async function exec(command: string, args: Array<any> = [], options: object = {}): Promise<number> {
+async function exec(command: string, args: Array<any> = [], options: object = {}): 
+    Promise<{ code: number, signal: string }> {
   return new Promise((res, rej) => {
     let p = spawn(command, args, options);  
-    p.on('close', (code) => {
-      if (code === 0) {
-        res(1);
-      } else {
-        rej(new Error(`${command} failed with code ${code}`));
-      }
+    p.on('close', (code, signal) => {
+      res({code, signal})
+      // if (code === 0) {
+      //   res(signal);
+      // } else {
+      //   rej(new Error(`${command} failed with code ${code}`));
+      // }
     });
     p.on('error', rej);
   });

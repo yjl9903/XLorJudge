@@ -1,5 +1,6 @@
 import path from 'path'
 import { promises } from 'fs'
+import rimraf from 'rimraf'
 
 import { random_string, make_temp_dir, exec } from '../util'
 import { Verdict, SUB_PATH, TEMP_PATH, LANG_CONFIG, 
@@ -78,16 +79,10 @@ class Submission {
       gid = COMPILER_GROUP_ID;
     }
 
-    // console.log(root_dir);
-    // console.log(info_dir);
-    // console.log(stdin_file, stdout_file, stderr_file);
-
     let stdin: any = 'ignore', stdout: any = 'ignore', stderr: any = 'ignore';
     if (stdin_file) stdin = await promises.open(stdin_file, 'r');
     if (stdout_file) stdout = await promises.open(stdout_file, 'w');
     if (stderr_file) stderr = await promises.open(stderr_file, 'w');
-
-    // console.log('open ok!');
 
     let nsjail_args = [
       '-Mo', '--chroot', root_dir, '--user', uid, '--group', gid, 
@@ -114,24 +109,45 @@ class Submission {
 
     try {
       // console.log(NSJAIL_PATH,[...nsjail_args, ...limit_args, ...env_args, '--', exe_file, ...args]);
-      await exec(NSJAIL_PATH, 
+      let {code: _, signal: signal} = await exec(NSJAIL_PATH, 
                 [...nsjail_args, ...limit_args, ...env_args, '--', exe_file, ...args], 
                 { stdio: [stdin, stdout, stderr], uid: 0, gid: 0 });
     } catch(ex) {
-      // console.log('Runtime Error');
-      console.error(ex)
-      // let 
+      console.error(ex);
+      throw(ex);
     }
-    
-    // try {
-    //   await promises.rmdir(root_dir);
-    // } catch (ex) {
 
-    // }
-    
-    return new Result(0, 0, 0, Verdict.Accepted);
+    try {
+      let usage_file = await promises.readFile(path.join(info_dir, 'usage'), 'utf8'), usage: Object = {};
+      for (let line of usage_file.split('\n')) {
+        if (line === '') continue;
+        let [tag, num] = line.split(' ');
+        usage[tag] = Number(num);
+      }
+
+      let result = new Result(Math.round(usage['user'] / 1000), Math.round(usage['memory'] / 1024), 
+        usage['exit'], usage['signal']);
+      if (result.exit_code != 0) {
+        result.verdict = Verdict.RuntimeError;
+      }
+      if (max_memory > 0 && result.memory > max_memory) {
+        result.verdict = Verdict.MemoryLimitExceeded;
+      } else if (max_time > 0 && result.time > max_time) {
+        result.verdict = Verdict.TimeLimitExceeded;
+      } else if (real_time_limit > 0 && usage['pass'] / 1000 > real_time_limit) {
+        result.verdict = Verdict.IdlenessLimitExceeded;
+      } else if (result.signal !== 0) {
+        result.verdict = Verdict.RuntimeError;
+      }
+      return result;
+    } catch(ex) {
+      console.error(ex);
+      throw(ex);
+    } finally {
+      rimraf(info_dir, () => {});
+      rimraf(root_dir, () => {});
+    }
   }
-
 }
 
 export default Submission;
