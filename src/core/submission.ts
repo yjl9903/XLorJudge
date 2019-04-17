@@ -17,8 +17,8 @@ class Submission {
   constructor(lang: string, exe_file?: string) {
     this.lang = lang;
     this.lang_config = LANG_CONFIG[lang];
-    if (typeof exe_file === undefined) {
-      this.exe_file = path.join(SUB_PATH, random_string());
+    if (exe_file === undefined) {
+      this.exe_file = path.join(SUB_PATH, random_string() + '.' + this.lang_config['exe_ext']);
     } else {
       this.exe_file = exe_file;
     }
@@ -26,7 +26,7 @@ class Submission {
 
   clean(): void {
     try {
-      // fs.rmdir(this.exe_file, (err) => {});
+      promises.rmdir(this.exe_file);
     } catch(ex) {
 
     }
@@ -47,21 +47,35 @@ class Submission {
       else if (arg === '{exe_file}') arg = compile_out;
       return arg;
     });
-    // console.log(cmd);
-    // console.log(args);
 
     let result = await this.run(compile_dir, cmd, args, true, max_time, 1024, null, error_path, error_path);
-
     console.log(result);
+
+    if (result.verdict !== Verdict.Accepted) {
+      let error_msg = '';
+      try {
+        error_msg = await promises.readFile(error_path, 'utf8')
+      } catch(ex) {
+
+      }
+      rimraf(compile_dir, () => {});
+      if (error_msg === '') {
+        if (result.verdict === Verdict.TimeLimitExceeded) {
+          error_msg = 'Time limit exceeded when compiling';
+        } else if (result.verdict === Verdict.MemoryLimitExceeded) {
+          error_msg = 'Memory limit exceeded when compiling';
+        } else {
+          error_msg = 'Something is wrong, but, em, nothing is reported';
+        }
+      }
+    }
+
     // copy compile_out to exe_file
     // clear temp folder
-    
+    await promises.copyFile(path.join(compile_dir, compile_out), this.exe_file);
+    promises.chmod(this.exe_file, 0o0775);
+    rimraf(compile_dir, () => {});
   }
-
-  // async unsafe_run(args, work_dir: string, max_time: number): Result {
-
-  //   return new Result(0, 0, 0, Verdict.Accepted);
-  // }
 
   async run(work_dir: string, exe_file: string = null, args: Array<string> = [], trusted: boolean = false,
       max_time: number, max_memory: number, 
@@ -69,7 +83,7 @@ class Submission {
     
     let root_dir = await make_temp_dir();
     let info_dir = await make_temp_dir();
-    let error_path = path.join(info_dir, 'err');
+    // let error_path = path.join(info_dir, 'err');
     let real_time_limit = max_time * 2;
 
     let uid = RUN_USER_ID;

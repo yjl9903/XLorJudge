@@ -7,7 +7,8 @@
       ]
     },
     "code_file": "foo.c",
-    "execute_prefix": "./"
+    "execute_prefix": "./",
+    "exe_ext": "bin"
   },
   "cpp": {
     "compile": {
@@ -16,8 +17,9 @@
         "-static", "-O2", "-std=c++11", "-DONLINE_JUDGE", "-lm", "-o", "{exe_file}", "{code_file}"
       ]
     },
-    "code_file": "foo.cpp"
+    "code_file": "foo.cpp",
 
+    "exe_ext": "bin11"
   },
   "cc14": {
     "compile": {
@@ -26,8 +28,9 @@
         "-static", "-O2", "-std=c++14", "-DONLINE_JUDGE", "-lm", "-o", "{exe_file}", "{code_file}"
       ]
     },
-    "code_file": "foo.cpp"
+    "code_file": "foo.cpp",
 
+    "exe_ext": "bin14"
   },
   "cc17": {
     "compile": {
@@ -36,8 +39,9 @@
         "-static", "-O2", "-std=c++17", "-DONLINE_JUDGE", "-lm", "-o", "{exe_file}", "{code_file}"
       ]
     },
-    "code_file": "foo.cpp"
+    "code_file": "foo.cpp",
 
+    "exe_ext": "bin17"
   },
   "java": {
     
@@ -46,6 +50,14 @@
 
   },
   "python": {
+    "compile": {
+      "cmd": "/bin/cp",
+      "args": [
+        "{code_file}", "{exe_file}"
+      ]
+    },
+    "code_file": "foo.py",
 
+    "exe_ext": "py"
   }
 }

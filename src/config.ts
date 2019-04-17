@@ -22,7 +22,7 @@ const PROJECT_PATH = __dirname;
 const RUN_PATH = path.join(PROJECT_PATH, 'run');
 const DATA_PATH = path.join(RUN_PATH, 'data');
 const SUB_PATH = path.join(RUN_PATH, 'sub');
-const TEMP_PATH = path.join(SUB_PATH, 'temp');
+const TEMP_PATH = path.join(RUN_PATH, 'temp');
 
 const COMPILER_USER_ID = 999;
 const COMPILER_GROUP_ID = 999;
