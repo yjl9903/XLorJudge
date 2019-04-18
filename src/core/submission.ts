@@ -8,6 +8,7 @@ import { Verdict, SUB_PATH, TEMP_PATH, LANG_CONFIG,
         NSJAIL_PATH, OUTPUT_LIMIT, ENV } from '../config'
 
 import Result from './result'
+import CompileError from './error'
 
 class Submission {
   lang: string;
@@ -50,7 +51,7 @@ class Submission {
 
     let result = await this.run(compile_dir, cmd, args, true, max_time, 1024, null, error_path, error_path);
     console.log(result);
-
+    
     if (result.verdict !== Verdict.Accepted) {
       let error_msg = '';
       try {
@@ -68,6 +69,7 @@ class Submission {
           error_msg = 'Something is wrong, but, em, nothing is reported';
         }
       }
+      throw(new CompileError(error_msg));
     }
 
     // copy compile_out to exe_file
