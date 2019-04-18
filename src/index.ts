@@ -6,22 +6,46 @@ import { promises } from 'fs'
 import os from 'os'
 import path from 'path'
 
+import basicAuth from 'basic-auth'
+
 import Submission from './core/submission'
 import judge from './core/judge'
+import TestCase from './core/testcase'
+import * as tokens from './configs/token.json'
+
+app.all('/*', (req, res, nxt) => {
+  if (req.url === '/ping') {
+    nxt(); return ;
+  }
+  let auth = basicAuth(req);
+  if (auth.name === tokens['username'] && auth.pass === tokens['password']) {
+    nxt();
+  } else {
+    res.sendStatus(401);
+  }
+});
 
 app.get('/ping', (req, res) => {
   console.log('ping...');
-  
   res.send('XLor Online Judge Core');
+});
+
+app.post('/upload/case/:id/:type', async (req, res) => {
+  let id = req.params.id, type = req.params.type, content = req.body;
+  // console.log(id, type, content);
+  if (type !== 'in' && type !== 'out') {
+    res.sendStatus(400);
+  } else {
+    let c = new TestCase(id);
+    await c.write(type, content);
+    res.send('OK');
+  }
 });
 
 app.post('/judge', async (req, res) => {
   console.log('judging...');
   let code = Buffer.from(req.body.code, 'base64').toString();
-  // let submission = new Submission(req.body.lang);
-  // console.log(code);
   let ans = await judge('abc', code, req.body.lang, 1, 128);
-  
   res.send(ans);
 });
 
