@@ -18,7 +18,7 @@
       ]
     },
     "code_file": "foo.cpp",
-
+    "execute_prefix": "./",
     "exe_ext": "bin11"
   },
   "cc14": {
@@ -29,7 +29,7 @@
       ]
     },
     "code_file": "foo.cpp",
-
+    "execute_prefix": "./",
     "exe_ext": "bin14"
   },
   "cc17": {
@@ -40,7 +40,7 @@
       ]
     },
     "code_file": "foo.cpp",
-
+    "execute_prefix": "./",
     "exe_ext": "bin17"
   },
   "java": {

@@ -1,5 +1,5 @@
 import app from './app'
-import { random_string, make_temp_dir, exec } from './util'
+import { b64decode, random_string, make_temp_dir, exec } from './util'
 import { RUN_PATH } from './config'
 import { promises } from 'fs'
 
@@ -44,8 +44,8 @@ app.post('/upload/case/:id/:type', async (req, res) => {
 
 app.post('/judge', async (req, res) => {
   console.log('judging...');
-  let code = Buffer.from(req.body.code, 'base64').toString();
-  let ans = await judge('abc', code, req.body.lang, 1, 128);
+  let code = b64decode(req.body.code);
+  let ans = await judge('abc', code, req.body.lang, 1, 128, req.body.cases);
   res.send(ans);
 });
 

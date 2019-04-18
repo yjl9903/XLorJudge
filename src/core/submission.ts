@@ -1,9 +1,9 @@
 import path from 'path'
-import { promises } from 'fs'
+import { createReadStream, createWriteStream, promises, unlink } from 'fs'
 import rimraf from 'rimraf'
 
 import { random_string, make_temp_dir, exec } from '../util'
-import { Verdict, SUB_PATH, TEMP_PATH, LANG_CONFIG, 
+import { Verdict, SUB_PATH, LANG_CONFIG, 
         COMPILER_USER_ID, COMPILER_GROUP_ID, RUN_GROUP_ID, RUN_USER_ID,
         NSJAIL_PATH, OUTPUT_LIMIT, ENV } from '../config'
 
@@ -25,12 +25,8 @@ class Submission {
     }
   }
 
-  clean(): void {
-    try {
-      promises.rmdir(this.exe_file);
-    } catch(ex) {
-
-    }
+  clear(): void {
+    unlink(this.exe_file, () => {});
   }
 
   async compile(code: string, max_time: number): Promise<void> {
@@ -49,9 +45,9 @@ class Submission {
       return arg;
     });
 
+    await promises.writeFile(error_path, ''); // important
     let result = await this.run(compile_dir, cmd, args, true, max_time, 1024, null, error_path, error_path);
-    console.log(result);
-    
+
     if (result.verdict !== Verdict.Accepted) {
       let error_msg = '';
       try {
@@ -100,11 +96,40 @@ class Submission {
     if (stdout_file) stdout = await promises.open(stdout_file, 'w');
     if (stderr_file) stderr = await promises.open(stderr_file, 'w');
 
+    // use stream?
+    // async function ReadStream(file: string) {
+    //   return new Promise((res, rej) => {
+    //     let stream = createReadStream(file);
+    //     stream.on('open', () => {
+    //       console.log('open read');
+    //       res(stream);
+    //     });
+    //     stream.on('close', () => {
+    //       console.log('close read');
+    //     })
+    //   });
+    // }
+    // async function WriteStream(file: string) {
+    //   return new Promise((res, rej) => {
+    //     let stream = createReadStream(file);
+    //     stream.on('open', () => {
+    //       console.log('open write');
+    //       res(stream);
+    //     });
+    //     stream.on('close', () => {
+    //       console.log('close write');
+    //     })
+    //   });
+    // }
+    // if (stdin_file) stdin = await ReadStream(stdin_file);
+    // if (stdout_file) stdout = await WriteStream(stdout_file);
+    // if (stderr_file) stderr = await WriteStream(stderr_file);
+
     let nsjail_args = [
       '-Mo', '--chroot', root_dir, '--user', uid, '--group', gid, 
       '--log', path.join(info_dir, 'log'), '--usage', path.join(info_dir, 'usage'),
       "-R", "/bin", "-R", "/lib", "-R", "/lib64", "-R", "/usr", "-R", "/sbin", "-R", "/dev", "-R", "/etc",
-      trusted ? '-B' : '-R', work_dir + ':/app', '-D', '/app'
+      trusted ? '-B' : '-R', work_dir + ':/app'
     ];
 
     let limit_args = [
@@ -123,17 +148,32 @@ class Submission {
       env_args.push(`${k}=${ENV[k]}`);
     }
 
+    let extra_files = [];
+    if (exe_file === '') {
+      exe_file = path.basename(this.exe_file);
+      extra_files.push('-R');
+      extra_files.push(this.exe_file + ':/app/' + exe_file);
+      exe_file = this.lang_config['execute_prefix'] + exe_file;
+    }
+
     try {
+      // console.log(NSJAIL_PATH, [...nsjail_args, ...extra_files, '-D', '/app', ...limit_args, ...env_args, '--', exe_file, ...args]);
       // console.log(NSJAIL_PATH,[...nsjail_args, ...limit_args, ...env_args, '--', exe_file, ...args]);
       let {code: _, signal: signal} = await exec(NSJAIL_PATH, 
-                [...nsjail_args, ...limit_args, ...env_args, '--', exe_file, ...args], 
+                [...nsjail_args, ...extra_files, '-D', '/app', ...limit_args, ...env_args, '--', exe_file, ...args],
                 { stdio: [stdin, stdout, stderr], uid: 0, gid: 0 });
+      let li = [];
+      if (stdin_file) li.push(stdin.close());
+      if (stdout_file) li.push(stdout.close());
+      if (stderr_file) li.push(stderr.close());
+      await Promise.all(li);
     } catch(ex) {
       console.error(ex);
       throw(ex);
     }
 
     try {
+      // lose usage file -> Runtime Error? Restart!
       let usage_file = await promises.readFile(path.join(info_dir, 'usage'), 'utf8'), usage: Object = {};
       for (let line of usage_file.split('\n')) {
         if (line === '') continue;

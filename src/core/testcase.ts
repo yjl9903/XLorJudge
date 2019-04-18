@@ -10,6 +10,8 @@ class TestCase {
 
   constructor(fingerprint: string) {
     this.fingerprint = fingerprint;
+    this.input_file = path.join(DATA_PATH, fingerprint, fingerprint + '.in');
+    this.output_file = path.join(DATA_PATH, fingerprint, fingerprint + '.out');
   }
 
   async write(type: string, content: string): Promise<void> {
@@ -18,14 +20,14 @@ class TestCase {
     } catch(ex) {
 
     }
-    promises.writeFile(path.join(DATA_PATH, this.fingerprint, this.fingerprint + '.' + type), content, 'utf8');
+    return promises.writeFile(path.join(DATA_PATH, this.fingerprint, this.fingerprint + '.' + type), content, 'utf8');
   }
 
   async isExist(): Promise<boolean> {
     let f = false, g = false;
     try {
-      await promises.access(path.join(DATA_PATH, this.fingerprint, this.fingerprint + '.in'), constants.R_OK).then(() => { f = true; });
-      await promises.access(path.join(DATA_PATH, this.fingerprint, this.fingerprint + '.out'), constants.R_OK).then(() => { g = true; });
+      await promises.access(this.input_file, constants.R_OK).then(() => { f = true; });
+      await promises.access(this.output_file, constants.R_OK).then(() => { g = true; });
     } catch(ex) {
       return false;
     }

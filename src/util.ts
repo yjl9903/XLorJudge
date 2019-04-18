@@ -12,6 +12,13 @@ function random_string(length = 32): string {
   return Array.apply(null, Array(length)).map(() => character_table[rand(0, character_table.length - 1)]).join('');
 }
 
+function b64encode(s: string): string {
+  return Buffer.from(s).toString('base64');
+}
+function b64decode(s: string): string {
+  return Buffer.from(s, 'base64').toString();
+}
+
 async function make_temp_dir(): Promise<string> {
   return new Promise(async (res, rej) => {
     while (true) {
@@ -43,4 +50,11 @@ async function exec(command: string, args: Array<any> = [], options: object = {}
   });
 }
 
-export { rand, random_string, make_temp_dir, exec }
+export { 
+  rand, 
+  random_string, 
+  b64encode,
+  b64decode,
+  make_temp_dir, 
+  exec 
+}
