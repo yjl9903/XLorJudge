@@ -42,6 +42,10 @@ app.post('/upload/case/:id/:type', async (req, res) => {
   }
 });
 
+app.post('/upload/chk', async (req, res) => {
+  
+});
+
 app.post('/judge', async (req, res) => {
   console.log('judging...');
   let code = b64decode(req.body.code);

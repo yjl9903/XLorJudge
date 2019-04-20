@@ -23,6 +23,7 @@ const RUN_PATH = path.join(PROJECT_PATH, 'run');
 const DATA_PATH = path.join(RUN_PATH, 'data');
 const SUB_PATH = path.join(RUN_PATH, 'sub');
 const TEMP_PATH = path.join(RUN_PATH, 'temp');
+const CHK_PATH = path.join(RUN_PATH, 'checker');
 
 const COMPILER_USER_ID = 999;
 const COMPILER_GROUP_ID = 999;
@@ -47,6 +48,7 @@ export {
   DATA_PATH,
   SUB_PATH,
   TEMP_PATH,
+  CHK_PATH,
   LANG_CONFIG,
   COMPILER_USER_ID,
   COMPILER_GROUP_ID,

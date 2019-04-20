@@ -23,14 +23,19 @@ export default async function(sub_id: string, sub_code: string, sub_lang: string
   let runner = new Runner(sub, '', max_time, max_memory);
 
   for (let fingerprint of cases) {
-    let result = await runner.run(new TestCase(fingerprint));
-    res.time = Math.max(res.time, result.time);
-    res.memory = Math.max(res.memory, result.memory);
-    if (result.verdict !== Verdict.Accepted) {
-      res.verdict = result.verdict;
-      break;
+    try {
+      let result = await runner.run(new TestCase(fingerprint));
+      if (result.verdict !== Verdict.Accepted) {
+        res.verdict = result.verdict;
+        break;
+      }
+      res.time = Math.max(res.time, result.time);
+      res.memory = Math.max(res.memory, result.memory);
+      res.sum += 1;
+    } catch(ex) {
+      sub.clear(); runner.clear();
+      return { verdict: Verdict.SystemError, message: ex.message };
     }
-    res.sum += 1;
   }
 
   sub.clear(); runner.clear();

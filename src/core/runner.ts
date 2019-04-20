@@ -51,13 +51,16 @@ class Runner {
     assert(this.run_dir !== ''); 
     assert(this.out_dir !== '');
     let result = await this.submission.run(this.run_dir, '', [], false, 
-      this.max_time, this.max_memory, testcase.input_file, run_out, run_err);
-    let ans = null;
+      this.max_time, this.max_memory, testcase.input_file, run_out, run_err).catch(err => {
+        throw new Error('Failed to Open Sandbox');
+      });
+    let ans = result;
     if (result.verdict === Verdict.Accepted) {
       ans = await this.check(run_out, result);
     } else {
 
     }
+    console.log(ans);
     return ans;
   }
   async check(output: string, result: Result): Promise<Result> {
