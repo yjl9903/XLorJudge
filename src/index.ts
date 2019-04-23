@@ -1,6 +1,6 @@
 import app from './app'
-import { b64decode, random_string, make_temp_dir, exec } from './util'
-import { RUN_PATH } from './config'
+import { b64decode, b64encode, random_string, make_temp_dir, exec } from './util'
+import { RUN_PATH, Verdict } from './config'
 import { promises } from 'fs'
 
 import os from 'os'
@@ -9,6 +9,7 @@ import path from 'path'
 import basicAuth from 'basic-auth'
 
 import Submission from './core/submission'
+import Checker from './core/checker'
 import judge from './core/judge'
 import TestCase from './core/testcase'
 import * as tokens from './configs/token.json'
@@ -42,8 +43,15 @@ app.post('/upload/case/:id/:type', async (req, res) => {
   }
 });
 
-app.post('/upload/chk', async (req, res) => {
-  
+app.post('/upload/checker', async (req, res) => {
+  let code: string = b64decode(req.body.code);
+  let chk: Checker = new Checker(req.body.id, req.body.lang);
+  let flag: boolean = true;
+  await chk.compile(code, 30).catch((err) => {
+    flag = false;
+    res.send({ verdict: Verdict.CompileError, message: b64encode(err.message) });
+  });
+  if (flag) res.send('OK');
 });
 
 app.post('/judge', async (req, res) => {
