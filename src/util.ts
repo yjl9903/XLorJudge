@@ -1,6 +1,6 @@
 import path from 'path'
-import { spawn, ChildProcess } from 'child_process'
-import { mkdirSync, promises } from 'fs'
+import { spawn } from 'child_process'
+import { promises } from 'fs'
 import { TEMP_PATH } from './config'
 
 function rand(l: number, r: number): number {

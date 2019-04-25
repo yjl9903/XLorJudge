@@ -25,7 +25,6 @@ class Runner {
     this.checker = chk;
     this.max_time = max_time;
     this.max_memory = max_memory;
-    // this.work_dir = make_temp_dir();
   }
 
   clear(): void {

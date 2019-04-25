@@ -188,11 +188,9 @@ class Submission {
 
       // console.log(usage);
       // console.log(await promises.readFile(path.join(info_dir, 'log'), 'utf8'));
-      let result = new Result(Math.round(usage['user'] / 1000), Math.round(usage['memory'] / 1024), 
-        usage['exit'], usage['signal']);
-      // let time = Number((usage['user'] / 1000.0).toFixed(3)), mem = Number((usage['memory'] / 1024.0).toFixed(3));
-      // console.log(time, mem);
-      // let result = new Result(time, mem, 
+      // let result = new Result(Math.round(usage['user'] / 1000), Math.round(usage['memory'] / 1024), 
+      let tim = Number((usage['user'] / 1000.0).toFixed(3)), mem = Number((usage['memory'] / 1024.0).toFixed(3));
+      let result = new Result(tim, mem, usage['exit'], usage['signal']);
       if (result.exit_code != 0) {
         result.verdict = Verdict.RuntimeError;
       }
