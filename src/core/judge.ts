@@ -1,12 +1,13 @@
 import Submission from './submission'
 import TestCase from './testcase'
 import Runner from './runner'
+import Checker from './checker'
 
 import { Verdict } from '../config'
 import { b64encode } from '../util'
 
 export default async function(sub_id: string, sub_code: string, sub_lang: string, 
-  max_time: number, max_memory: number, cases: Array<string>): Promise<Object> {
+  chk: Checker, max_time: number, max_memory: number, cases: Array<string>): Promise<Object> {
   
   let res: any = { verdict: Verdict.Accepted, message: '' };  
   
@@ -20,7 +21,7 @@ export default async function(sub_id: string, sub_code: string, sub_lang: string
   if (res.verdict === Verdict.CompileError) return res;
 
   res = { verdict: Verdict.Accepted, sum: 0, time: 0, memory: 0 };
-  let runner = new Runner(sub, '', max_time, max_memory);
+  let runner = new Runner(sub, chk, max_time, max_memory);
 
   for (let fingerprint of cases) {
     try {

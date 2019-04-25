@@ -13,6 +13,8 @@ enum Verdict {
   RuntimeError,
   SystemError,
   CompileError,
+  Point,
+  JudgeError
 }
 
 const NSJAIL_PATH = '/bin/nsjail';

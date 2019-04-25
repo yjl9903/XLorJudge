@@ -57,7 +57,9 @@ app.post('/upload/checker', async (req, res) => {
 app.post('/judge', async (req, res) => {
   console.log('judging...');
   let code = b64decode(req.body.code);
-  let ans = await judge('abc', code, req.body.lang, 1, 128, req.body.cases);
+  let ans = await judge(req.body.id, code, req.body.lang, 
+    new Checker(req.body.checker.id, req.body.checker.lang), 
+    1, 128, req.body.cases);
   res.send(ans);
 });
 

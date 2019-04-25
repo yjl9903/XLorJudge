@@ -5,6 +5,7 @@ import assert from 'assert'
 import rimraf from 'rimraf'
 
 import Submission from './submission'
+import Checker from './checker'
 import Result from './result'
 import TestCase from "./testcase"
 
@@ -13,15 +14,15 @@ import { make_temp_dir, random_string } from '../util'
 
 class Runner {
   submission: Submission;
-  checker;
+  checker: Checker;
   max_time: number;
   max_memory: number;
   run_dir: string = '';
   out_dir: string = '';
 
-  constructor(submission: Submission, checker, max_time: number, max_memory: number) {
+  constructor(submission: Submission, chk: Checker, max_time: number, max_memory: number) {
     this.submission = submission;
-    this.checker = checker;
+    this.checker = chk;
     this.max_time = max_time;
     this.max_memory = max_memory;
     // this.work_dir = make_temp_dir();
@@ -47,25 +48,47 @@ class Runner {
   async run(testcase: TestCase): Promise<Result> {
     let run_out = await this.make_write_file();
     let run_err = await this.make_write_file();
+    
     assert(await testcase.isExist());
     assert(this.run_dir !== ''); 
     assert(this.out_dir !== '');
-    let result = await this.submission.run(this.run_dir, '', [], false, 
+
+    let result = await this.submission.run(this.run_dir, '', [], [], false, 
       this.max_time, this.max_memory, testcase.input_file, run_out, run_err).catch(err => {
         throw new Error('Failed to Open Sandbox');
       });
-    let ans = result;
     if (result.verdict === Verdict.Accepted) {
-      ans = await this.check(run_out, result);
+      result.verdict = await this.check(testcase, run_out);
     } else {
 
     }
-    console.log(ans);
-    return ans;
-  }
-  async check(output: string, result: Result): Promise<Result> {
-
+    // console.log(result);
     return result;
+  }
+  async check(testcase: TestCase, output: string): Promise<Verdict> {
+    let chk_out = await this.make_write_file();
+    let files = [
+      { src: testcase.input_file, dst: 'in', mode: '-R' },
+      { src: testcase.output_file, dst: 'out', mode: '-R' },
+      { src: output, dst: "ans", mode: "-R" },
+      { src: chk_out, dst: "result", mode: "-B" }
+    ];
+    let chk_result = await this.checker.run(this.run_dir, '', ["in", "out", "ans", "result"], 
+      files, false, this.max_time, this.max_memory, null, null, null);
+    // console.log('check: ', chk_result);
+    if (chk_result.verdict !== Verdict.Accepted) {
+      if (chk_result.exit_code === 3) {
+        return Verdict.JudgeError;
+      }
+      if (chk_result.exit_code === 7) {
+        return Verdict.Point;
+      }
+      if (chk_result.verdict !== Verdict.RuntimeError) {
+        return chk_result.verdict;
+      }
+      return Verdict.WrongAnswer;
+    }
+    return Verdict.Accepted;
   }
 }
 

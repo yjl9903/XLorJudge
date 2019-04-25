@@ -46,7 +46,7 @@ class Submission {
     });
 
     await promises.writeFile(error_path, ''); // important
-    let result = await this.run(compile_dir, cmd, args, true, max_time, 1024, null, error_path, error_path);
+    let result = await this.run(compile_dir, cmd, args, [], true, max_time, 1024, null, error_path, error_path);
 
     if (result.verdict !== Verdict.Accepted) {
       let error_msg = '';
@@ -75,7 +75,8 @@ class Submission {
     rimraf(compile_dir, () => {});
   }
 
-  async run(work_dir: string, exe_file: string = null, args: Array<string> = [], trusted: boolean = false,
+  async run(work_dir: string, exe_file: string = null, args: Array<string> = [], 
+      files: Array<{ src: string, dst: string, mode: string }> = [], trusted: boolean = false, 
       max_time: number, max_memory: number, 
       stdin_file: string = null, stdout_file: string = null, stderr_file: string = null): Promise<Result> {
     
@@ -155,10 +156,14 @@ class Submission {
       extra_files.push(this.exe_file + ':/app/' + exe_file);
       exe_file = this.lang_config['execute_prefix'] + exe_file;
     }
+    for (let item of files) {
+      extra_files.push(item.mode);
+      extra_files.push(item.src + ':/app/' + item.dst);
+    }
 
     try {
-      // console.log(NSJAIL_PATH, [...nsjail_args, ...extra_files, '-D', '/app', ...limit_args, ...env_args, '--', exe_file, ...args]);
-      // console.log(NSJAIL_PATH,[...nsjail_args, ...limit_args, ...env_args, '--', exe_file, ...args]);
+      // console.log(NSJAIL_PATH, [...nsjail_args, ...extra_files, '-D', '/app', '--', exe_file, ...args].join(' '));
+      // console.log(NSJAIL_PATH,[...nsjail_args, ...limit_args, ...env_args, '--', exe_file, ...args].join(' '));
       let {code: _, signal: signal} = await exec(NSJAIL_PATH, 
                 [...nsjail_args, ...extra_files, '-D', '/app', ...limit_args, ...env_args, '--', exe_file, ...args],
                 { stdio: [stdin, stdout, stderr], uid: 0, gid: 0 });
@@ -181,8 +186,13 @@ class Submission {
         usage[tag] = Number(num);
       }
 
+      // console.log(usage);
+      // console.log(await promises.readFile(path.join(info_dir, 'log'), 'utf8'));
       let result = new Result(Math.round(usage['user'] / 1000), Math.round(usage['memory'] / 1024), 
         usage['exit'], usage['signal']);
+      // let time = Number((usage['user'] / 1000.0).toFixed(3)), mem = Number((usage['memory'] / 1024.0).toFixed(3));
+      // console.log(time, mem);
+      // let result = new Result(time, mem, 
       if (result.exit_code != 0) {
         result.verdict = Verdict.RuntimeError;
       }
