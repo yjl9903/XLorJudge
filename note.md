@@ -12,6 +12,12 @@ docker run --name=judge2 -it -d --privileged -p 3000:3000 -v /d/5-Project/XLOJ/n
 
 # 部署
 
+```
+wget -qO- https://raw.githubusercontent.com/creationix/nvm/v0.34.0/install.sh | bash
+nvm install 10.9
+npm install -g typescript nodemon
+```
+
 ```shell
 docker run --name=judge3 -it -d --privileged -p 3000:3000 -v /sys:/sys node-judge /bin/bash
 ```

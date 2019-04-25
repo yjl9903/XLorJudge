@@ -1,4 +1,5 @@
 import app from './app'
+import { cache } from './app'
 import { b64decode, b64encode, random_string, make_temp_dir, exec } from './util'
 import { RUN_PATH, Verdict } from './config'
 import { promises } from 'fs'
@@ -56,11 +57,20 @@ app.post('/upload/checker', async (req, res) => {
 
 app.post('/judge', async (req, res) => {
   console.log('judging...');
+  cache.set(req.body.id, { verdict: Verdict.Waiting }, 3600, err => {
+    // console.error(err);
+  });
   let code = b64decode(req.body.code);
   let ans = await judge(req.body.id, code, req.body.lang, 
     new Checker(req.body.checker.id, req.body.checker.lang), 
-    1, 128, req.body.cases);
+    req.body['max_time'], req.body['max_memory'], req.body.cases);
   res.send(ans);
+});
+
+app.get('/query', async (req, res) => {
+  cache.get(req.body.id, (err, data) => {
+    res.send(data);
+  });
 });
 
 (async function() {

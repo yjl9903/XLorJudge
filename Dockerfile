@@ -1,7 +1,7 @@
 FROM ubuntu:18.10
 
 RUN apt-get update \
-    && apt-get install -y wget bison flex locales \
+    && apt-get install -y wget bison flex locales memcached \
               python python3 gcc g++ make libtool pkg-config \
               libboost-all-dev libprotobuf-dev protobuf-compiler libnl-3-dev libnl-route-3-dev \
     && locale-gen en_US.UTF-8 \
@@ -10,7 +10,7 @@ RUN apt-get update \
 
 ADD . /Judge
 WORKDIR /Judge
-RUN mkdir -p /dist/run/sub /dist/run/log /dist/run/temp
+RUN mkdir -p /dist/run/sub /dist/run/temp /dist/run/data /dist/run/checker
 
 ENV LANG=en_US.UTF-8 LANGUAGE=en_US:en LC_ALL=en_US.UTF-8
 

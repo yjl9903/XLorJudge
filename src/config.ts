@@ -3,7 +3,8 @@ import * as LANG_CONFIG from './configs/lang.json'
 
 
 enum Verdict {
-  Waiting = -3,
+  Compiling = -4,
+  Waiting,
   Judging,
   WrongAnswer,
   Accepted,
