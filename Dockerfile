@@ -1,7 +1,7 @@
 FROM ubuntu:18.10
 
 RUN apt-get update \
-    && apt-get install -y wget curl bison flex locales memcached \
+    && apt-get install -y wget git curl bison flex locales memcached \
               python python3 gcc g++ make libtool pkg-config \
               libboost-all-dev libprotobuf-dev protobuf-compiler libnl-3-dev libnl-route-3-dev \
     && locale-gen en_US.UTF-8 \
