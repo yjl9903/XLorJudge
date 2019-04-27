@@ -1,4 +1,4 @@
-docker build -t XLor-Judge .# XLor Judge
+# XLor Judge
 
 In development.
 

@@ -19,7 +19,7 @@ RUN useradd -r compiler \
     && npm install -g typescript && npm install . \
     && chmod +x run.sh
 
-RUN cd nsjail && make && mv nsjail /bin/nsjail && cd ..
+RUN git submodule update --init --recursive && cd nsjail && make && cd ..
 
 EXPOSE 3000
 
