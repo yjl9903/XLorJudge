@@ -6,7 +6,7 @@ RUN apt-get update \
               libboost-all-dev libprotobuf-dev protobuf-compiler libnl-3-dev libnl-route-3-dev \
     && locale-gen en_US.UTF-8 \
     && curl -sL https://deb.nodesource.com/setup_10.x | bash - \
-    && apt-get install -y nodejs \
+    && apt-get install -y nodejs 
 
 ADD . /Judge
 WORKDIR /Judge
