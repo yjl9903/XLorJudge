@@ -68,11 +68,11 @@ class Runner {
     let chk_out = await this.make_write_file();
     let files = [
       { src: testcase.input_file, dst: 'in', mode: '-R' },
-      { src: testcase.output_file, dst: 'out', mode: '-R' },
-      { src: output, dst: "ans", mode: "-R" },
+      { src: output, dst: "out", mode: "-R" },
+      { src: testcase.output_file, dst: 'ans', mode: '-R' },
       { src: chk_out, dst: "result", mode: "-B" }
     ];
-    let chk_result = await this.checker.run(this.run_dir, '', ["in", "out", "ans", "result"], 
+    let chk_result = await this.checker.check(this.run_dir, '', [], 
       files, false, this.max_time, this.max_memory, null, null, null);
     // console.log('check: ', chk_result);
     if (chk_result.verdict !== Verdict.Accepted) {
