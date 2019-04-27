@@ -46,7 +46,8 @@ class Submission {
     });
 
     await promises.writeFile(error_path, ''); // important
-    let result = await this.run(compile_dir, cmd, args, [], true, max_time, 1024, null, error_path, error_path);
+    let result = await this.run(compile_dir, cmd, args, [], true, max_time, 1024, null, error_path, error_path)
+                            .catch(() => { throw(new Error('Failed to Open Sandbox')) });
 
     if (result.verdict !== Verdict.Accepted) {
       let error_msg = '';

@@ -56,7 +56,8 @@ app.post('/judge', async (req, res) => {
   let code = b64decode(req.body.code);
   let ans = await judge(req.body.id, code, req.body.lang, 
     new Checker(req.body.checker.id, req.body.checker.lang), 
-    req.body['max_time'], req.body['max_memory'], req.body.cases);
+    req.body['max_time'], req.body['max_memory'], req.body.cases)
+      .catch(err => { res.send({ verdict: Verdict.SystemError, message: err.message }) });
   res.send(ans);
 });
 
