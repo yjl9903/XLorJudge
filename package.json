@@ -6,7 +6,8 @@
   "scripts": {
     "start": "tsc && node ./dist/index.js",
     "serve": "nodemon -L",
-    "build": "tsc"
+    "build": "tsc",
+    "test": "node ./test/index.js"
   },
   "author": "",
   "license": "MIT",
@@ -20,6 +21,7 @@
   "devDependencies": {
     "@types/express": "^4.16.1",
     "@types/memcached": "^2.2.6",
-    "@types/node": "^11.13.4"
+    "@types/node": "^11.13.4",
+    "axios": "^0.18.0"
   }
 }
