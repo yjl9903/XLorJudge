@@ -26,6 +26,39 @@ const ajax = axios.create({
 });
 
 const cases = [];
+let id = '';
+
+async function queryState(id) {
+  return new Promise((resolve, reject) => {
+    let loopid = setInterval(() => {
+      ajax.get('/query', { params: { id: id } }).then(res => {
+        // console.log(res.data);
+        if (res.data.verdict > -2) {
+          clearInterval(loopid);
+          resolve(res.data);
+        }
+      });
+    }, 1000);
+  });
+}
+
+async function judge(src, verdict, time = 1, memory = 64) {
+  console.log(`\nJudge ${src}.cpp`);
+
+  let id = random_string();
+  return ajax.post('/judge', {
+    id: id, 
+    max_time: time, 
+    max_memory: memory,
+    cases: cases, 
+    checker: { id: 'chk', lang: 'cpp' },
+    lang: 'cpp',
+    code: b64encode(await fs.promises.readFile(`/Judge/test/${src}.cpp`, 'utf8'))
+  }).then(async () => {
+    console.log('Test result:', await queryState(id));
+    console.log(`Expected verdict: ${verdict}`);
+  });
+}
 
 ajax.get('/ping')
   .then(async res => {
@@ -38,7 +71,7 @@ ajax.get('/ping')
   })
   .then(async res => {
     console.log('Step 2: ' + res.data);
-    const case_num = 10;
+    const case_num = 5;
     let tasks = [];
     for (let i = 0; i < case_num; i++) {
       let id = random_string(), a = rand(0, 100000), b = rand(0, 100000);
@@ -57,7 +90,8 @@ ajax.get('/ping')
   })
   .then(async res => {
     console.log('Step 3:', res[0].data);
-    let id = random_string();
+
+    id = random_string();
     return ajax.post('/judge', {
       id: id, 
       max_time: 1, 
@@ -68,9 +102,27 @@ ajax.get('/ping')
       code: b64encode(await fs.promises.readFile('/Judge/test/a.cpp', 'utf8'))
     });
   })
-  .then(res => {
-    console.log('Final result:', res.data);
-    console.log('Expected verdict: 0 / Accepted');
+  .then(async () => {
+    console.log('Test result:', await queryState(id));
+    console.log('Expected verdict: 0');
+    // Time
+    return judge('b', 2);
+  })
+  .then(async () => {
+    // Memory
+    return judge('c', 3);
+  })
+  .then(async () => {
+    // Compile Error
+    return judge('d', 6);
+  })
+  .then(async () => {
+    // Runtime Error
+    return judge('e', 4);
+  })
+  .then(async () => {
+    // WA
+    return judge('f', -1);
   })
   .catch(err => {
     console.error(err);

@@ -53,7 +53,6 @@ app.post('/judge', async (req, res) => {
 
 app.get('/query', async (req, res) => {
   cache.get(req.query.id, (err, data) => {
-    console.log(data);
     res.send(data);
   });
 });
