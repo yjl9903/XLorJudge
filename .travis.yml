@@ -13,6 +13,3 @@ install:
 script:
   - docker build -t xlor-judge .
   - docker run --name=judge -d --privileged -p 3000:3000 xlor-judge /bin/bash "./run.sh"
-  - docker ps
-  - curl http://localhost:3000/ping
-  - npm run test
