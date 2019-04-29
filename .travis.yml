@@ -1,11 +1,19 @@
 language: node_js
+node_js:
+  - "10.9"
 
 services:
   - docker
+
+cache: npm
 
 before_install:
   - docker build -t xlor-judge .
   - docker run --name=judge -d --privileged -p 3000:3000 xlor-judge /bin/bash "./run.sh"
 
+install:
+  - npm install .
+
 script:
   - curl http://localhost:3000/ping
+  - npm run test
