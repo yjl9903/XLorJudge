@@ -1,5 +1,6 @@
 const axios = require('axios');
 const fs = require('fs');
+const path = require('path');
 
 function b64encode(s) {
   return Buffer.from(s).toString('base64');
@@ -53,7 +54,7 @@ async function judge(src, verdict, time = 1, memory = 64) {
     cases: cases, 
     checker: { id: 'chk', lang: 'cpp' },
     lang: 'cpp',
-    code: b64encode(await fs.promises.readFile(`/Judge/test/${src}.cpp`, 'utf8'))
+    code: b64encode(await fs.promises.readFile(path.join(__dirname, `/${src}.cpp`), 'utf8'))
   }).then(async () => {
     console.log('Test result:', await queryState(id));
     console.log(`Expected verdict: ${verdict}`);
@@ -66,7 +67,7 @@ ajax.get('/ping')
     return ajax.post('/upload/checker', {
       id: 'chk',
       lang: 'cpp',
-      code: b64encode(await fs.promises.readFile('/Judge/test/chk.cpp', 'utf8'))
+      code: b64encode(await fs.promises.readFile(path.join(__dirname, '/chk.cpp'), 'utf8'))
     });
   })
   .then(async res => {
@@ -99,7 +100,7 @@ ajax.get('/ping')
       cases: cases, 
       checker: { id: 'chk', lang: 'cpp' },
       lang: 'cpp',
-      code: b64encode(await fs.promises.readFile('/Judge/test/a.cpp', 'utf8'))
+      code: b64encode(await fs.promises.readFile(path.join(__dirname, '/a.cpp'), 'utf8'))
     });
   })
   .then(async () => {
