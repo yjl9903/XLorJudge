@@ -2,6 +2,9 @@ import express from 'express'
 import bodyParser from 'body-parser'
 import Memcached from 'memcached'
 
+import basicAuth from 'basic-auth'
+import * as tokens from './configs/token.json'
+
 const app = express();
 const cache = new Memcached('0.0.0.0:11211');
 
@@ -17,6 +20,18 @@ app.use(function(req, res, next) {
     req.on('end', next);
   } else {
     next();
+  }
+});
+
+app.all('/*', (req, res, nxt) => {
+  if (req.url === '/ping') {
+    nxt(); return ;
+  }
+  let auth = basicAuth(req);
+  if (auth.name === tokens['username'] && auth.pass === tokens['password']) {
+    nxt();
+  } else {
+    res.sendStatus(401);
   }
 });
 
