@@ -18,8 +18,9 @@ function random_string(length = 32) {
   return Array.apply(null, Array(length)).map(() => character_table[rand(0, character_table.length - 1)]).join('');
 }
 
+const baseURL = 'http://106.52.226.226:3000/';
 const ajax = axios.create({
-  baseURL: 'http://localhost:3000/',
+  baseURL: baseURL,
   headers: {
     "Authorization": "Basic WExvcjp3aGd0eGR5",
     "Content-Type": "application/json"
@@ -63,6 +64,7 @@ async function judge(src, verdict, time = 1, memory = 64) {
 
 ajax.get('/ping')
   .then(async res => {
+    console.log(`Test Judge Core on ${baseURL}`);
     console.log('Step 1: ' + res.data);
     return ajax.post('/upload/checker', {
       id: 'chk',
@@ -107,7 +109,7 @@ ajax.get('/ping')
     console.log('Test result:', await queryState(id));
     console.log('Expected verdict: 0');
     // Time
-    return judge('b', 2);
+    return judge('b', 1);
   })
   .then(async () => {
     // Memory
