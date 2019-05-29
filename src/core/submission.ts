@@ -195,7 +195,8 @@ class Submission {
       } else if (max_time > 0 && result.time > max_time) {
         result.verdict = Verdict.TimeLimitExceeded;
       } else if (real_time_limit > 0 && usage['pass'] / 1000 > real_time_limit) {
-        result.verdict = Verdict.IdlenessLimitExceeded;
+        // result.verdict = Verdict.IdlenessLimitExceeded;
+        result.verdict = Verdict.TimeLimitExceeded;
       } else if (result.signal !== 0) {
         result.verdict = Verdict.RuntimeError;
       }
