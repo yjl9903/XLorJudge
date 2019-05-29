@@ -17,7 +17,6 @@ export default async function(sub_id: string, sub_code: string, sub_lang: string
   let sub: Submission = new Submission(sub_lang);
   await sub.compile(sub_code, Math.max(max_time * 5, 15)).catch((err) => {
     // return CE msg
-    // console.log(err.message);
     res.verdict = Verdict.CompileError;
     if (err.message === 'Failed to Open Sandbox') res.verdict = Verdict.SystemError;
     res.message = b64encode(err.message);

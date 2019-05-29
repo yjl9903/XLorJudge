@@ -61,7 +61,6 @@ class Runner {
     } else {
 
     }
-    // console.log(result);
     return result;
   }
   async check(testcase: TestCase, output: string): Promise<Verdict> {
@@ -74,7 +73,7 @@ class Runner {
     ];
     let chk_result = await this.checker.check(this.run_dir, '', [], 
       files, false, this.max_time, this.max_memory, null, null, null);
-    // console.log('check: ', chk_result);
+      
     if (chk_result.verdict !== Verdict.Accepted) {
       if (chk_result.exit_code === 3) {
         return Verdict.JudgeError;

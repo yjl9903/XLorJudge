@@ -163,8 +163,6 @@ class Submission {
     }
 
     try {
-      // console.log(NSJAIL_PATH, [...nsjail_args, ...extra_files, '-D', '/app', '--', exe_file, ...args].join(' '));
-      // console.log(NSJAIL_PATH,[...nsjail_args, ...limit_args, ...env_args, '--', exe_file, ...args].join(' '));
       let {code: _, signal: signal} = await exec(NSJAIL_PATH, 
                 [...nsjail_args, ...extra_files, '-D', '/app', ...limit_args, ...env_args, '--', exe_file, ...args],
                 { stdio: [stdin, stdout, stderr], uid: 0, gid: 0 });
@@ -187,9 +185,6 @@ class Submission {
         usage[tag] = Number(num);
       }
 
-      // console.log(usage);
-      // console.log(await promises.readFile(path.join(info_dir, 'log'), 'utf8'));
-      // let result = new Result(Math.round(usage['user'] / 1000), Math.round(usage['memory'] / 1024), 
       let tim = Number((usage['user'] / 1000.0).toFixed(3)), mem = Number((usage['memory'] / 1024.0).toFixed(3));
       let result = new Result(tim, mem, usage['exit'], usage['signal']);
       if (result.exit_code != 0) {
