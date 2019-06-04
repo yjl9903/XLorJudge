@@ -130,7 +130,7 @@ class Submission {
     let nsjail_args = [
       '-Mo', '--chroot', root_dir, '--user', uid, '--group', gid, 
       '--log', path.join(info_dir, 'log'), '--usage', path.join(info_dir, 'usage'),
-      "-R", "/bin", "-R", "/lib", "-R", "/lib64", "-R", "/usr", "-R", "/usr/bin", "-R", "/sbin", "-R", "/dev", "-R", "/etc",
+      "-R", "/bin", "-R", "/lib", "-R", "/lib64", "-R", "/usr", "-R", "/sbin", "-R", "/dev", "-R", "/etc",
       trusted ? '-B' : '-R', work_dir + ':/app'
     ];
 
@@ -208,7 +208,7 @@ class Submission {
       console.error(ex);
       throw(ex);
     } finally {
-      // rimraf(info_dir, () => {});
+      rimraf(info_dir, () => {});
       rimraf(root_dir, () => {});
     }
   }
