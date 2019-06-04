@@ -7,7 +7,10 @@
       ]
     },
     "code_file": "foo.c",
-    "execute_prefix": "./",
+    "execute": {
+      "cmd": "./{exe_file}",
+      "args": []
+    },
     "exe_ext": "bin"
   },
   "cpp": {
@@ -18,7 +21,10 @@
       ]
     },
     "code_file": "foo.cpp",
-    "execute_prefix": "./",
+    "execute": {
+      "cmd": "./{exe_file}",
+      "args": []
+    },
     "exe_ext": "bin11"
   },
   "cc14": {
@@ -29,7 +35,10 @@
       ]
     },
     "code_file": "foo.cpp",
-    "execute_prefix": "./",
+    "execute": {
+      "cmd": "./{exe_file}",
+      "args": []
+    },
     "exe_ext": "bin14"
   },
   "cc17": {
@@ -40,14 +49,28 @@
       ]
     },
     "code_file": "foo.cpp",
-    "execute_prefix": "./",
+    "execute": {
+      "cmd": "./{exe_file}",
+      "args": []
+    },
     "exe_ext": "bin17"
   },
   "java": {
     
   },
   "py2": {
-
+    "compile": {
+      "cmd": "/bin/cp",
+      "args": [
+        "{code_file}", "{exe_file}"
+      ]
+    },
+    "code_file": "foo.py",
+    "execute": {
+      "cmd": "/usr/bin/python",
+      "args": [ "{exe_file}" ]
+    },
+    "exe_ext": "py2"
   },
   "python": {
     "compile": {
@@ -57,7 +80,28 @@
       ]
     },
     "code_file": "foo.py",
-
-    "exe_ext": "py"
+    "execute": {
+      "cmd": "/usr/bin/python3",
+      "args": [ 
+        "{exe_file}" 
+      ]
+    },
+    "exe_ext": "py3"
+  },
+  "text": {
+    "compile": {
+      "cmd": "/bin/cp",
+      "args": [
+        "{code_file}", "{exe_file}"
+      ]
+    },
+    "code_file": "foo.txt",
+    "execute": {
+      "cmd": "/bin/cat",
+      "args": [
+        "{exe_file}"
+      ]
+    },
+    "exe_ext": "txt"
   }
 }

@@ -48,11 +48,11 @@ class Runner {
     let run_out = await this.make_write_file();
     let run_err = await this.make_write_file();
     
-    assert(await testcase.isExist());
+    // assert(await testcase.isExist());
     assert(this.run_dir !== ''); 
     assert(this.out_dir !== '');
 
-    let result = await this.submission.run(this.run_dir, '', [], [], false, 
+    let result = await this.submission.run(this.run_dir, '', [], [], true, 
       this.max_time, this.max_memory, testcase.input_file, run_out, run_err).catch(err => {
         throw new Error('Failed to Open Sandbox');
       });

@@ -130,7 +130,7 @@ class Submission {
     let nsjail_args = [
       '-Mo', '--chroot', root_dir, '--user', uid, '--group', gid, 
       '--log', path.join(info_dir, 'log'), '--usage', path.join(info_dir, 'usage'),
-      "-R", "/bin", "-R", "/lib", "-R", "/lib64", "-R", "/usr", "-R", "/sbin", "-R", "/dev", "-R", "/etc",
+      "-R", "/bin", "-R", "/lib", "-R", "/lib64", "-R", "/usr", "-R", "/usr/bin", "-R", "/sbin", "-R", "/dev", "-R", "/etc",
       trusted ? '-B' : '-R', work_dir + ':/app'
     ];
 
@@ -155,7 +155,10 @@ class Submission {
       exe_file = path.basename(this.exe_file);
       extra_files.push('-R');
       extra_files.push(this.exe_file + ':/app/' + exe_file);
-      exe_file = this.lang_config['execute_prefix'] + exe_file;
+      args = this.lang_config['execute']['args'].map((s) => {
+        return s.replace(/({exe_file})/, exe_file);
+      });
+      exe_file = this.lang_config['execute']['cmd'].replace(/({exe_file})/, exe_file);
     }
     for (let item of files) {
       extra_files.push(item.mode);
@@ -205,7 +208,7 @@ class Submission {
       console.error(ex);
       throw(ex);
     } finally {
-      rimraf(info_dir, () => {});
+      // rimraf(info_dir, () => {});
       rimraf(root_dir, () => {});
     }
   }

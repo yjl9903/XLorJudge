@@ -32,7 +32,12 @@ export default async function(sub_id: string, sub_code: string, sub_lang: string
 
   for (let fingerprint of cases) {
     try {
-      let result = await runner.run(new TestCase(fingerprint)).catch(err => { throw(err); });
+      let c = new TestCase(fingerprint);
+      if (!await c.isExist()) {
+        res.verdict = Verdict.JudgeError;
+        break;
+      }
+      let result = await runner.run(c).catch(err => { throw(err); });
       res.time = Math.max(res.time, result.time);
       res.memory = Math.max(res.memory, result.memory);
       if (result.verdict !== Verdict.Accepted) {
