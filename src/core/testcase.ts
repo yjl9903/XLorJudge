@@ -33,6 +33,16 @@ class TestCase {
     }
     return f && g;
   }
+
+  async clear(): Promise<void> {
+    try {
+      await promises.unlink(path.join(DATA_PATH, this.fingerprint, this.fingerprint + '.in'));
+    } catch(err) { }
+    try {
+      await promises.unlink(path.join(DATA_PATH, this.fingerprint, this.fingerprint + '.out'));
+    } catch(err) { }
+    promises.rmdir(path.join(DATA_PATH, this.fingerprint));
+  }
 }
 
 export default TestCase;

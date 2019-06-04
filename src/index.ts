@@ -21,6 +21,11 @@ app.post('/upload/case/:id/:type', async (req, res) => {
     res.send('OK');
   }
 });
+app.delete('/upload/case/:id', (req, res) => {
+  let c = new TestCase(req.params.id);
+  c.clear();
+  res.send('OK');
+});
 
 app.post('/upload/checker', async (req, res) => {
   let code: string = b64decode(req.body.code);
