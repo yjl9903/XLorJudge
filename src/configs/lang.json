@@ -86,7 +86,9 @@
     "code_file": "foo.py",
     "execute": {
       "cmd": "/usr/bin/python",
-      "args": [ "{exe_file}" ]
+      "args": [ 
+        "{exe_file}" 
+      ]
     },
     "exe_ext": "py2"
   },
