@@ -31,7 +31,7 @@ class Submission {
 
   async compile(code: string, max_time: number): Promise<void> {
     let compile_dir = await make_temp_dir();
-    let compile_out = 'compile.out';
+    let compile_out = this.lang_config['compile'].out || 'compile.out';
     let error_path = path.join(compile_dir, 'compiler.err');
 
     // write code into a file
@@ -67,6 +67,41 @@ class Submission {
         }
       }
       throw(new CompileError(error_msg));
+    }
+
+    if (this.lang_config['compile'].cmd2) {
+      // For java...
+      compile_out = 'compile.out';
+      let cmd = this.lang_config['compile'].cmd2;
+      let args = this.lang_config['compile'].args2.map((arg) => {
+        if (arg === '{code_file}') arg = this.lang_config['code_file'];
+        else if (arg === '{exe_file}') arg = compile_out;
+        return arg;
+      });
+  
+      await promises.writeFile(error_path, ''); // important
+      let result = await this.run(compile_dir, cmd, args, [], true, max_time, 1024, null, null, error_path)
+                              .catch(() => { throw(new Error('Failed to Open Sandbox')) });
+  
+      if (result.verdict !== Verdict.Accepted) {
+        let error_msg = '';
+        try {
+          error_msg = await promises.readFile(error_path, 'utf8')
+        } catch(ex) {
+  
+        }
+        // rimraf(compile_dir, () => {});
+        if (error_msg === '') {
+          if (result.verdict === Verdict.TimeLimitExceeded) {
+            error_msg = 'Time limit exceeded when compiling';
+          } else if (result.verdict === Verdict.MemoryLimitExceeded) {
+            error_msg = 'Memory limit exceeded when compiling';
+          } else {
+            error_msg = 'Something is wrong, but, em, nothing is reported';
+          }
+        }
+        throw(new CompileError(error_msg));
+      }
     }
 
     // copy compile_out to exe_file

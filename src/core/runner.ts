@@ -52,7 +52,7 @@ class Runner {
     assert(this.run_dir !== ''); 
     assert(this.out_dir !== '');
 
-    let result = await this.submission.run(this.run_dir, '', [], [], true, 
+    let result = await this.submission.run(this.run_dir, '', [], [], false, 
       this.max_time, this.max_memory, testcase.input_file, run_out, run_err).catch(err => {
         throw new Error('Failed to Open Sandbox');
       });

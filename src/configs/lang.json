@@ -56,7 +56,25 @@
     "exe_ext": "bin17"
   },
   "java": {
-    
+    "compile": {
+      "out": "Main.class",
+      "cmd": "/usr/bin/javac",
+      "args": [
+        "-encoding", "utf8", "-d", ".", "{code_file}"
+      ],
+      "cmd2": "/usr/bin/jar",
+      "args2": [
+        "-cvf", "{exe_file}", "Main.class"
+      ]
+    },
+    "code_file": "Main.java",
+    "execute": {
+      "cmd": "/usr/bin/java",
+      "args": [
+        "-cp", "{exe_file}", "Main"
+      ]
+    },
+    "exe_ext": "jar"
   },
   "py2": {
     "compile": {
