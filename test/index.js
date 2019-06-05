@@ -18,7 +18,7 @@ function random_string(length = 32) {
   return Array.apply(null, Array(length)).map(() => character_table[rand(0, character_table.length - 1)]).join('');
 }
 
-const baseURL = 'http://106.52.226.226:3000/';
+const baseURL = 'http://localhost:3000/';
 const ajax = axios.create({
   baseURL: baseURL,
   headers: {
@@ -44,8 +44,8 @@ async function queryState(id) {
   });
 }
 
-async function judge(src, verdict, time = 1, memory = 64) {
-  console.log(`\nJudge ${src}.cpp`);
+async function judge(src, lang, verdict, time = 1, memory = 64) {
+  console.log(`\nJudge ${src} with ${lang}`);
 
   let id = random_string();
   return ajax.post('/judge', {
@@ -54,8 +54,8 @@ async function judge(src, verdict, time = 1, memory = 64) {
     max_memory: memory,
     cases: cases, 
     checker: { id: 'chk', lang: 'cpp' },
-    lang: 'cpp',
-    code: b64encode(await fs.promises.readFile(path.join(__dirname, `/${src}.cpp`), 'utf8'))
+    lang: lang,
+    code: b64encode(await fs.promises.readFile(path.join(__dirname, `/${src}`), 'utf8'))
   }).then(async () => {
     console.log('Test result:', await queryState(id));
     console.log(`Expected verdict: ${verdict}`);
@@ -109,23 +109,41 @@ ajax.get('/ping')
     console.log('Test result:', await queryState(id));
     console.log('Expected verdict: 0');
     // Time
-    return judge('b', 1);
+    return judge('b.cpp', 'cpp', 1);
   })
   .then(async () => {
     // Memory
-    return judge('c', 3);
+    return judge('c.cpp', 'cpp', 3);
   })
   .then(async () => {
     // Compile Error
-    return judge('d', 6);
+    return judge('d.cpp', 'cpp', 6);
   })
   .then(async () => {
     // Runtime Error
-    return judge('e', 4);
+    return judge('e.cpp', 'cpp', 4);
   })
   .then(async () => {
     // WA
-    return judge('f', -1);
+    return judge('f.cpp', 'cpp', -1);
+  })
+  .then(async () => {
+    return judge('a.c', 'c', 0);
+  })
+  .then(async () => {
+    return judge('a.cpp', 'cc14', 0);
+  })
+  .then(async () => {
+    return judge('a.cpp', 'cc17', 0);
+  })
+  .then(async () => {
+    return judge('a.py', 'python', 0);
+  })
+  .then(async () => {
+    return judge('a.py2', 'py2', 0);
+  })
+  .then(async () => {
+    return judge('Main.java', 'java', 0);
   })
   .catch(err => {
     console.error(err);
