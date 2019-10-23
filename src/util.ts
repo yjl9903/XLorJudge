@@ -1,15 +1,17 @@
-import path from 'path'
-import { spawn } from 'child_process'
-import { promises } from 'fs'
-import { TEMP_PATH } from './config'
+import path from 'path';
+import { spawn } from 'child_process';
+import { promises } from 'fs';
+import { TEMP_PATH } from './config';
 
 function rand(l: number, r: number): number {
   return l + Math.round(Math.random() * (r - l));
 }
 
-const character_table = "0123456789abcdefghijklmnopqrstuvwxyz";
+const character_table = '0123456789abcdefghijklmnopqrstuvwxyz';
 function random_string(length = 32): string {
-  return Array.apply(null, Array(length)).map(() => character_table[rand(0, character_table.length - 1)]).join('');
+  return Array.apply(null, Array(length))
+    .map(() => character_table[rand(0, character_table.length - 1)])
+    .join('');
 }
 
 function b64encode(s: string): string {
@@ -27,19 +29,20 @@ async function make_temp_dir(): Promise<string> {
         await promises.mkdir(dir);
         res(dir);
         break;
-      } catch(ex) {
-
-      }
+      } catch (ex) {}
     }
   });
 }
 
-async function exec(command: string, args: Array<any> = [], options: object = {}): 
-    Promise<{ code: number, signal: string }> {
+async function exec(
+  command: string,
+  args: Array<any> = [],
+  options: object = {}
+): Promise<{ code: number; signal: string }> {
   return new Promise((res, rej) => {
-    let p = spawn(command, args, options);  
+    let p = spawn(command, args, options);
     p.on('close', (code, signal) => {
-      res({code, signal})
+      res({ code, signal });
       // if (code === 0) {
       //   res(signal);
       // } else {
@@ -50,11 +53,4 @@ async function exec(command: string, args: Array<any> = [], options: object = {}
   });
 }
 
-export { 
-  rand, 
-  random_string, 
-  b64encode,
-  b64decode,
-  make_temp_dir, 
-  exec 
-}
+export { rand, random_string, b64encode, b64decode, make_temp_dir, exec };

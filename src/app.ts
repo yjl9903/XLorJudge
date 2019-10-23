@@ -1,9 +1,9 @@
-import express from 'express'
-import bodyParser from 'body-parser'
-import Memcached from 'memcached'
+import express from 'express';
+import bodyParser from 'body-parser';
+import Memcached from 'memcached';
 
-import basicAuth from 'basic-auth'
-import * as tokens from './configs/token.json'
+import basicAuth from 'basic-auth';
+import * as tokens from './configs/token.json';
 
 const app = express();
 const cache = new Memcached('0.0.0.0:11211');
@@ -16,7 +16,7 @@ app.use(function(req, res, next) {
   if (req.is('text/*')) {
     req.body = '';
     req.setEncoding('utf8');
-    req.on('data', chunk => req.body += chunk);
+    req.on('data', chunk => (req.body += chunk));
     req.on('end', next);
   } else {
     next();
@@ -25,7 +25,8 @@ app.use(function(req, res, next) {
 
 app.all('/*', (req, res, nxt) => {
   if (req.url === '/ping') {
-    nxt(); return ;
+    nxt();
+    return;
   }
   let auth = basicAuth(req);
   if (auth.name === tokens['username'] && auth.pass === tokens['password']) {

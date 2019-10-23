@@ -1,6 +1,5 @@
-import path from 'path'
-import * as LANG_CONFIG from './configs/lang.json'
-
+import path from 'path';
+import * as LANG_CONFIG from './configs/lang.json';
 
 enum Verdict {
   Compiling = -4,
@@ -38,16 +37,16 @@ const OUTPUT_LIMIT = 256;
 
 const ENV = {
   PATH: process.env['PATH'],
-  LANG: "en_US.UTF-8",
-  LANGUAGE: "en_US:en",
-  LC_ALL: "en_US.UTF-8",
+  LANG: 'en_US.UTF-8',
+  LANGUAGE: 'en_US:en',
+  LC_ALL: 'en_US.UTF-8'
 };
 
 export {
-  Verdict, 
-  NSJAIL_PATH, 
-  PROJECT_PATH, 
-  RUN_PATH, 
+  Verdict,
+  NSJAIL_PATH,
+  PROJECT_PATH,
+  RUN_PATH,
   DATA_PATH,
   SUB_PATH,
   TEMP_PATH,

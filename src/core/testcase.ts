@@ -1,7 +1,7 @@
-import path from 'path'
-import { constants, promises } from 'fs'
+import path from 'path';
+import { constants, promises } from 'fs';
 
-import { DATA_PATH } from '../config'
+import { DATA_PATH } from '../config';
 
 class TestCase {
   fingerprint: string;
@@ -17,18 +17,25 @@ class TestCase {
   async write(type: string, content: string): Promise<void> {
     try {
       await promises.mkdir(path.join(DATA_PATH, this.fingerprint));
-    } catch(ex) {
-
-    }
-    return promises.writeFile(path.join(DATA_PATH, this.fingerprint, this.fingerprint + '.' + type), content, 'utf8');
+    } catch (ex) {}
+    return promises.writeFile(
+      path.join(DATA_PATH, this.fingerprint, this.fingerprint + '.' + type),
+      content,
+      'utf8'
+    );
   }
 
   async isExist(): Promise<boolean> {
-    let f = false, g = false;
+    let f = false,
+      g = false;
     try {
-      await promises.access(this.input_file, constants.R_OK).then(() => { f = true; });
-      await promises.access(this.output_file, constants.R_OK).then(() => { g = true; });
-    } catch(ex) {
+      await promises.access(this.input_file, constants.R_OK).then(() => {
+        f = true;
+      });
+      await promises.access(this.output_file, constants.R_OK).then(() => {
+        g = true;
+      });
+    } catch (ex) {
       return false;
     }
     return f && g;
@@ -36,11 +43,15 @@ class TestCase {
 
   async clear(): Promise<void> {
     try {
-      await promises.unlink(path.join(DATA_PATH, this.fingerprint, this.fingerprint + '.in'));
-    } catch(err) { }
+      await promises.unlink(
+        path.join(DATA_PATH, this.fingerprint, this.fingerprint + '.in')
+      );
+    } catch (err) {}
     try {
-      await promises.unlink(path.join(DATA_PATH, this.fingerprint, this.fingerprint + '.out'));
-    } catch(err) { }
+      await promises.unlink(
+        path.join(DATA_PATH, this.fingerprint, this.fingerprint + '.out')
+      );
+    } catch (err) {}
     promises.rmdir(path.join(DATA_PATH, this.fingerprint));
   }
 }

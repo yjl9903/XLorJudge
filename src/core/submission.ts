@@ -1,14 +1,23 @@
-import path from 'path'
-import { createReadStream, createWriteStream, promises, unlink } from 'fs'
-import rimraf from 'rimraf'
+import path from 'path';
+import { createReadStream, createWriteStream, promises, unlink } from 'fs';
+import rimraf from 'rimraf';
 
-import { random_string, make_temp_dir, exec } from '../util'
-import { Verdict, SUB_PATH, LANG_CONFIG, 
-        COMPILER_USER_ID, COMPILER_GROUP_ID, RUN_GROUP_ID, RUN_USER_ID,
-        NSJAIL_PATH, OUTPUT_LIMIT, ENV } from '../config'
+import { random_string, make_temp_dir, exec } from '../util';
+import {
+  Verdict,
+  SUB_PATH,
+  LANG_CONFIG,
+  COMPILER_USER_ID,
+  COMPILER_GROUP_ID,
+  RUN_GROUP_ID,
+  RUN_USER_ID,
+  NSJAIL_PATH,
+  OUTPUT_LIMIT,
+  ENV
+} from '../config';
 
-import Result from './result'
-import CompileError from './error'
+import Result from './result';
+import CompileError from './error';
 
 class Submission {
   lang: string;
@@ -19,7 +28,10 @@ class Submission {
     this.lang = lang;
     this.lang_config = LANG_CONFIG[lang];
     if (exe_file === undefined) {
-      this.exe_file = path.join(SUB_PATH, random_string() + '.' + this.lang_config['exe_ext']);
+      this.exe_file = path.join(
+        SUB_PATH,
+        random_string() + '.' + this.lang_config['exe_ext']
+      );
     } else {
       this.exe_file = exe_file;
     }
@@ -35,27 +47,40 @@ class Submission {
     let error_path = path.join(compile_dir, 'compiler.err');
 
     // write code into a file
-    await promises.writeFile(path.join(compile_dir, this.lang_config['code_file']), code);
-    
+    await promises.writeFile(
+      path.join(compile_dir, this.lang_config['code_file']),
+      code
+    );
+
     // run compile command
     let cmd = this.lang_config['compile'].cmd;
-    let args = this.lang_config['compile'].args.map((arg) => {
+    let args = this.lang_config['compile'].args.map(arg => {
       if (arg === '{code_file}') arg = this.lang_config['code_file'];
       else if (arg === '{exe_file}') arg = compile_out;
       return arg;
     });
 
     await promises.writeFile(error_path, ''); // important
-    let result = await this.run(compile_dir, cmd, args, [], true, max_time, 1024, null, error_path, error_path)
-                            .catch(() => { throw(new Error('Failed to Open Sandbox')) });
+    let result = await this.run(
+      compile_dir,
+      cmd,
+      args,
+      [],
+      true,
+      max_time,
+      1024,
+      null,
+      error_path,
+      error_path
+    ).catch(() => {
+      throw new Error('Failed to Open Sandbox');
+    });
 
     if (result.verdict !== Verdict.Accepted) {
       let error_msg = '';
       try {
-        error_msg = await promises.readFile(error_path, 'utf8')
-      } catch(ex) {
-
-      }
+        error_msg = await promises.readFile(error_path, 'utf8');
+      } catch (ex) {}
       rimraf(compile_dir, () => {});
       if (error_msg === '') {
         if (result.verdict === Verdict.TimeLimitExceeded) {
@@ -66,30 +91,40 @@ class Submission {
           error_msg = 'Something is wrong, but, em, nothing is reported';
         }
       }
-      throw(new CompileError(error_msg));
+      throw new CompileError(error_msg);
     }
 
     if (this.lang_config['compile'].cmd2) {
       // For java...
       compile_out = 'compile.out';
       let cmd = this.lang_config['compile'].cmd2;
-      let args = this.lang_config['compile'].args2.map((arg) => {
+      let args = this.lang_config['compile'].args2.map(arg => {
         if (arg === '{code_file}') arg = this.lang_config['code_file'];
         else if (arg === '{exe_file}') arg = compile_out;
         return arg;
       });
-  
+
       await promises.writeFile(error_path, ''); // important
-      let result = await this.run(compile_dir, cmd, args, [], true, max_time, 1024, null, null, error_path)
-                              .catch(() => { throw(new Error('Failed to Open Sandbox')) });
-  
+      let result = await this.run(
+        compile_dir,
+        cmd,
+        args,
+        [],
+        true,
+        max_time,
+        1024,
+        null,
+        null,
+        error_path
+      ).catch(() => {
+        throw new Error('Failed to Open Sandbox');
+      });
+
       if (result.verdict !== Verdict.Accepted) {
         let error_msg = '';
         try {
-          error_msg = await promises.readFile(error_path, 'utf8')
-        } catch(ex) {
-  
-        }
+          error_msg = await promises.readFile(error_path, 'utf8');
+        } catch (ex) {}
         // rimraf(compile_dir, () => {});
         if (error_msg === '') {
           if (result.verdict === Verdict.TimeLimitExceeded) {
@@ -100,7 +135,7 @@ class Submission {
             error_msg = 'Something is wrong, but, em, nothing is reported';
           }
         }
-        throw(new CompileError(error_msg));
+        throw new CompileError(error_msg);
       }
     }
 
@@ -111,11 +146,18 @@ class Submission {
     rimraf(compile_dir, () => {});
   }
 
-  async run(work_dir: string, exe_file: string = null, args: Array<string> = [], 
-      files: Array<{ src: string, dst: string, mode: string }> = [], trusted: boolean = false, 
-      max_time: number, max_memory: number, 
-      stdin_file: string = null, stdout_file: string = null, stderr_file: string = null): Promise<Result> {
-    
+  async run(
+    work_dir: string,
+    exe_file: string = null,
+    args: Array<string> = [],
+    files: Array<{ src: string; dst: string; mode: string }> = [],
+    trusted: boolean = false,
+    max_time: number,
+    max_memory: number,
+    stdin_file: string = null,
+    stdout_file: string = null,
+    stderr_file: string = null
+  ): Promise<Result> {
     let root_dir = await make_temp_dir();
     let info_dir = await make_temp_dir();
     // let error_path = path.join(info_dir, 'err');
@@ -128,7 +170,9 @@ class Submission {
       gid = COMPILER_GROUP_ID;
     }
 
-    let stdin: any = 'ignore', stdout: any = 'ignore', stderr: any = 'ignore';
+    let stdin: any = 'ignore',
+      stdout: any = 'ignore',
+      stderr: any = 'ignore';
     if (stdin_file) stdin = await promises.open(stdin_file, 'r');
     if (stdout_file) stdout = await promises.open(stdout_file, 'w');
     if (stderr_file) stderr = await promises.open(stderr_file, 'w');
@@ -163,20 +207,52 @@ class Submission {
     // if (stderr_file) stderr = await WriteStream(stderr_file);
 
     let nsjail_args = [
-      '-Mo', '--chroot', root_dir, '--user', uid, '--group', gid, 
-      '--log', path.join(info_dir, 'log'), '--usage', path.join(info_dir, 'usage'),
-      "-R", "/bin", "-R", "/lib", "-R", "/lib64", "-R", "/usr", "-R", "/sbin", "-R", "/dev", "-R", "/etc",
-      trusted ? '-B' : '-R', work_dir + ':/app'
+      '-Mo',
+      '--chroot',
+      root_dir,
+      '--user',
+      uid,
+      '--group',
+      gid,
+      '--log',
+      path.join(info_dir, 'log'),
+      '--usage',
+      path.join(info_dir, 'usage'),
+      '-R',
+      '/bin',
+      '-R',
+      '/lib',
+      '-R',
+      '/lib64',
+      '-R',
+      '/usr',
+      '-R',
+      '/sbin',
+      '-R',
+      '/dev',
+      '-R',
+      '/etc',
+      trusted ? '-B' : '-R',
+      work_dir + ':/app'
     ];
 
     let limit_args = [
-      "--cgroup_pids_max", 64, "--cgroup_cpu_ms_per_sec", 1000,
-      "--cgroup_mem_max", (max_memory + 32) * 1024 * 1024,
-      "--time_limit", real_time_limit + 1,
-      "--rlimit_cpu", max_time + 1,
-      "--rlimit_as", "inf",
-      "--rlimit_stack", Math.max(max_memory + 32, 256),
-      "--rlimit_fsize", OUTPUT_LIMIT,
+      '--cgroup_pids_max',
+      64,
+      '--cgroup_cpu_ms_per_sec',
+      1000,
+      '--cgroup_mem_max',
+      (max_memory + 32) * 1024 * 1024,
+      '--time_limit',
+      real_time_limit + 1,
+      '--rlimit_cpu',
+      max_time + 1,
+      '--rlimit_as',
+      'inf',
+      '--rlimit_stack',
+      Math.max(max_memory + 32, 256),
+      '--rlimit_fsize',
+      OUTPUT_LIMIT
     ];
 
     let env_args = [];
@@ -190,10 +266,13 @@ class Submission {
       exe_file = path.basename(this.exe_file);
       extra_files.push('-R');
       extra_files.push(this.exe_file + ':/app/' + exe_file);
-      args = this.lang_config['execute']['args'].map((s) => {
+      args = this.lang_config['execute']['args'].map(s => {
         return s.replace(/({exe_file})/, exe_file);
       });
-      exe_file = this.lang_config['execute']['cmd'].replace(/({exe_file})/, exe_file);
+      exe_file = this.lang_config['execute']['cmd'].replace(
+        /({exe_file})/,
+        exe_file
+      );
     }
     for (let item of files) {
       extra_files.push(item.mode);
@@ -201,29 +280,46 @@ class Submission {
     }
 
     try {
-      let {code: _, signal: signal} = await exec(NSJAIL_PATH, 
-                [...nsjail_args, ...extra_files, '-D', '/app', ...limit_args, ...env_args, '--', exe_file, ...args],
-                { stdio: [stdin, stdout, stderr], uid: 0, gid: 0 });
+      let { code: _, signal: signal } = await exec(
+        NSJAIL_PATH,
+        [
+          ...nsjail_args,
+          ...extra_files,
+          '-D',
+          '/app',
+          ...limit_args,
+          ...env_args,
+          '--',
+          exe_file,
+          ...args
+        ],
+        { stdio: [stdin, stdout, stderr], uid: 0, gid: 0 }
+      );
       let li = [];
       if (stdin_file) li.push(stdin.close());
       if (stdout_file) li.push(stdout.close());
       if (stderr_file) li.push(stderr.close());
       await Promise.all(li);
-    } catch(ex) {
+    } catch (ex) {
       console.error(ex);
-      throw(ex);
+      throw ex;
     }
 
     try {
       // lose usage file -> Runtime Error? Restart!
-      let usage_file = await promises.readFile(path.join(info_dir, 'usage'), 'utf8'), usage: Object = {};
+      let usage_file = await promises.readFile(
+          path.join(info_dir, 'usage'),
+          'utf8'
+        ),
+        usage: Object = {};
       for (let line of usage_file.split('\n')) {
         if (line === '') continue;
         let [tag, num] = line.split(' ');
         usage[tag] = Number(num);
       }
 
-      let tim = Number((usage['user'] / 1000.0).toFixed(3)), mem = Number((usage['memory'] / 1024.0).toFixed(3));
+      let tim = Number((usage['user'] / 1000.0).toFixed(3)),
+        mem = Number((usage['memory'] / 1024.0).toFixed(3));
       let result = new Result(tim, mem, usage['exit'], usage['signal']);
       if (result.exit_code != 0) {
         result.verdict = Verdict.RuntimeError;
@@ -232,15 +328,18 @@ class Submission {
         result.verdict = Verdict.MemoryLimitExceeded;
       } else if (max_time > 0 && result.time > max_time) {
         result.verdict = Verdict.TimeLimitExceeded;
-      } else if (real_time_limit > 0 && usage['pass'] / 1000 > real_time_limit) {
+      } else if (
+        real_time_limit > 0 &&
+        usage['pass'] / 1000 > real_time_limit
+      ) {
         result.verdict = Verdict.IdlenessLimitExceeded;
       } else if (result.signal !== 0) {
         result.verdict = Verdict.RuntimeError;
       }
       return result;
-    } catch(ex) {
+    } catch (ex) {
       console.error(ex);
-      throw(ex);
+      throw ex;
     } finally {
       rimraf(info_dir, () => {});
       rimraf(root_dir, () => {});
