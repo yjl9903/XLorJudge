@@ -36,6 +36,10 @@ app.all('/*', (req, res, nxt) => {
   }
 });
 
+app.get('/ping', (req, res) => {
+  res.send('XLor Online Judge Core');
+});
+
 export default app;
 
 export { app, cache };

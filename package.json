@@ -7,7 +7,8 @@
     "start": "tsc && node ./dist/index.js",
     "serve": "nodemon -L",
     "build": "yarn tsc",
-    "test": "node ./test/index.js",
+    "mytest": "node ./test/index.js",
+    "test": "jest",
     "lint": "yarn prettier --write --parser typescript src/**/*.ts"
   },
   "author": "",
@@ -31,11 +32,16 @@
   },
   "devDependencies": {
     "@types/express": "^4.16.1",
+    "@types/jest": "^24.0.19",
     "@types/memcached": "^2.2.6",
     "@types/node": "^11.13.4",
+    "@types/supertest": "^2.0.8",
     "axios": "^0.18.0",
+    "jest": "^24.9.0",
     "lint-staged": "^9.4.2",
     "prettier": "^1.18.2",
+    "supertest": "^4.0.2",
+    "ts-jest": "^24.1.0",
     "typescript": "^3.6.4"
   }
 }

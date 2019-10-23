@@ -7,10 +7,6 @@ import Checker from './core/checker';
 import judge from './core/judge';
 import TestCase from './core/testcase';
 
-app.get('/ping', (req, res) => {
-  res.send('XLor Online Judge Core');
-});
-
 app.post('/upload/case/:id/:type', async (req, res) => {
   let id = req.params.id,
     type = req.params.type,
