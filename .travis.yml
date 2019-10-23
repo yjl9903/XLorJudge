@@ -5,10 +5,14 @@ node_js:
 services:
   - docker
 
-cache: npm
+cache:
+  yarn: true
+  directories:
+    - node_modules
 
 install:
-  - npm install
+  - yarn
+  - yarn run build
 
 script:
   - docker build -t xlor-judge .

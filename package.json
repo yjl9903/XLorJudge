@@ -6,7 +6,7 @@
   "scripts": {
     "start": "tsc && node ./dist/index.js",
     "serve": "nodemon -L",
-    "build": "tsc",
+    "build": "yarn tsc",
     "test": "node ./test/index.js",
     "lint": "yarn prettier --write --parser typescript src/**/*.ts"
   },
