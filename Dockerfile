@@ -5,7 +5,7 @@ RUN apt-get update \
               python python3 gcc g++ openjdk-8-jdk make libtool pkg-config \
               libboost-all-dev libprotobuf-dev protobuf-compiler libnl-3-dev libnl-route-3-dev \
     && locale-gen en_US.UTF-8 \
-    && curl -sL https://deb.nodesource.com/setup_10.x | bash - \
+    && curl -sL https://deb.nodesource.com/setup_12.x | bash - \
     && apt-get install -y nodejs 
 
 ADD . /Judge
@@ -24,4 +24,3 @@ RUN git submodule update --init --recursive && cd nsjail && make && mv nsjail /b
 EXPOSE 3000
 
 CMD ./run.sh
-
