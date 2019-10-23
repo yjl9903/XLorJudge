@@ -347,6 +347,13 @@
   dependencies:
     "@babel/types" "^7.3.0"
 
+"@types/basic-auth@^1.1.2":
+  version "1.1.2"
+  resolved "https://registry.npm.taobao.org/@types/basic-auth/download/@types/basic-auth-1.1.2.tgz#810fbded879f14327fc1d3413bdb92cfe9e24f73"
+  integrity sha1-gQ+97YefFDJ/wdNBO9uSz+niT3M=
+  dependencies:
+    "@types/node" "*"
+
 "@types/body-parser@*":
   version "1.17.1"
   resolved "https://registry.npm.taobao.org/@types/body-parser/download/@types/body-parser-1.17.1.tgz#18fcf61768fb5c30ccc508c21d6fd2e8b3bf7897"
