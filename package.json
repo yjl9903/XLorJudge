@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "tsc && node ./dist/index.js",
-    "serve": "nodemon -L",
+    "watch": "nodemon -L",
     "build": "yarn tsc",
     "mytest": "node ./test/index.js",
     "test": "jest",
@@ -16,13 +16,13 @@
   "dependencies": {
     "basic-auth": "^2.0.1",
     "body-parser": "^1.18.3",
+    "execa": "^3.2.0",
     "express": "^4.16.4",
     "memcached": "^2.2.2",
     "rimraf": "^2.6.3"
   },
   "gitHooks": {
-    "pre-commit": "lint-staged",
-    "commit-msg": "node scripts/verifyCommit.js"
+    "pre-commit": "lint-staged"
   },
   "lint-staged": {
     "*.ts": [

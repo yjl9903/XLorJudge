@@ -3,25 +3,25 @@ import { spawn } from 'child_process';
 import { promises } from 'fs';
 import { TEMP_PATH } from './config';
 
-function rand(l: number, r: number): number {
+export function rand(l: number, r: number): number {
   return l + Math.round(Math.random() * (r - l));
 }
 
 const character_table = '0123456789abcdefghijklmnopqrstuvwxyz';
-function random_string(length = 32): string {
+export function random_string(length = 32): string {
   return Array.apply(null, Array(length))
     .map(() => character_table[rand(0, character_table.length - 1)])
     .join('');
 }
 
-function b64encode(s: string): string {
+export function b64encode(s: string): string {
   return Buffer.from(s).toString('base64');
 }
-function b64decode(s: string): string {
+export function b64decode(s: string): string {
   return Buffer.from(s, 'base64').toString();
 }
 
-async function make_temp_dir(): Promise<string> {
+export async function make_temp_dir(): Promise<string> {
   return new Promise(async (res, rej) => {
     while (true) {
       let dir = path.join(TEMP_PATH, random_string());
@@ -34,9 +34,9 @@ async function make_temp_dir(): Promise<string> {
   });
 }
 
-async function exec(
+export async function exec(
   command: string,
-  args: Array<any> = [],
+  args: Array<string> = [],
   options: object = {}
 ): Promise<{ code: number; signal: string }> {
   return new Promise((res, rej) => {
@@ -52,5 +52,3 @@ async function exec(
     p.on('error', rej);
   });
 }
-
-export { rand, random_string, b64encode, b64decode, make_temp_dir, exec };

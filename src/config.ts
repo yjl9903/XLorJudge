@@ -1,7 +1,9 @@
 import path from 'path';
 import * as LANG_CONFIG from './configs/lang.json';
 
-enum Verdict {
+export { LANG_CONFIG };
+
+export enum Verdict {
   Compiling = -4,
   Waiting,
   Judging,
@@ -17,45 +19,27 @@ enum Verdict {
   JudgeError
 }
 
-const NSJAIL_PATH = '/bin/nsjail';
+export const NSJAIL_PATH = '/bin/nsjail';
 
-const PROJECT_PATH = __dirname;
+export const PROJECT_PATH = __dirname;
 // const CONFIG_PATH = path.join(PROJECT_PATH, 'config');
-const RUN_PATH = path.join(PROJECT_PATH, 'run');
-const DATA_PATH = path.join(RUN_PATH, 'data');
-const SUB_PATH = path.join(RUN_PATH, 'sub');
-const TEMP_PATH = path.join(RUN_PATH, 'temp');
-const CHK_PATH = path.join(RUN_PATH, 'checker');
+export const RUN_PATH = path.join(PROJECT_PATH, 'run');
+export const DATA_PATH = path.join(RUN_PATH, 'data');
+export const SUB_PATH = path.join(RUN_PATH, 'sub');
+export const TEMP_PATH = path.join(RUN_PATH, 'temp');
+export const CHK_PATH = path.join(RUN_PATH, 'checker');
 
-const COMPILER_USER_ID = 999;
-const COMPILER_GROUP_ID = 999;
+export const COMPILER_USER_ID = 999;
+export const COMPILER_GROUP_ID = 999;
 
-const RUN_USER_ID = 65534;
-const RUN_GROUP_ID = 65534;
+export const RUN_USER_ID = 65534;
+export const RUN_GROUP_ID = 65534;
 
-const OUTPUT_LIMIT = 256;
+export const OUTPUT_LIMIT = 256;
 
-const ENV = {
+export const ENV = {
   PATH: process.env['PATH'],
   LANG: 'en_US.UTF-8',
   LANGUAGE: 'en_US:en',
   LC_ALL: 'en_US.UTF-8'
-};
-
-export {
-  Verdict,
-  NSJAIL_PATH,
-  PROJECT_PATH,
-  RUN_PATH,
-  DATA_PATH,
-  SUB_PATH,
-  TEMP_PATH,
-  CHK_PATH,
-  LANG_CONFIG,
-  COMPILER_USER_ID,
-  COMPILER_GROUP_ID,
-  RUN_USER_ID,
-  RUN_GROUP_ID,
-  OUTPUT_LIMIT,
-  ENV
 };

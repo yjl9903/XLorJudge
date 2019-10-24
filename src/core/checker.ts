@@ -11,7 +11,7 @@ import {
 import { exec } from '../util';
 import Result from './result';
 
-class Checker extends Submission {
+export default class Checker extends Submission {
   constructor(id: string, lang: string) {
     super(lang, path.join(CHK_PATH, id + '.' + LANG_CONFIG[lang]['exe_ext']));
   }
@@ -54,5 +54,3 @@ class Checker extends Submission {
     return new Result(0, 0, result.code, 0, Verdict.WrongAnswer);
   }
 }
-
-export default Checker;
