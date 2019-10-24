@@ -16,7 +16,8 @@ export enum Verdict {
   SystemError,
   CompileError,
   Point,
-  JudgeError
+  JudgeError,
+  TestCaseError
 }
 
 export const NSJAIL_PATH = '/bin/nsjail';

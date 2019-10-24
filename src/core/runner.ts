@@ -53,7 +53,6 @@ class Runner {
     let run_out = await this.make_write_file();
     let run_err = await this.make_write_file();
 
-    // assert(await testcase.isExist());
     assert(this.run_dir !== '');
     assert(this.out_dir !== '');
 
@@ -75,7 +74,6 @@ class Runner {
       });
     if (result.verdict === Verdict.Accepted) {
       result.verdict = await this.check(testcase, run_out);
-    } else {
     }
     return result;
   }

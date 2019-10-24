@@ -23,8 +23,8 @@ router.post('/case/:id/:type', async (req, res) => {
   }
 });
 
-router.delete('/case/:id', (req, res) => {
-  let c = new TestCase(req.params.id);
+router.delete('/case/:id', async (req, res) => {
+  const c = new TestCase(req.params.id);
   c.clear();
   res.send('OK');
 });

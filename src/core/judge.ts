@@ -43,10 +43,10 @@ export default async function(
   for (let fingerprint of cases) {
     try {
       let c = new TestCase(fingerprint);
-      if (!(await c.isExist())) {
-        res.verdict = Verdict.JudgeError;
-        break;
-      }
+      // if (!(await c.isExist())) {
+      //   res.verdict = Verdict.JudgeError;
+      //   break;
+      // }
       let result = await runner.run(c).catch(err => {
         throw err;
       });

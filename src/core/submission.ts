@@ -173,9 +173,14 @@ class Submission {
     let stdin: any = 'ignore',
       stdout: any = 'ignore',
       stderr: any = 'ignore';
-    if (stdin_file) stdin = await promises.open(stdin_file, 'r');
-    if (stdout_file) stdout = await promises.open(stdout_file, 'w');
-    if (stderr_file) stderr = await promises.open(stderr_file, 'w');
+
+    try {
+      if (stdin_file) stdin = await promises.open(stdin_file, 'r');
+      if (stdout_file) stdout = await promises.open(stdout_file, 'w');
+      if (stderr_file) stderr = await promises.open(stderr_file, 'w');
+    } catch (err) {
+      return new Result(0, 0, 0, 0, Verdict.TestCaseError);
+    }
 
     // use stream?
     // async function ReadStream(file: string) {

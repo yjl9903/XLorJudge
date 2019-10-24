@@ -1,5 +1,6 @@
 import path from 'path';
-import { constants, promises } from 'fs';
+import { promises } from 'fs';
+import rimraf from 'rimraf';
 
 import { DATA_PATH } from '../config';
 
@@ -17,7 +18,9 @@ class TestCase {
   async write(type: string, content: string): Promise<void> {
     try {
       await promises.mkdir(path.join(DATA_PATH, this.fingerprint));
-    } catch (ex) {}
+    } catch (err) {
+
+    }
     return promises.writeFile(
       path.join(DATA_PATH, this.fingerprint, this.fingerprint + '.' + type),
       content,
@@ -25,34 +28,13 @@ class TestCase {
     );
   }
 
-  async isExist(): Promise<boolean> {
-    let f = false,
-      g = false;
-    try {
-      await promises.access(this.input_file, constants.R_OK).then(() => {
-        f = true;
+  clear(): Promise<void> {
+    return new Promise((res, rej) => {
+      rimraf(path.join(DATA_PATH, this.fingerprint), err => {
+        if (err) rej(err);
+        else res();
       });
-      await promises.access(this.output_file, constants.R_OK).then(() => {
-        g = true;
-      });
-    } catch (ex) {
-      return false;
-    }
-    return f && g;
-  }
-
-  async clear(): Promise<void> {
-    try {
-      await promises.unlink(
-        path.join(DATA_PATH, this.fingerprint, this.fingerprint + '.in')
-      );
-    } catch (err) {}
-    try {
-      await promises.unlink(
-        path.join(DATA_PATH, this.fingerprint, this.fingerprint + '.out')
-      );
-    } catch (err) {}
-    promises.rmdir(path.join(DATA_PATH, this.fingerprint));
+    });
   }
 }
 
