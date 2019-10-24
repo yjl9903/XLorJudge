@@ -179,6 +179,8 @@ class Submission {
       if (stdout_file) stdout = await promises.open(stdout_file, 'w');
       if (stderr_file) stderr = await promises.open(stderr_file, 'w');
     } catch (err) {
+      rimraf(info_dir, () => {});
+      rimraf(root_dir, () => {});
       return new Result(0, 0, 0, 0, Verdict.TestCaseError);
     }
 
