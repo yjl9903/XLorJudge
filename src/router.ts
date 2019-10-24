@@ -11,21 +11,26 @@ import TestCase from './core/testcase';
 const router = Router();
 
 router.post('/case/:id/:type', async (req, res) => {
-  let id = req.params.id,
-    type = req.params.type,
-    content = req.body;
+  const {
+    params: { id, type },
+    body: content
+  } = req;
   if (type !== 'in' && type !== 'out') {
     res.sendStatus(400);
   } else {
     let c = new TestCase(id);
-    c.write(type, content);
-    res.send('OK');
+    try {
+      await c.write(type, content);
+      res.send({ status: 'ok' });
+    } catch (err) {
+      res.status(500).send('');
+    }
   }
 });
 
 router.delete('/case/:id', async (req, res) => {
   const c = new TestCase(req.params.id);
-  c.clear();
+  await c.clear();
   res.send('OK');
 });
 

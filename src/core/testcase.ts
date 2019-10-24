@@ -18,9 +18,7 @@ class TestCase {
   async write(type: string, content: string): Promise<void> {
     try {
       await promises.mkdir(path.join(DATA_PATH, this.fingerprint));
-    } catch (err) {
-
-    }
+    } catch (err) {}
     return promises.writeFile(
       path.join(DATA_PATH, this.fingerprint, this.fingerprint + '.' + type),
       content,
