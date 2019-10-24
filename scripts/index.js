@@ -18,7 +18,8 @@ function random_string(length = 32) {
   return Array.apply(null, Array(length)).map(() => character_table[rand(0, character_table.length - 1)]).join('');
 }
 
-const baseURL = 'http://localhost:3000/';
+// const baseURL = 'http://localhost:3000/';
+const baseURL = 'http://121.36.155.143:3000/';
 
 const api = axios.create({
   baseURL: baseURL,
@@ -106,17 +107,30 @@ async function judge(src, lang, cases = [], time = 1, memory = 64) {
     }
   }
 
+  // ac
   await expectJudge('a.cpp', 'cpp', 0, cases);
+  // tle
   await expectJudge('b.cpp', 'cpp', 1, cases);
+  // mle
   await expectJudge('c.cpp', 'cpp', 3, cases);
+  // ce
   await expectJudge('d.cpp', 'cpp', 6, cases);
+  // re
   await expectJudge('e.cpp', 'cpp', 4, cases);
+  // wa
   await expectJudge('f.cpp', 'cpp', -1, cases);
+  // testcase
   await expectJudge('a.cpp', 'cpp', 9, ['wa']);
+  // c
   await expectJudge('a.c', 'c', 0, cases);
+  // c++14
   await expectJudge('a.cpp', 'cc14', 0, cases);
+  // c++17
   await expectJudge('a.cpp', 'cc17', 0, cases);
+  // python3
   await expectJudge('a.py', 'python', 0, cases);
+  // python2
   await expectJudge('a.py2', 'py2', 0, cases);
+  // java
   await expectJudge('Main.java', 'java', 0, cases);
 })();
