@@ -37,10 +37,12 @@ router.delete('/case/:id', async (req, res) => {
 router.post('/checker', async (req, res) => {
   let code: string = b64decode(req.body.code);
   let chk: Checker = new Checker(req.body.id, req.body.lang);
-  chk.compile(code, 30).catch(err => {
-    // res.send({ verdict: Verdict.CompileError, message: b64encode(err.message) });
-  });
-  res.send('OK');
+  try {
+    await chk.compile(code, 30)
+    res.send({ status: 'ok' });
+  } catch (err) {
+    res.status(500).send('');
+  }
 });
 
 router.post('/judge', async (req, res) => {
