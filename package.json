@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "tsc && node ./dist/index.js",
+    "start": "yarn tsc && node ./dist/index.js",
     "watch": "nodemon -L",
     "build": "yarn tsc",
     "mytest": "node ./test/index.js",
