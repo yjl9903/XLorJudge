@@ -10,7 +10,7 @@ import TestCase from './core/testcase';
 
 const router = Router();
 
-router.post('/upload/case/:id/:type', async (req, res) => {
+router.post('/case/:id/:type', async (req, res) => {
   let id = req.params.id,
     type = req.params.type,
     content = req.body;
@@ -23,13 +23,13 @@ router.post('/upload/case/:id/:type', async (req, res) => {
   }
 });
 
-router.delete('/upload/case/:id', (req, res) => {
+router.delete('/case/:id', (req, res) => {
   let c = new TestCase(req.params.id);
   c.clear();
   res.send('OK');
 });
 
-router.post('/upload/checker', async (req, res) => {
+router.post('/checker', async (req, res) => {
   let code: string = b64decode(req.body.code);
   let chk: Checker = new Checker(req.body.id, req.body.lang);
   chk.compile(code, 30).catch(err => {
