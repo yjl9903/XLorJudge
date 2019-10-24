@@ -18,13 +18,14 @@ function random_string(length = 32) {
   return Array.apply(null, Array(length)).map(() => character_table[rand(0, character_table.length - 1)]).join('');
 }
 
-// const baseURL = 'http://localhost:3000/';
-const baseURL = 'http://121.36.155.143:3000/';
+const baseURL = 'http://localhost:3000/';
+const name = 'XLor';
+const pass = 'whgtxdy';
 
 const api = axios.create({
   baseURL: baseURL,
   headers: {
-    "Authorization": "Basic WExvcjp3aGd0eGR5",
+    "Authorization": `Basic ${b64encode(name + ':' + pass)}`,
     "Content-Type": "application/json"
   }
 });
