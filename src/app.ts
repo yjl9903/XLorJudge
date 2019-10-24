@@ -1,9 +1,10 @@
 import express from 'express';
 import bodyParser from 'body-parser';
 import Memcached from 'memcached';
-
 import basicAuth from 'basic-auth';
+
 import * as tokens from './configs/token.json';
+import router from './router';
 
 const app = express();
 const cache = new Memcached('0.0.0.0:11211');
@@ -39,6 +40,8 @@ app.all('/*', (req, res, nxt) => {
 app.get('/ping', (req, res) => {
   res.send('XLor Online Judge Core');
 });
+
+app.use(router);
 
 export default app;
 
