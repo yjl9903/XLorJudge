@@ -66,7 +66,7 @@ ajax.get('/ping')
   .then(async res => {
     console.log(`Test Judge Core on ${baseURL}`);
     console.log('Step 1: ' + res.data);
-    return ajax.post('/upload/checker', {
+    return ajax.post('/checker', {
       id: 'chk',
       lang: 'cpp',
       code: b64encode(await fs.promises.readFile(path.join(__dirname, '/chk.cpp'), 'utf8'))
@@ -79,11 +79,11 @@ ajax.get('/ping')
     for (let i = 0; i < case_num; i++) {
       let id = random_string(), a = rand(0, 100000), b = rand(0, 100000);
       tasks.push(ajax.post(
-        `/upload/case/${id}/in`, 
+        `/case/${id}/in`, 
         `${a} ${b}`,
         { headers: { "Content-Type": "text/plain" } }));
       tasks.push(ajax.post(
-        `/upload/case/${id}/out`, 
+        `/case/${id}/out`, 
         `${a + b}`,
         { headers: { "Content-Type": "text/plain" } }));
       
