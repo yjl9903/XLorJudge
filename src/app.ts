@@ -11,7 +11,7 @@ const cache = new Memcached('0.0.0.0:11211');
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
-app.use(function(req, res, next) {
+app.use((req, res, next) => {
   // parse text/plain
   if (req.is('text/*')) {
     req.body = '';
@@ -28,7 +28,7 @@ app.all('/*', (req, res, nxt) => {
     nxt();
     return;
   }
-  let auth = basicAuth(req);
+  const auth = basicAuth(req);
   if (auth.name === tokens['username'] && auth.pass === tokens['password']) {
     nxt();
   } else {
