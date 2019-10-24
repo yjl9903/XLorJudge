@@ -1,0 +1,9 @@
+version: '2.1'
+
+services:
+  judge:
+    image: xlor-judge
+    build: .
+    privileged: true
+    ports:
+      - 3000:3000
