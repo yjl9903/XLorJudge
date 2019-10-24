@@ -1,4 +1,4 @@
-import { Verdict } from '../config';
+import { Verdict } from '../type'
 
 class Result {
   time: number;

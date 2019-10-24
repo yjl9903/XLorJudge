@@ -9,7 +9,8 @@ import Checker from './checker';
 import Result from './result';
 import TestCase from './testcase';
 
-import { Verdict, COMPILER_USER_ID, COMPILER_GROUP_ID } from '../config';
+import { COMPILER_USER_ID, COMPILER_GROUP_ID } from '../config';
+import { Verdict } from '../type';
 import { make_temp_dir, random_string } from '../util';
 
 class Runner {

@@ -4,7 +4,7 @@ import Runner from './runner';
 import Checker from './checker';
 import { cache } from '../app';
 
-import { Verdict } from '../config';
+import { Verdict } from '../type'
 import { b64encode } from '../util';
 
 export default async function(

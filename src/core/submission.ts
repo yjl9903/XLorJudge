@@ -3,8 +3,8 @@ import { createReadStream, createWriteStream, promises, unlink } from 'fs';
 import rimraf from 'rimraf';
 
 import { random_string, make_temp_dir, exec } from '../util';
+import { Verdict } from '../type';
 import {
-  Verdict,
   SUB_PATH,
   LANG_CONFIG,
   COMPILER_USER_ID,

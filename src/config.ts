@@ -3,23 +3,6 @@ import * as LANG_CONFIG from './configs/lang.json';
 
 export { LANG_CONFIG };
 
-export enum Verdict {
-  Compiling = -4,
-  Waiting,
-  Judging,
-  WrongAnswer,
-  Accepted,
-  TimeLimitExceeded,
-  IdlenessLimitExceeded,
-  MemoryLimitExceeded,
-  RuntimeError,
-  SystemError,
-  CompileError,
-  Point,
-  JudgeError,
-  TestCaseError
-}
-
 export const NSJAIL_PATH = '/bin/nsjail';
 
 export const PROJECT_PATH = __dirname;

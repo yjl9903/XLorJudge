@@ -4,10 +4,10 @@ import Submission from './submission';
 import {
   CHK_PATH,
   LANG_CONFIG,
-  Verdict,
   RUN_USER_ID,
   RUN_GROUP_ID
 } from '../config';
+import { Verdict } from '../type'
 import { exec } from '../util';
 import Result from './result';
 
