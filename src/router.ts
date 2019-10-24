@@ -35,8 +35,8 @@ router.delete('/case/:id', async (req, res) => {
 });
 
 router.post('/checker', async (req, res) => {
-  const code: string = b64decode(req.body.code);
-  const chk: Checker = new Checker(req.body.id, req.body.lang);
+  const code = b64decode(req.body.code);
+  const chk = new Checker(req.body.id, req.body.lang);
   try {
     await chk.compile(code, 30);
     res.send({ status: 'ok' });
