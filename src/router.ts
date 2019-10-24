@@ -1,4 +1,4 @@
-import { Router } from 'express'
+import { Router } from 'express';
 
 import { cache } from './app';
 import { b64decode } from './util';

@@ -9,8 +9,9 @@ import router from './router';
 const app = express();
 const cache = new Memcached('0.0.0.0:11211');
 
+app.set('port', process.env.PORT ? process.env.PORT : 3000);
+
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
 
 app.use((req, res, next) => {
   // parse text/plain
