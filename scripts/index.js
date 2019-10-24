@@ -19,7 +19,8 @@ function random_string(length = 32) {
 }
 
 const baseURL = 'http://localhost:3000/';
-const ajax = axios.create({
+
+const api = axios.create({
   baseURL: baseURL,
   headers: {
     "Authorization": "Basic WExvcjp3aGd0eGR5",
@@ -28,13 +29,12 @@ const ajax = axios.create({
 });
 
 const cases = [];
-let id = '';
+const CaseNum = 5;
 
 async function queryState(id) {
   return new Promise((resolve, reject) => {
     let loopid = setInterval(() => {
-      ajax.get('/query', { params: { id: id } }).then(res => {
-        // console.log(res.data);
+      api.get('/query', { params: { id: id } }).then(res => {
         if (res.data.verdict > -2) {
           clearInterval(loopid);
           resolve(res.data);
@@ -44,108 +44,79 @@ async function queryState(id) {
   });
 }
 
-async function judge(src, lang, verdict, time = 1, memory = 64) {
-  console.log(`\nJudge ${src} with ${lang}`);
-
-  let id = random_string();
-  return ajax.post('/judge', {
+async function judge(src, lang, cases = [], time = 1, memory = 64) {
+  const id = random_string();
+  await api.post('/judge', {
     id: id, 
     max_time: time, 
     max_memory: memory,
     cases: cases, 
     checker: { id: 'chk', lang: 'cpp' },
     lang: lang,
-    code: b64encode(await fs.promises.readFile(path.join(__dirname, `/${src}`), 'utf8'))
-  }).then(async () => {
-    console.log('Test result:', await queryState(id));
-    console.log(`Expected verdict: ${verdict}`);
+    code: b64encode(await fs.promises.readFile(src, 'utf8'))
   });
+  return await queryState(id);
 }
 
-ajax.get('/ping')
-  .then(async res => {
-    console.log(`Test Judge Core on ${baseURL}`);
-    console.log('Step 1: ' + res.data);
-    return ajax.post('/checker', {
-      id: 'chk',
-      lang: 'cpp',
-      code: b64encode(await fs.promises.readFile(path.join(__dirname, '/chk.cpp'), 'utf8'))
-    });
-  })
-  .then(async res => {
-    console.log('Step 2: ' + res.data);
-    const case_num = 5;
-    let tasks = [];
-    for (let i = 0; i < case_num; i++) {
-      let id = random_string(), a = rand(0, 100000), b = rand(0, 100000);
-      tasks.push(ajax.post(
-        `/case/${id}/in`, 
-        `${a} ${b}`,
-        { headers: { "Content-Type": "text/plain" } }));
-      tasks.push(ajax.post(
-        `/case/${id}/out`, 
-        `${a + b}`,
-        { headers: { "Content-Type": "text/plain" } }));
-      
-      cases.push(id);
-    }
-    return axios.all(tasks);
-  })
-  .then(async res => {
-    console.log('Step 3:', res[0].data);
+(async () => {
+  console.log(`\nStart test XLor Judge on ${baseURL}`);
 
-    id = random_string();
-    return ajax.post('/judge', {
-      id: id, 
-      max_time: 1, 
-      max_memory: 64,
-      cases: cases, 
-      checker: { id: 'chk', lang: 'cpp' },
-      lang: 'cpp',
-      code: b64encode(await fs.promises.readFile(path.join(__dirname, '/a.cpp'), 'utf8'))
-    });
-  })
-  .then(async () => {
-    console.log('Test result:', await queryState(id));
-    console.log('Expected verdict: 0');
-    // Time
-    return judge('b.cpp', 'cpp', 1);
-  })
-  .then(async () => {
-    // Memory
-    return judge('c.cpp', 'cpp', 3);
-  })
-  .then(async () => {
-    // Compile Error
-    return judge('d.cpp', 'cpp', 6);
-  })
-  .then(async () => {
-    // Runtime Error
-    return judge('e.cpp', 'cpp', 4);
-  })
-  .then(async () => {
-    // WA
-    return judge('f.cpp', 'cpp', -1);
-  })
-  .then(async () => {
-    return judge('a.c', 'c', 0);
-  })
-  .then(async () => {
-    return judge('a.cpp', 'cc14', 0);
-  })
-  .then(async () => {
-    return judge('a.cpp', 'cc17', 0);
-  })
-  .then(async () => {
-    return judge('a.py', 'python', 0);
-  })
-  .then(async () => {
-    return judge('a.py2', 'py2', 0);
-  })
-  .then(async () => {
-    return judge('Main.java', 'java', 0);
-  })
-  .catch(err => {
-    console.error(err);
-    throw(err);
+  console.log(`\nStep 1: Ping`);
+  console.log((await api.get('/ping')).data);
+
+  console.log(`\nStep 2: Upload checker`);
+  await api.post('/checker', {
+    id: 'chk',
+    lang: 'cpp',
+    code: b64encode(await fs.promises.readFile(path.join(__dirname, 'testcode', 'chk.cpp'), 'utf8'))
   });
+
+  console.log(`\nStep 3: Upload testcase`);
+
+  const tasks = [];
+  for (let i = 0; i < CaseNum; i++) {
+    const id = random_string();
+    a = rand(0, 100000), b = rand(0, 100000);
+    tasks.push(api.post(
+      `/case/${id}/in`, 
+      `${a} ${b}`, 
+      { headers: { "Content-Type": "text/plain" } }
+    ));
+    tasks.push(api.post(
+      `/case/${id}/out`, 
+      `${a + b}`, 
+      { headers: { "Content-Type": "text/plain" } }
+    ));
+    cases.push(id);
+  }
+  await axios.all(tasks);
+
+  console.log(`\nStep 4: Judge test`);
+
+  async function expectJudge(src, lang, expect, cases, time = 1, memory = 64) {
+    console.log(`\nTest ${src} using ${lang}`);
+    const result = await judge(path.join(__dirname, 'testcode', src), lang, cases, time, memory);
+    if (result.verdict === 6) result.message = b64decode(result.message);
+    console.log(`Result:`);
+    console.log(JSON.stringify(result, null, 2));
+    if (expect === result.verdict) {
+      console.log(`OK, Expect: ${expect}`);
+    } else {
+      console.log(`No, Expect: ${expect}, but get: ${result.verdict}`);
+    }
+  }
+
+  await expectJudge('a.cpp', 'cpp', 0, cases);
+  await expectJudge('b.cpp', 'cpp', 1, cases);
+  await expectJudge('c.cpp', 'cpp', 3, cases);
+  await expectJudge('d.cpp', 'cpp', 6, cases);
+  await expectJudge('e.cpp', 'cpp', 4, cases);
+  await expectJudge('f.cpp', 'cpp', -1, cases);
+  await expectJudge('a.cpp', 'cpp', 9, ['wa']);
+  await expectJudge('a.c', 'c', 0, cases);
+  await expectJudge('a.cpp', 'cc14', 0, cases);
+  await expectJudge('a.cpp', 'cc17', 0, cases);
+  await expectJudge('a.py', 'python', 0, cases);
+  await expectJudge('a.py2', 'py2', 0, cases);
+  await expectJudge('Main.java', 'java', 0, cases);
+})();
