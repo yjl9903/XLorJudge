@@ -4,7 +4,7 @@ import Runner from './runner';
 import Checker from './checker';
 import { cache } from '../app';
 
-import { Verdict } from '../type'
+import { Verdict } from '../type';
 import { b64encode } from '../util';
 
 export default async function(
@@ -15,38 +15,32 @@ export default async function(
   max_time: number,
   max_memory: number,
   cases: Array<string>
-): Promise<Object> {
+): Promise<any> {
   let res: any = { verdict: Verdict.Accepted, message: '' };
 
   cache.set(sub_id, { verdict: Verdict.Compiling }, 3600, err => {});
 
-  let sub: Submission = new Submission(sub_lang);
-  await sub.compile(sub_code, Math.max(max_time * 5, 15)).catch(err => {
+  const sub: Submission = new Submission(sub_lang);
+  try {
+    await sub.compile(sub_code, Math.max(max_time * 5, 15));
+  } catch (err) {
     // return CE msg
     res.verdict = Verdict.CompileError;
     if (err.message === 'Failed to Open Sandbox')
       res.verdict = Verdict.SystemError;
     res.message = b64encode(err.message);
-  });
-  if (
-    res.verdict === Verdict.CompileError ||
-    res.verdict === Verdict.SystemError
-  ) {
     cache.set(sub_id, res, 3600, () => {});
     return res;
   }
+
   cache.set(sub_id, { verdict: Verdict.Judging }, 3600, () => {});
 
   res = { verdict: Verdict.Accepted, sum: 0, time: 0, memory: 0 };
-  let runner = new Runner(sub, chk, max_time, max_memory);
+  const runner = new Runner(sub, chk, max_time, max_memory);
 
   for (let fingerprint of cases) {
     try {
-      let c = new TestCase(fingerprint);
-      // if (!(await c.isExist())) {
-      //   res.verdict = Verdict.JudgeError;
-      //   break;
-      // }
+      const c = new TestCase(fingerprint);
       let result = await runner.run(c).catch(err => {
         throw err;
       });
@@ -63,16 +57,16 @@ export default async function(
         3600,
         () => {}
       );
-    } catch (ex) {
+    } catch (err) {
       sub.clear();
       runner.clear();
       cache.set(
         sub_id,
-        { verdict: Verdict.SystemError, message: ex.message },
+        { verdict: Verdict.SystemError, message: err.message },
         3600,
         () => {}
       );
-      return { verdict: Verdict.SystemError, message: ex.message };
+      return { verdict: Verdict.SystemError, message: err.message };
     }
   }
 
