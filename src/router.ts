@@ -38,7 +38,7 @@ router.post('/checker', async (req, res) => {
   const code: string = b64decode(req.body.code);
   const chk: Checker = new Checker(req.body.id, req.body.lang);
   try {
-    await chk.compile(code, 30)
+    await chk.compile(code, 30);
     res.send({ status: 'ok' });
   } catch (err) {
     res.status(500).send('');
@@ -53,12 +53,10 @@ router.post('/judge', async (req, res) => {
     code,
     req.body.lang,
     new Checker(req.body.checker.id, req.body.checker.lang),
-    req.body['max_time'],
-    req.body['max_memory'],
+    req.body.max_time,
+    req.body.max_memory,
     req.body.cases
-  ).catch(err => {
-    // res.send({ verdict: Verdict.SystemError, message: err.message });
-  });
+  ).catch(() => {});
   res.send({ status: 'ok' });
 });
 
