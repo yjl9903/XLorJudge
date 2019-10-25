@@ -6,7 +6,6 @@
     "sourceMap": true,
     "outDir": "dist",
     "esModuleInterop": true,
-    "resolveJsonModule": true,
     "baseUrl": ".",
     "paths": {
       "*": [

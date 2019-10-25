@@ -3,7 +3,7 @@ import bodyParser from 'body-parser';
 import Memcached from 'memcached';
 import basicAuth from 'basic-auth';
 
-import * as tokens from './configs/token.json';
+import * as tokens from './configs/token';
 import router from './router';
 
 const app = express();

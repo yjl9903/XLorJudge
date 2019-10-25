@@ -1,5 +1,5 @@
 import path from 'path';
-import * as LANG_CONFIG from './lang.json';
+import * as LANG_CONFIG from './lang';
 
 export { LANG_CONFIG };
 
