@@ -91,7 +91,7 @@ class Submission {
       throw new CompileError(error_msg);
     }
 
-    if (this.lang_config['compile'].cmd2) {
+    if ('cmd2' in this.lang_config['compile']) {
       // For java...
       compile_out = 'compile.out';
       const cmd = this.lang_config['compile'].cmd2;
@@ -277,9 +277,11 @@ class Submission {
         usage.exit,
         usage.signal
       );
-      if (result.exit_code !== 0 || result.signal !== 0) {
+      // important
+      if (result.exit_code !== 0) {
         result.verdict = Verdict.RuntimeError;
-      } else if (max_memory > 0 && result.memory > max_memory) {
+      }
+      if (max_memory > 0 && result.memory > max_memory) {
         result.verdict = Verdict.MemoryLimitExceeded;
       } else if (max_time > 0 && result.time > max_time) {
         result.verdict = Verdict.TimeLimitExceeded;
@@ -288,6 +290,8 @@ class Submission {
         usage['pass'] / 1000 > real_time_limit
       ) {
         result.verdict = Verdict.IdlenessLimitExceeded;
+      } else if (result.signal !== 0) {
+        result.verdict = Verdict.RuntimeError;
       }
       return result;
     } catch (err) {
