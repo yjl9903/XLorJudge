@@ -4,7 +4,11 @@ services:
   judge:
     container_name: judge
     image: xlor-judge
-    build: .
+    build:
+      context: .
+      args:
+        port: 3000
+        mode: production
     privileged: true
     ports:
       - 3000:3000
