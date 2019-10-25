@@ -1,4 +1,4 @@
-declare enum Verdict {
+export enum Verdict {
   Compiling = -4,
   Waiting,
   Judging,

@@ -1,3 +1,5 @@
+import { Verdict } from '../verdict';
+
 export default class Result {
   time: number;
   memory: number;
