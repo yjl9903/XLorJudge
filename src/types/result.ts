@@ -1,6 +1,6 @@
 import { Verdict } from 'verdict';
 
-class Result {
+export default class Result {
   time: number;
   memory: number;
   exit_code: number;
@@ -20,5 +20,3 @@ class Result {
     this.verdict = verdict;
   }
 }
-
-export default Result;

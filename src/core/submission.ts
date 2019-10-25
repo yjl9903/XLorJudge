@@ -17,7 +17,7 @@ import {
   ENV
 } from '../config';
 
-import Result from './result';
+import Result from 'result';
 import CompileError from './error';
 
 class Submission {

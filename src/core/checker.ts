@@ -4,7 +4,7 @@ import Submission from './submission';
 import { CHK_PATH, LANG_CONFIG, RUN_USER_ID, RUN_GROUP_ID } from '../config';
 import { Verdict } from 'verdict';
 import { exec } from '@util';
-import Result from './result';
+import Result from 'result';
 
 export default class Checker extends Submission {
   constructor(id: string, lang: string) {

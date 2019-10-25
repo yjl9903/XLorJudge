@@ -6,7 +6,7 @@ import rimraf from 'rimraf';
 
 import Submission from './submission';
 import Checker from './checker';
-import Result from './result';
+import Result from 'result';
 import TestCase from './testcase';
 
 import { COMPILER_USER_ID, COMPILER_GROUP_ID } from '../config';
