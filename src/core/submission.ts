@@ -229,15 +229,13 @@ class Submission {
     }
 
     const extra_files = [];
-    if (exe_file === '') {
+    if (exe_file === '' || exe_file === null) {
       exe_file = path.basename(this.exe_file);
       extra_files.push('-R');
       extra_files.push(this.exe_file + ':/app/' + exe_file);
-      if (args.length === 0) {
-        args = this.lang_config['execute']['args'].map((s: string) => {
-          return s.replace(/({exe_file})/, exe_file);
-        });
-      }
+      args = args.map((s: string) => {
+        return s.replace(/({exe_file})/, exe_file);
+      });
       exe_file = this.lang_config['execute']['cmd'].replace(
         /({exe_file})/,
         exe_file

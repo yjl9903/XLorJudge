@@ -52,7 +52,7 @@ class Runner {
       const result = await this.submission.run(
         run_dir,
         '',
-        [],
+        this.submission.lang_config['execute']['args'],
         [],
         false,
         this.max_time,
