@@ -16,8 +16,10 @@ export function b64decode(s: string): string {
   return Buffer.from(s, 'base64').toString();
 }
 
-export function make_temp_dir(): Promise<void> {
-  return promises.mkdir(path.join(TEMP_PATH, random_string()));
+export async function make_temp_dir(): Promise<string> {
+  const dir = path.join(TEMP_PATH, random_string());
+  await promises.mkdir(dir);
+  return dir;
 }
 
 export async function exec(
