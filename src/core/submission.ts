@@ -1,5 +1,5 @@
 import path from 'path';
-import { createReadStream, createWriteStream, promises, unlink } from 'fs';
+import { promises, unlink } from 'fs';
 import rimraf from 'rimraf';
 
 import { random_string, make_temp_dir, exec } from '../util';
@@ -158,21 +158,17 @@ class Submission {
     stdout_file: string = null,
     stderr_file: string = null
   ): Promise<Result> {
-    let root_dir = await make_temp_dir();
-    let info_dir = await make_temp_dir();
-    // let error_path = path.join(info_dir, 'err');
-    let real_time_limit = max_time * 2;
+    const root_dir = await make_temp_dir();
+    const info_dir = await make_temp_dir();
+    // const error_path = path.join(info_dir, 'err');
+    const real_time_limit = max_time * 2;
 
-    let uid = RUN_USER_ID;
-    let gid = RUN_GROUP_ID;
-    if (trusted) {
-      uid = COMPILER_USER_ID;
-      gid = COMPILER_GROUP_ID;
-    }
+    const uid = trusted ? COMPILER_USER_ID : RUN_USER_ID;
+    const gid = trusted ? COMPILER_GROUP_ID : RUN_GROUP_ID;
 
-    let stdin: any = 'ignore',
-      stdout: any = 'ignore',
-      stderr: any = 'ignore';
+    let stdin: 'ignore' | promises.FileHandle = 'ignore',
+      stdout: 'ignore' | promises.FileHandle = 'ignore',
+      stderr: 'ignore' | promises.FileHandle = 'ignore';
 
     try {
       if (stdin_file) stdin = await promises.open(stdin_file, 'r');
@@ -184,36 +180,7 @@ class Submission {
       return new Result(0, 0, 0, 0, Verdict.TestCaseError);
     }
 
-    // use stream?
-    // async function ReadStream(file: string) {
-    //   return new Promise((res, rej) => {
-    //     let stream = createReadStream(file);
-    //     stream.on('open', () => {
-    //       console.log('open read');
-    //       res(stream);
-    //     });
-    //     stream.on('close', () => {
-    //       console.log('close read');
-    //     })
-    //   });
-    // }
-    // async function WriteStream(file: string) {
-    //   return new Promise((res, rej) => {
-    //     let stream = createReadStream(file);
-    //     stream.on('open', () => {
-    //       console.log('open write');
-    //       res(stream);
-    //     });
-    //     stream.on('close', () => {
-    //       console.log('close write');
-    //     })
-    //   });
-    // }
-    // if (stdin_file) stdin = await ReadStream(stdin_file);
-    // if (stdout_file) stdout = await WriteStream(stdout_file);
-    // if (stderr_file) stderr = await WriteStream(stderr_file);
-
-    let nsjail_args = [
+    const nsjail_args = [
       '-Mo',
       '--chroot',
       root_dir,
@@ -243,7 +210,7 @@ class Submission {
       work_dir + ':/app'
     ];
 
-    let limit_args = [
+    const limit_args = [
       '--cgroup_pids_max',
       64,
       '--cgroup_cpu_ms_per_sec',
@@ -262,13 +229,13 @@ class Submission {
       OUTPUT_LIMIT
     ];
 
-    let env_args = [];
-    for (let k in ENV) {
+    const env_args = [];
+    for (const k in ENV) {
       env_args.push('-E');
       env_args.push(`${k}=${ENV[k]}`);
     }
 
-    let extra_files = [];
+    const extra_files = [];
     if (exe_file === '') {
       exe_file = path.basename(this.exe_file);
       extra_files.push('-R');
@@ -281,13 +248,13 @@ class Submission {
         exe_file
       );
     }
-    for (let item of files) {
-      extra_files.push(item.mode);
-      extra_files.push(item.src + ':/app/' + item.dst);
+    for (const { mode, src, dst } of files) {
+      extra_files.push(mode);
+      extra_files.push(src + ':/app/' + dst);
     }
 
     try {
-      let { code: _, signal: signal } = await exec(
+      await exec(
         NSJAIL_PATH,
         [
           ...nsjail_args,
@@ -302,32 +269,32 @@ class Submission {
         ],
         { stdio: [stdin, stdout, stderr], uid: 0, gid: 0 }
       );
-      let li = [];
-      if (stdin_file) li.push(stdin.close());
-      if (stdout_file) li.push(stdout.close());
-      if (stderr_file) li.push(stderr.close());
-      await Promise.all(li);
-    } catch (ex) {
-      console.error(ex);
-      throw ex;
+      const closeTasks = [];
+      if (stdin_file) closeTasks.push((stdin as promises.FileHandle).close());
+      if (stdout_file) closeTasks.push((stdout as promises.FileHandle).close());
+      if (stderr_file) closeTasks.push((stderr as promises.FileHandle).close());
+      await Promise.all(closeTasks);
+    } catch (err) {
+      console.error(err);
+      throw err;
     }
 
     try {
       // lose usage file -> Runtime Error? Restart!
-      let usage_file = await promises.readFile(
+      const usage_file = await promises.readFile(
           path.join(info_dir, 'usage'),
           'utf8'
         ),
         usage: Object = {};
-      for (let line of usage_file.split('\n')) {
+      for (const line of usage_file.split('\n')) {
         if (line === '') continue;
-        let [tag, num] = line.split(' ');
+        const [tag, num] = line.split(' ');
         usage[tag] = Number(num);
       }
 
-      let tim = Number((usage['user'] / 1000.0).toFixed(3)),
+      const tim = Number((usage['user'] / 1000.0).toFixed(3)),
         mem = Number((usage['memory'] / 1024.0).toFixed(3));
-      let result = new Result(tim, mem, usage['exit'], usage['signal']);
+      const result = new Result(tim, mem, usage['exit'], usage['signal']);
       if (result.exit_code != 0) {
         result.verdict = Verdict.RuntimeError;
       }
