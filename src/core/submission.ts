@@ -233,7 +233,7 @@ class Submission {
       exe_file = path.basename(this.exe_file);
       extra_files.push('-R');
       extra_files.push(this.exe_file + ':/app/' + exe_file);
-      args = this.lang_config['execute']['args'].map(s => {
+      args = this.lang_config['execute']['args'].map((s: string) => {
         return s.replace(/({exe_file})/, exe_file);
       });
       exe_file = this.lang_config['execute']['cmd'].replace(
