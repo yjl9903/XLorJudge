@@ -3,7 +3,7 @@ import { spawn } from 'child_process';
 import { promises } from 'fs';
 import cryptoRandomString from 'crypto-random-string';
 
-import { TEMP_PATH } from '@config';
+import { TEMP_PATH } from './configs';
 
 export function random_string(length = 32): string {
   return cryptoRandomString({ length });

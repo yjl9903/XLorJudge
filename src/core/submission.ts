@@ -2,7 +2,7 @@ import path from 'path';
 import { promises, unlink } from 'fs';
 import rimraf from 'rimraf';
 
-import { random_string, make_temp_dir, exec } from '@util';
+import { random_string, make_temp_dir, exec } from '../util';
 import {
   SUB_PATH,
   LANG_CONFIG,
@@ -13,7 +13,7 @@ import {
   NSJAIL_PATH,
   OUTPUT_LIMIT,
   ENV
-} from '@config';
+} from '../configs';
 
 import CompileError from './error';
 import { Verdict } from 'verdict';

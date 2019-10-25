@@ -1,7 +1,7 @@
 import { Router } from 'express';
 
 import { cache } from './app';
-import { b64decode } from '@util';
+import { b64decode } from './util';
 
 import Checker from './core/checker';
 import judge from './core/judge';

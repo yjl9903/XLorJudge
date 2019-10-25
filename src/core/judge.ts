@@ -4,7 +4,7 @@ import Runner from './runner';
 import Checker from './checker';
 import { cache } from '../app';
 
-import { b64encode } from '@util';
+import { b64encode } from '../util';
 
 import { Verdict } from 'verdict';
 

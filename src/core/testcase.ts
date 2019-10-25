@@ -2,7 +2,7 @@ import path from 'path';
 import { promises } from 'fs';
 import rimraf from 'rimraf';
 
-import { DATA_PATH } from '@config';
+import { DATA_PATH } from '../configs';
 
 class TestCase {
   fingerprint: string;
