@@ -1,17 +1,16 @@
 import path from 'path';
 import { promises } from 'fs';
 import assert from 'assert';
-
 import rimraf from 'rimraf';
 
 import Submission from './submission';
 import Checker from './checker';
-import Result from 'result';
 import TestCase from './testcase';
-
-import { COMPILER_USER_ID, COMPILER_GROUP_ID } from '../config';
-import { Verdict } from 'verdict';
 import { make_temp_dir, random_string } from '@util';
+import { COMPILER_USER_ID, COMPILER_GROUP_ID } from '@config';
+
+import Result from 'result';
+import { Verdict } from 'verdict';
 
 class Runner {
   submission: Submission;

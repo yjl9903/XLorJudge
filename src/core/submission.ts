@@ -3,8 +3,6 @@ import { promises, unlink } from 'fs';
 import rimraf from 'rimraf';
 
 import { random_string, make_temp_dir, exec } from '@util';
-import { Verdict } from 'verdict';
-import Usage from 'usage';
 import {
   SUB_PATH,
   LANG_CONFIG,
@@ -15,10 +13,12 @@ import {
   NSJAIL_PATH,
   OUTPUT_LIMIT,
   ENV
-} from '../config';
+} from '@config';
 
-import Result from 'result';
 import CompileError from './error';
+import { Verdict } from 'verdict';
+import Usage from 'usage';
+import Result from 'result';
 
 class Submission {
   lang: string;
