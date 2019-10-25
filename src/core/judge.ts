@@ -38,10 +38,10 @@ export default async function(
   res = { verdict: Verdict.Accepted, sum: 0, time: 0, memory: 0 };
   const runner = new Runner(sub, chk, max_time, max_memory);
 
-  for (let fingerprint of cases) {
+  for (const fingerprint of cases) {
     try {
       const c = new TestCase(fingerprint);
-      let result = await runner.run(c).catch(err => {
+      const result = await runner.run(c).catch(err => {
         throw err;
       });
       res.time = Math.max(res.time, result.time);

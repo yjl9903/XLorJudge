@@ -28,14 +28,9 @@ export async function exec(
   options: object = {}
 ): Promise<{ code: number; signal: string }> {
   return new Promise((res, rej) => {
-    let p = spawn(command, args, options);
+    const p = spawn(command, args, options);
     p.on('close', (code, signal) => {
       res({ code, signal });
-      // if (code === 0) {
-      //   res(signal);
-      // } else {
-      //   rej(new Error(`${command} failed with code ${code}`));
-      // }
     });
     p.on('error', rej);
   });

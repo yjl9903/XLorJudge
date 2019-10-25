@@ -1,6 +1,7 @@
 import path from 'path';
 import { promises, unlink } from 'fs';
 import rimraf from 'rimraf';
+import execa from 'execa';
 
 import { Verdict } from '../verdict';
 import { random_string, make_temp_dir, exec } from '../util';
@@ -16,7 +17,7 @@ import {
   ENV
 } from '../configs';
 
-import CompileError from './error';
+import { CompileError, SystemError } from './error';
 import Usage from './usage';
 import Result from './result';
 
@@ -43,26 +44,26 @@ class Submission {
   }
 
   async compile(code: string, max_time: number): Promise<void> {
-    let compile_dir = await make_temp_dir();
+    const compile_dir = await make_temp_dir();
     let compile_out = this.lang_config['compile'].out || 'compile.out';
-    let error_path = path.join(compile_dir, 'compiler.err');
+    const error_path = path.join(compile_dir, 'compiler.err');
 
     // write code into a file
     await promises.writeFile(
       path.join(compile_dir, this.lang_config['code_file']),
       code
     );
+    await promises.writeFile(error_path, '');
 
     // run compile command
-    let cmd = this.lang_config['compile'].cmd;
-    let args = this.lang_config['compile'].args.map(arg => {
+    const cmd = this.lang_config['compile'].cmd;
+    const args = this.lang_config['compile'].args.map((arg: string) => {
       if (arg === '{code_file}') arg = this.lang_config['code_file'];
       else if (arg === '{exe_file}') arg = compile_out;
       return arg;
     });
 
-    await promises.writeFile(error_path, ''); // important
-    let result = await this.run(
+    const result = await this.run(
       compile_dir,
       cmd,
       args,
@@ -73,16 +74,10 @@ class Submission {
       null,
       error_path,
       error_path
-    ).catch(() => {
-      throw new Error('Failed to Open Sandbox');
-    });
+    );
 
     if (result.verdict !== Verdict.Accepted) {
-      let error_msg = '';
-      try {
-        error_msg = await promises.readFile(error_path, 'utf8');
-      } catch (ex) {}
-      rimraf(compile_dir, () => {});
+      let error_msg = await promises.readFile(error_path, 'utf8');
       if (error_msg === '') {
         if (result.verdict === Verdict.TimeLimitExceeded) {
           error_msg = 'Time limit exceeded when compiling';
@@ -92,14 +87,15 @@ class Submission {
           error_msg = 'Something is wrong, but, em, nothing is reported';
         }
       }
+      rimraf(compile_dir, () => {});
       throw new CompileError(error_msg);
     }
 
     if (this.lang_config['compile'].cmd2) {
       // For java...
       compile_out = 'compile.out';
-      let cmd = this.lang_config['compile'].cmd2;
-      let args = this.lang_config['compile'].args2.map(arg => {
+      const cmd = this.lang_config['compile'].cmd2;
+      const args = this.lang_config['compile'].args2.map((arg: string) => {
         if (arg === '{code_file}') arg = this.lang_config['code_file'];
         else if (arg === '{exe_file}') arg = compile_out;
         return arg;
@@ -117,16 +113,10 @@ class Submission {
         null,
         null,
         error_path
-      ).catch(() => {
-        throw new Error('Failed to Open Sandbox');
-      });
+      );
 
       if (result.verdict !== Verdict.Accepted) {
-        let error_msg = '';
-        try {
-          error_msg = await promises.readFile(error_path, 'utf8');
-        } catch (ex) {}
-        // rimraf(compile_dir, () => {});
+        let error_msg = await promises.readFile(error_path, 'utf8');
         if (error_msg === '') {
           if (result.verdict === Verdict.TimeLimitExceeded) {
             error_msg = 'Time limit exceeded when compiling';
@@ -136,6 +126,7 @@ class Submission {
             error_msg = 'Something is wrong, but, em, nothing is reported';
           }
         }
+        rimraf(compile_dir, () => {});
         throw new CompileError(error_msg);
       }
     }
@@ -144,6 +135,7 @@ class Submission {
     // clear temp folder
     await promises.copyFile(path.join(compile_dir, compile_out), this.exe_file);
     promises.chmod(this.exe_file, 0o0775);
+
     rimraf(compile_dir, () => {});
   }
 
@@ -270,17 +262,13 @@ class Submission {
         ],
         { stdio: [stdin, stdout, stderr], uid: 0, gid: 0 }
       );
+
       const closeTasks = [];
       if (stdin_file) closeTasks.push((stdin as promises.FileHandle).close());
       if (stdout_file) closeTasks.push((stdout as promises.FileHandle).close());
       if (stderr_file) closeTasks.push((stderr as promises.FileHandle).close());
       await Promise.all(closeTasks);
-    } catch (err) {
-      console.error(err);
-      throw err;
-    }
 
-    try {
       // lose usage file -> Runtime Error? Restart!
       const usage = new Usage(
         await promises.readFile(path.join(info_dir, 'usage'), 'utf8')
@@ -309,7 +297,7 @@ class Submission {
       return result;
     } catch (err) {
       console.error(err);
-      throw err;
+      throw new SystemError(err.message);
     } finally {
       rimraf(info_dir, () => {});
       rimraf(root_dir, () => {});
