@@ -15,9 +15,10 @@ export default async function(
   max_time: number,
   max_memory: number,
   cases: Array<string>
-): Promise<any> {
-  let res: any = { verdict: Verdict.Accepted, message: '' };
-
+): Promise<
+  | { verdict: Verdict; message: string }
+  | { verdict: Verdict; sum: number; time: number; memory: number }
+> {
   cache.set(sub_id, { verdict: Verdict.Compiling }, 3600, err => {});
 
   const sub: Submission = new Submission(sub_lang);
@@ -25,36 +26,36 @@ export default async function(
     await sub.compile(sub_code, Math.max(max_time * 5, 15));
   } catch (err) {
     // return CE msg
-    res.verdict = Verdict.CompileError;
+    const result = {
+      verdict: Verdict.CompileError,
+      message: b64encode(err.message)
+    };
     if ('verdict' in err && err.verdict === Verdict.SystemError) {
-      res.verdict = Verdict.SystemError;
+      result.verdict = Verdict.SystemError;
     }
-    res.message = b64encode(err.message);
-    cache.set(sub_id, res, 3600, () => {});
-    return res;
+    cache.set(sub_id, result, 3600, () => {});
+    return result;
   }
 
   cache.set(sub_id, { verdict: Verdict.Judging }, 3600, () => {});
 
-  res = { verdict: Verdict.Accepted, sum: 0, time: 0, memory: 0 };
+  const result = { verdict: Verdict.Accepted, sum: 0, time: 0, memory: 0 };
   const runner = new Runner(sub, chk, max_time, max_memory);
 
   for (const fingerprint of cases) {
     try {
       const c = new TestCase(fingerprint);
-      const result = await runner.run(c).catch(err => {
-        throw err;
-      });
-      res.time = Math.max(res.time, result.time);
-      res.memory = Math.max(res.memory, result.memory);
-      if (result.verdict !== Verdict.Accepted) {
-        res.verdict = result.verdict;
+      const tot = await runner.run(c);
+      result.time = Math.max(result.time, tot.time);
+      result.memory = Math.max(result.memory, tot.memory);
+      if (tot.verdict !== Verdict.Accepted) {
+        result.verdict = tot.verdict;
         break;
       }
-      res.sum += 1;
+      result.sum += 1;
       cache.set(
         sub_id,
-        { verdict: Verdict.Judging, sum: res.sum },
+        { verdict: Verdict.Judging, sum: result.sum },
         3600,
         () => {}
       );
@@ -71,9 +72,9 @@ export default async function(
     }
   }
 
-  cache.set(sub_id, res, 3600, () => {});
+  cache.set(sub_id, result, 3600, () => {});
   sub.clear();
   runner.clear();
 
-  return res;
+  return result;
 }
