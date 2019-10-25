@@ -23,7 +23,7 @@ router.post('/case/:id/:type', async (req, res) => {
       await c.write(type, content);
       res.send({ status: 'ok' });
     } catch (err) {
-      res.status(500).send('');
+      res.sendStatus(500);
     }
   }
 });
@@ -31,7 +31,7 @@ router.post('/case/:id/:type', async (req, res) => {
 router.delete('/case/:id', async (req, res) => {
   const c = new TestCase(req.params.id);
   await c.clear();
-  res.send('OK');
+  res.send({ status: 'ok' });
 });
 
 router.post('/checker', async (req, res) => {
@@ -41,7 +41,7 @@ router.post('/checker', async (req, res) => {
     await chk.compile(code, 30);
     res.send({ status: 'ok' });
   } catch (err) {
-    res.status(500).send('');
+    res.sendStatus(500);
   }
 });
 
@@ -62,7 +62,7 @@ router.post('/judge', async (req, res) => {
 
 router.get('/query', async (req, res) => {
   cache.get(req.query.id, (err, data) => {
-    if (err) res.status(400).send('');
+    if (err) res.sendStatus(400);
     else res.send(data);
   });
 });
