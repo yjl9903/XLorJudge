@@ -27,7 +27,11 @@ app.use((req, res, next) => {
 
 app.all('/*', (req, res, nxt) => {
   const auth = basicAuth(req);
-  if (auth.name === tokens['username'] && auth.pass === tokens['password']) {
+  if (
+    auth &&
+    auth.name === tokens['username'] &&
+    auth.pass === tokens['password']
+  ) {
     nxt();
   } else {
     res.sendStatus(401);
