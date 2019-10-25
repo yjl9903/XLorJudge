@@ -7,8 +7,6 @@ import Checker from './core/checker';
 import judge from './core/judge';
 import TestCase from './core/testcase';
 
-import { Verdict } from 'verdict';
-
 const router = Router();
 
 router.post('/case/:id/:type', async (req, res) => {

@@ -16,9 +16,8 @@ import {
 } from '../configs';
 
 import CompileError from './error';
-import { Verdict } from 'verdict';
-import Usage from 'usage';
-import Result from 'result';
+import Usage from './usage';
+import Result from './result';
 
 class Submission {
   lang: string;

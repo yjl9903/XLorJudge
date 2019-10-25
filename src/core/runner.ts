@@ -9,8 +9,7 @@ import TestCase from './testcase';
 import { make_temp_dir, random_string } from '../util';
 import { COMPILER_USER_ID, COMPILER_GROUP_ID } from '../configs';
 
-import Result from 'result';
-import { Verdict } from 'verdict';
+import Result from './result';
 
 class Runner {
   submission: Submission;

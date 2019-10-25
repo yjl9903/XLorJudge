@@ -6,8 +6,6 @@ import { cache } from '../app';
 
 import { b64encode } from '../util';
 
-import { Verdict } from 'verdict';
-
 export default async function(
   sub_id: string,
   sub_code: string,
