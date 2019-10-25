@@ -43,49 +43,43 @@ class Runner {
     if (this.out_dir === '') {
       this.out_dir = await make_temp_dir();
     }
-    let file = path.join(this.out_dir, 'out_' + random_string());
+    const file = path.join(this.out_dir, 'out_' + random_string());
     await promises.writeFile(file, '');
     await promises.chown(file, COMPILER_USER_ID, COMPILER_GROUP_ID);
     return file;
   }
 
   async run(testcase: TestCase): Promise<Result> {
-    let run_out = await this.make_write_file();
-    let run_err = await this.make_write_file();
+    const run_out = await this.make_write_file();
+    const run_err = await this.make_write_file();
 
-    assert(this.run_dir !== '');
-    assert(this.out_dir !== '');
-
-    let result = await this.submission
-      .run(
-        this.run_dir,
-        '',
-        [],
-        [],
-        false,
-        this.max_time,
-        this.max_memory,
-        testcase.input_file,
-        run_out,
-        run_err
-      )
-      .catch(err => {
-        throw new Error('Failed to Open Sandbox');
-      });
+    const result = await this.submission.run(
+      this.run_dir,
+      '',
+      [],
+      [],
+      false,
+      this.max_time,
+      this.max_memory,
+      testcase.input_file,
+      run_out,
+      run_err
+    );
     if (result.verdict === Verdict.Accepted) {
       result.verdict = await this.check(testcase, run_out);
     }
     return result;
   }
   async check(testcase: TestCase, output: string): Promise<Verdict> {
-    let chk_out = await this.make_write_file();
-    let files = [
+    const chk_out = await this.make_write_file();
+    const files = [
       { src: testcase.input_file, dst: 'in', mode: '-R' },
       { src: output, dst: 'out', mode: '-R' },
       { src: testcase.output_file, dst: 'ans', mode: '-R' },
       { src: chk_out, dst: 'result', mode: '-B' }
     ];
-    let chk_result = await this.checker.check(
+
+    const chk_result = await this.checker.check(
       this.run_dir,
       '',
       [],

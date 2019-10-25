@@ -153,7 +153,6 @@ class Submission {
   ): Promise<Result> {
     const root_dir = await make_temp_dir();
     const info_dir = await make_temp_dir();
-    // const error_path = path.join(info_dir, 'err');
     const real_time_limit = max_time * 2;
 
     const uid = trusted ? COMPILER_USER_ID : RUN_USER_ID;
@@ -269,7 +268,6 @@ class Submission {
       if (stderr_file) closeTasks.push((stderr as promises.FileHandle).close());
       await Promise.all(closeTasks);
 
-      // lose usage file -> Runtime Error? Restart!
       const usage = new Usage(
         await promises.readFile(path.join(info_dir, 'usage'), 'utf8')
       );
@@ -279,10 +277,9 @@ class Submission {
         usage.exit,
         usage.signal
       );
-      if (result.exit_code != 0) {
+      if (result.exit_code !== 0 || result.signal !== 0) {
         result.verdict = Verdict.RuntimeError;
-      }
-      if (max_memory > 0 && result.memory > max_memory) {
+      } else if (max_memory > 0 && result.memory > max_memory) {
         result.verdict = Verdict.MemoryLimitExceeded;
       } else if (max_time > 0 && result.time > max_time) {
         result.verdict = Verdict.TimeLimitExceeded;
@@ -291,8 +288,6 @@ class Submission {
         usage['pass'] / 1000 > real_time_limit
       ) {
         result.verdict = Verdict.IdlenessLimitExceeded;
-      } else if (result.signal !== 0) {
-        result.verdict = Verdict.RuntimeError;
       }
       return result;
     } catch (err) {
