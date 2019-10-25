@@ -18,7 +18,7 @@ router.post('/case/:id/:type', async (req, res) => {
   if (type !== 'in' && type !== 'out') {
     res.sendStatus(400);
   } else {
-    let c = new TestCase(id);
+    const c = new TestCase(id);
     try {
       await c.write(type, content);
       res.send({ status: 'ok' });
