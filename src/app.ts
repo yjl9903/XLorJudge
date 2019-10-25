@@ -26,10 +26,6 @@ app.use((req, res, next) => {
 });
 
 app.all('/*', (req, res, nxt) => {
-  if (req.url === '/ping') {
-    nxt();
-    return;
-  }
   const auth = basicAuth(req);
   if (auth.name === tokens['username'] && auth.pass === tokens['password']) {
     nxt();
