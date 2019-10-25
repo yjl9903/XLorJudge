@@ -1,6 +1,5 @@
 import path from 'path';
 import { promises } from 'fs';
-import assert from 'assert';
 import rimraf from 'rimraf';
 
 import Submission from './submission';
@@ -8,7 +7,6 @@ import Checker from './checker';
 import TestCase from './testcase';
 import { Verdict } from '../verdict';
 import { make_temp_dir, random_string } from '../util';
-import { COMPILER_USER_ID, COMPILER_GROUP_ID } from '../configs';
 
 import Result from './result';
 
@@ -41,7 +39,7 @@ class Runner {
     }
     const file = path.join(this.out_dir, 'out_' + random_string());
     await promises.writeFile(file, '');
-    await promises.chown(file, COMPILER_USER_ID, COMPILER_GROUP_ID);
+    await promises.chmod(file, 0o766);
     return file;
   }
 
@@ -83,10 +81,10 @@ class Runner {
     const run_dir = await make_temp_dir();
 
     try {
-      const chk_result = await this.checker.check(
+      const chk_result = await this.checker.run(
         run_dir,
         '',
-        [],
+        ['in', 'out', 'ans', 'result'],
         files,
         false,
         this.max_time,

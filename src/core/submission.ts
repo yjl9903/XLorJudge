@@ -138,6 +138,8 @@ class Submission {
     rimraf(compile_dir, () => {});
   }
 
+  // when exe_file has value, sub use compiler or interpreter
+  // otherwise, sub will mount excutable file to sandbox
   async run(
     work_dir: string,
     exe_file: string = null,
@@ -231,9 +233,11 @@ class Submission {
       exe_file = path.basename(this.exe_file);
       extra_files.push('-R');
       extra_files.push(this.exe_file + ':/app/' + exe_file);
-      args = this.lang_config['execute']['args'].map((s: string) => {
-        return s.replace(/({exe_file})/, exe_file);
-      });
+      if (args.length === 0) {
+        args = this.lang_config['execute']['args'].map((s: string) => {
+          return s.replace(/({exe_file})/, exe_file);
+        });
+      }
       exe_file = this.lang_config['execute']['cmd'].replace(
         /({exe_file})/,
         exe_file
