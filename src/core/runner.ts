@@ -39,7 +39,7 @@ class Runner {
     }
     const file = path.join(this.out_dir, 'out_' + random_string());
     await promises.writeFile(file, '');
-    await promises.chmod(file, 0o766);
+    await promises.chmod(file, 0o766); // file mod for writing
     return file;
   }
 

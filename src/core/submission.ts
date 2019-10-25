@@ -138,8 +138,6 @@ class Submission {
     rimraf(compile_dir, () => {});
   }
 
-  // when exe_file has value, sub use compiler or interpreter
-  // otherwise, sub will mount excutable file to sandbox
   async run(
     work_dir: string,
     exe_file: string = null,
@@ -230,6 +228,8 @@ class Submission {
 
     const extra_files = [];
     if (exe_file === '' || exe_file === null) {
+      // when exe_file has value, sub use compiler or interpreter
+      // otherwise, sub will mount excutable file to sandbox
       exe_file = path.basename(this.exe_file);
       extra_files.push('-R');
       extra_files.push(this.exe_file + ':/app/' + exe_file);
