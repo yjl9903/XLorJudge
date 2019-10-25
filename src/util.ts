@@ -1,17 +1,12 @@
 import path from 'path';
 import { spawn } from 'child_process';
 import { promises } from 'fs';
+import cryptoRandomString from 'crypto-random-string';
+
 import { TEMP_PATH } from './config';
 
-export function rand(l: number, r: number): number {
-  return l + Math.round(Math.random() * (r - l));
-}
-
-const character_table = '0123456789abcdefghijklmnopqrstuvwxyz';
 export function random_string(length = 32): string {
-  return Array.apply(null, Array(length))
-    .map(() => character_table[rand(0, character_table.length - 1)])
-    .join('');
+  return cryptoRandomString({ length });
 }
 
 export function b64encode(s: string): string {
@@ -22,16 +17,9 @@ export function b64decode(s: string): string {
 }
 
 export async function make_temp_dir(): Promise<string> {
-  return new Promise(async (res, rej) => {
-    while (true) {
-      let dir = path.join(TEMP_PATH, random_string());
-      try {
-        await promises.mkdir(dir);
-        res(dir);
-        break;
-      } catch (ex) {}
-    }
-  });
+  const dir = path.join(TEMP_PATH, random_string());
+  await promises.mkdir(dir);
+  return dir;
 }
 
 export async function exec(
