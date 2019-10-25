@@ -96,13 +96,17 @@ async function judge(src, lang, cases = [], time = 1, memory = 64) {
 
   console.log(`\nStep 4: Judge test`);
 
+  let ok = 0, sum = 0;
+
   async function expectJudge(src, lang, expect, cases, time = 1, memory = 64) {
+    sum++;
     console.log(`\nTest ${src} using ${lang}`);
     const result = await judge(path.join(__dirname, 'testcode', src), lang, cases, time, memory);
     if (result.verdict === 6) result.message = b64decode(result.message);
     console.log(`Result:`);
     console.log(JSON.stringify(result, null, 2));
     if (expect === result.verdict) {
+      ok++;
       console.log(`OK, Expect: ${expect}`);
     } else {
       console.log(`No, Expect: ${expect}, but get: ${result.verdict}`);
@@ -121,6 +125,8 @@ async function judge(src, lang, cases = [], time = 1, memory = 64) {
   await expectJudge('e.cpp', 'cpp', 4, cases);
   // wa
   await expectJudge('f.cpp', 'cpp', -1, cases);
+  // stack
+  await expectJudge('g.cpp', 'cpp', 0, cases);
   // testcase
   await expectJudge('a.cpp', 'cpp', 9, ['wa']);
   // c
@@ -135,4 +141,6 @@ async function judge(src, lang, cases = [], time = 1, memory = 64) {
   await expectJudge('a.py2', 'py2', 0, cases);
   // java
   await expectJudge('Main.java', 'java', 0, cases);
+
+  console.log(`\nTest finish: ${ok}/${sum}`);
 })();
