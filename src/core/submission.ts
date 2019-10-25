@@ -3,7 +3,7 @@ import { promises, unlink } from 'fs';
 import rimraf from 'rimraf';
 
 import { random_string, make_temp_dir, exec } from '../util';
-import { Verdict } from '../type';
+import { Verdict, Usage } from '../type';
 import {
   SUB_PATH,
   LANG_CONFIG,
@@ -281,20 +281,15 @@ class Submission {
 
     try {
       // lose usage file -> Runtime Error? Restart!
-      const usage_file = await promises.readFile(
-          path.join(info_dir, 'usage'),
-          'utf8'
-        ),
-        usage: Object = {};
-      for (const line of usage_file.split('\n')) {
-        if (line === '') continue;
-        const [tag, num] = line.split(' ');
-        usage[tag] = Number(num);
-      }
-
-      const tim = Number((usage['user'] / 1000.0).toFixed(3)),
-        mem = Number((usage['memory'] / 1024.0).toFixed(3));
-      const result = new Result(tim, mem, usage['exit'], usage['signal']);
+      const usage = new Usage(
+        await promises.readFile(path.join(info_dir, 'usage'), 'utf8')
+      );
+      const result = new Result(
+        usage.parseUser(),
+        usage.parseMemory(),
+        usage.exit,
+        usage.signal
+      );
       if (result.exit_code != 0) {
         result.verdict = Verdict.RuntimeError;
       }
@@ -311,9 +306,9 @@ class Submission {
         result.verdict = Verdict.RuntimeError;
       }
       return result;
-    } catch (ex) {
-      console.error(ex);
-      throw ex;
+    } catch (err) {
+      console.error(err);
+      throw err;
     } finally {
       rimraf(info_dir, () => {});
       rimraf(root_dir, () => {});
