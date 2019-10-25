@@ -102,7 +102,7 @@ class Submission {
       });
 
       await promises.writeFile(error_path, ''); // important
-      let result = await this.run(
+      const result = await this.run(
         compile_dir,
         cmd,
         args,
@@ -134,7 +134,7 @@ class Submission {
     // copy compile_out to exe_file
     // clear temp folder
     await promises.copyFile(path.join(compile_dir, compile_out), this.exe_file);
-    promises.chmod(this.exe_file, 0o0775);
+    await promises.chmod(this.exe_file, 0o0775);
 
     rimraf(compile_dir, () => {});
   }
