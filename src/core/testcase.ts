@@ -1,5 +1,5 @@
-import path from 'path';
 import { promises } from 'fs';
+import path from 'path';
 import rimraf from 'rimraf';
 
 import { DATA_PATH } from '../configs';

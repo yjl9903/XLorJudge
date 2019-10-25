@@ -1,14 +1,14 @@
-import path from 'path';
 import { promises } from 'fs';
+import path from 'path';
 import rimraf from 'rimraf';
 
-import Submission from './submission';
-import Checker from './checker';
-import TestCase from './testcase';
-import { Verdict } from '../verdict';
 import { make_temp_dir, random_string } from '../util';
+import { Verdict } from '../verdict';
 
+import Checker from './checker';
 import Result from './result';
+import Submission from './submission';
+import TestCase from './testcase';
 
 class Runner {
   submission: Submission;

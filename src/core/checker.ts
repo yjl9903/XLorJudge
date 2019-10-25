@@ -1,9 +1,10 @@
 import path from 'path';
 
-import Submission from './submission';
-import Result from './result';
 import { CHK_PATH, LANG_CONFIG } from '../configs';
 import { Verdict } from '../verdict';
+
+import Result from './result';
+import Submission from './submission';
 
 export default class Checker extends Submission {
   constructor(id: string, lang: string) {

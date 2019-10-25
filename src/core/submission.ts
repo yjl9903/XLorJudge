@@ -1,24 +1,24 @@
-import path from 'path';
 import { promises, unlink } from 'fs';
+import path from 'path';
 import rimraf from 'rimraf';
 
-import { Verdict } from '../verdict';
-import { random_string, make_temp_dir, exec } from '../util';
 import {
-  SUB_PATH,
-  LANG_CONFIG,
-  COMPILER_USER_ID,
   COMPILER_GROUP_ID,
-  RUN_GROUP_ID,
-  RUN_USER_ID,
+  COMPILER_USER_ID,
+  ENV,
+  LANG_CONFIG,
   NSJAIL_PATH,
   OUTPUT_LIMIT,
-  ENV
+  RUN_GROUP_ID,
+  RUN_USER_ID,
+  SUB_PATH
 } from '../configs';
+import { exec, make_temp_dir, random_string } from '../util';
+import { Verdict } from '../verdict';
 
 import { CompileError, SystemError } from './error';
-import Usage from './usage';
 import Result from './result';
+import Usage from './usage';
 
 class Submission {
   lang: string;

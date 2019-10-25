@@ -1,7 +1,7 @@
-import express from 'express';
-import bodyParser from 'body-parser';
-import Memcached from 'memcached';
 import basicAuth from 'basic-auth';
+import bodyParser from 'body-parser';
+import express from 'express';
+import Memcached from 'memcached';
 
 import tokens from './configs/token';
 import router from './router';

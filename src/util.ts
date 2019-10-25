@@ -1,7 +1,7 @@
-import path from 'path';
 import { spawn } from 'child_process';
-import { promises } from 'fs';
 import cryptoRandomString from 'crypto-random-string';
+import { promises } from 'fs';
+import path from 'path';
 
 import { TEMP_PATH } from './configs';
 
