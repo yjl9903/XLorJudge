@@ -2,8 +2,9 @@ import path from 'path';
 import { promises, unlink } from 'fs';
 import rimraf from 'rimraf';
 
-import { random_string, make_temp_dir, exec } from '../util';
-import { Verdict, Usage } from '../type';
+import { random_string, make_temp_dir, exec } from '@util';
+import { Verdict } from 'verdict';
+import Usage from 'usage';
 import {
   SUB_PATH,
   LANG_CONFIG,

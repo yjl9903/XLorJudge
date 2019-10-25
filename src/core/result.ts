@@ -1,4 +1,4 @@
-import { Verdict } from '../type';
+import { Verdict } from 'verdict';
 
 class Result {
   time: number;

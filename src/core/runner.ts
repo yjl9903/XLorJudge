@@ -10,8 +10,8 @@ import Result from './result';
 import TestCase from './testcase';
 
 import { COMPILER_USER_ID, COMPILER_GROUP_ID } from '../config';
-import { Verdict } from '../type';
-import { make_temp_dir, random_string } from '../util';
+import { Verdict } from 'verdict';
+import { make_temp_dir, random_string } from '@util';
 
 class Runner {
   submission: Submission;

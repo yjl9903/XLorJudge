@@ -9,8 +9,15 @@
     "resolveJsonModule": true,
     "baseUrl": ".",
     "paths": {
+      "@config": [
+        "src/configs/index.ts"
+      ],
+      "@util": [
+        "src/util.ts"
+      ],
       "*": [
-        "node_modules/*"
+        "node_modules/*",
+        "src/types/*"
       ]
     }
   },

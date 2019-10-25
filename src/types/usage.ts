@@ -1,21 +1,4 @@
-export enum Verdict {
-  Compiling = -4,
-  Waiting,
-  Judging,
-  WrongAnswer,
-  Accepted,
-  TimeLimitExceeded,
-  IdlenessLimitExceeded,
-  MemoryLimitExceeded,
-  RuntimeError,
-  SystemError,
-  CompileError,
-  Point,
-  JudgeError,
-  TestCaseError
-}
-
-export class Usage {
+export default class Usage {
   user: number;
   pass: number;
   memory: number;
