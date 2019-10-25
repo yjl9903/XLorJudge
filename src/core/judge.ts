@@ -26,8 +26,9 @@ export default async function(
   } catch (err) {
     // return CE msg
     res.verdict = Verdict.CompileError;
-    if (err.message === 'Failed to Open Sandbox')
+    if ('verdict' in err && err.verdict === Verdict.SystemError) {
       res.verdict = Verdict.SystemError;
+    }
     res.message = b64encode(err.message);
     cache.set(sub_id, res, 3600, () => {});
     return res;
