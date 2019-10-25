@@ -1,7 +1,5 @@
 FROM ubuntu:18.10
 
-ARG port=3000
-
 RUN apt-get update \
     && apt-get install -y wget git curl locales memcached \
               python python3 gcc g++ openjdk-8-jdk libtool \
@@ -12,11 +10,15 @@ RUN apt-get update \
     && apt-get install -y nodejs \
     && npm install -g yarn && yarn
 
-ENV LANG=en_US.UTF-8 LANGUAGE=en_US:en LC_ALL=en_US.UTF-8 PORT=${port}
-
 ADD . /judge
 
 WORKDIR /judge
+
+ARG port=3000
+
+ARG mode=production
+
+ENV LANG=en_US.UTF-8 LANGUAGE=en_US:en LC_ALL=en_US.UTF-8 NODE_ENV=${mode} PORT=${port}
 
 RUN mkdir -p /Judge/dist/run/sub /Judge/dist/run/temp /Judge/dist/run/data /Judge/dist/run/checker \
     && useradd -r compiler \
