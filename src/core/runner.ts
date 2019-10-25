@@ -17,7 +17,6 @@ class Runner {
   checker: Checker;
   max_time: number;
   max_memory: number;
-  run_dir: string = '';
   out_dir: string = '';
 
   constructor(
@@ -33,13 +32,10 @@ class Runner {
   }
 
   clear(): void {
-    rimraf(this.run_dir, () => {});
     rimraf(this.out_dir, () => {});
   }
+
   async make_write_file(): Promise<string> {
-    if (this.run_dir === '') {
-      this.run_dir = await make_temp_dir();
-    }
     if (this.out_dir === '') {
       this.out_dir = await make_temp_dir();
     }
@@ -52,24 +48,30 @@ class Runner {
   async run(testcase: TestCase): Promise<Result> {
     const run_out = await this.make_write_file();
     const run_err = await this.make_write_file();
+    const run_dir = await make_temp_dir();
 
-    const result = await this.submission.run(
-      this.run_dir,
-      '',
-      [],
-      [],
-      false,
-      this.max_time,
-      this.max_memory,
-      testcase.input_file,
-      run_out,
-      run_err
-    );
-    if (result.verdict === Verdict.Accepted) {
-      result.verdict = await this.check(testcase, run_out);
+    try {
+      const result = await this.submission.run(
+        run_dir,
+        '',
+        [],
+        [],
+        false,
+        this.max_time,
+        this.max_memory,
+        testcase.input_file,
+        run_out,
+        run_err
+      );
+      if (result.verdict === Verdict.Accepted) {
+        result.verdict = await this.check(testcase, run_out);
+      }
+      return result;
+    } finally {
+      rimraf(run_dir, () => {});
     }
-    return result;
   }
+
   async check(testcase: TestCase, output: string): Promise<Verdict> {
     const chk_out = await this.make_write_file();
     const files = [
@@ -78,33 +80,35 @@ class Runner {
       { src: testcase.output_file, dst: 'ans', mode: '-R' },
       { src: chk_out, dst: 'result', mode: '-B' }
     ];
+    const run_dir = await make_temp_dir();
 
-    const chk_result = await this.checker.check(
-      this.run_dir,
-      '',
-      [],
-      files,
-      false,
-      this.max_time,
-      this.max_memory,
-      null,
-      null,
-      null
-    );
+    try {
+      const chk_result = await this.checker.check(
+        run_dir,
+        '',
+        [],
+        files,
+        false,
+        this.max_time,
+        this.max_memory
+      );
 
-    if (chk_result.verdict !== Verdict.Accepted) {
-      if (chk_result.exit_code === 3) {
-        return Verdict.JudgeError;
+      if (chk_result.verdict !== Verdict.Accepted) {
+        if (chk_result.exit_code === 3) {
+          return Verdict.JudgeError;
+        }
+        if (chk_result.exit_code === 7) {
+          return Verdict.Point;
+        }
+        if (chk_result.verdict !== Verdict.RuntimeError) {
+          return chk_result.verdict;
+        }
+        return Verdict.WrongAnswer;
       }
-      if (chk_result.exit_code === 7) {
-        return Verdict.Point;
-      }
-      if (chk_result.verdict !== Verdict.RuntimeError) {
-        return chk_result.verdict;
-      }
-      return Verdict.WrongAnswer;
+      return Verdict.Accepted;
+    } finally {
+      rimraf(run_dir, () => {});
     }
-    return Verdict.Accepted;
   }
 }
 
