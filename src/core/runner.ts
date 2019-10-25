@@ -90,20 +90,7 @@ class Runner {
         this.max_time,
         this.max_memory
       );
-
-      if (chk_result.verdict !== Verdict.Accepted) {
-        if (chk_result.exit_code === 3) {
-          return Verdict.JudgeError;
-        }
-        if (chk_result.exit_code === 7) {
-          return Verdict.Point;
-        }
-        if (chk_result.verdict !== Verdict.RuntimeError) {
-          return chk_result.verdict;
-        }
-        return Verdict.WrongAnswer;
-      }
-      return Verdict.Accepted;
+      return this.checker.getVerdict(chk_result);
     } finally {
       rimraf(run_dir, () => {});
     }
