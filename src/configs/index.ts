@@ -5,8 +5,7 @@ export { LANG_CONFIG };
 
 export const NSJAIL_PATH = '/bin/nsjail';
 
-export const PROJECT_PATH = path.join(__dirname, '..');
-// const CONFIG_PATH = path.join(PROJECT_PATH, 'config');
+export const PROJECT_PATH = path.join(__dirname, '../..');
 export const RUN_PATH = path.join(PROJECT_PATH, 'run');
 export const DATA_PATH = path.join(RUN_PATH, 'data');
 export const SUB_PATH = path.join(RUN_PATH, 'sub');

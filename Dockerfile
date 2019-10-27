@@ -20,7 +20,7 @@ ARG mode=production
 
 ENV LANG=en_US.UTF-8 LANGUAGE=en_US:en LC_ALL=en_US.UTF-8 NODE_ENV=${mode} PORT=${port}
 
-RUN mkdir -p /Judge/dist/run/sub /Judge/dist/run/temp /Judge/dist/run/data /Judge/dist/run/checker \
+RUN mkdir -p /judge/run/sub /judge/run/temp /judge/run/data /judge/run/checker \
     && useradd -r compiler \
     && wget https://raw.githubusercontent.com/MikeMirzayanov/testlib/master/testlib.h -O /usr/local/include/testlib.h \
     && git submodule update --init --recursive && cd nsjail && make && mv nsjail /bin/nsjail && cd .. \
