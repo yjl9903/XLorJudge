@@ -18,8 +18,7 @@ function random_string(length = 32) {
   return Array.apply(null, Array(length)).map(() => character_table[rand(0, character_table.length - 1)]).join('');
 }
 
-// const baseURL = 'http://localhost:3000/';
-const baseURL = 'http://121.36.155.143:3000/';
+const baseURL = 'http://localhost:3000/';
 const name = 'XLor';
 const pass = 'whgtxdy';
 
@@ -56,7 +55,7 @@ async function judge(src, lang, cases = [], time = 1, memory = 64) {
     cases: cases, 
     checker: { id: 'chk', lang: 'cpp' },
     lang: lang,
-    code: b64encode(await fs.promises.readFile(src, 'utf8'))
+    code: b64encode(await fs.promises.readFile(path.join(__dirname, 'testcode', src), 'utf8'))
   });
   return await queryState(id);
 }
@@ -101,7 +100,7 @@ async function judge(src, lang, cases = [], time = 1, memory = 64) {
   async function expectJudge(src, lang, expect, cases, time = 1, memory = 64) {
     sum++;
     console.log(`\nTest ${src} using ${lang}`);
-    const result = await judge(path.join(__dirname, 'testcode', src), lang, cases, time, memory);
+    const result = await judge(src, lang, cases, time, memory);
     if (result.verdict === 6) result.message = b64decode(result.message);
     console.log(`Result:`);
     console.log(JSON.stringify(result, null, 2));
@@ -114,27 +113,27 @@ async function judge(src, lang, cases = [], time = 1, memory = 64) {
   }
 
   // ac
-  await expectJudge('a.cpp', 'cpp', 0, cases);
+  await expectJudge('ac.cpp', 'cpp', 0, cases);
   // tle
-  await expectJudge('b.cpp', 'cpp', 1, cases);
+  await expectJudge('tle.cpp', 'cpp', 1, cases);
   // mle
-  await expectJudge('c.cpp', 'cpp', 3, cases);
+  await expectJudge('mle.cpp', 'cpp', 3, cases);
   // ce
-  await expectJudge('d.cpp', 'cpp', 6, cases);
+  await expectJudge('ce.cpp', 'cpp', 6, cases);
   // re
-  await expectJudge('e.cpp', 'cpp', 4, cases);
+  await expectJudge('re.cpp', 'cpp', 4, cases);
   // wa
-  await expectJudge('f.cpp', 'cpp', -1, cases);
+  await expectJudge('wa.cpp', 'cpp', -1, cases);
   // stack
-  await expectJudge('g.cpp', 'cpp', 0, cases);
+  await expectJudge('stk.cpp', 'cpp', 0, cases);
   // testcase
-  await expectJudge('a.cpp', 'cpp', 9, ['wa']);
+  await expectJudge('ac.cpp', 'cpp', 9, ['wa']);
   // c
   await expectJudge('a.c', 'c', 0, cases);
   // c++14
-  await expectJudge('a.cpp', 'cc14', 0, cases);
+  await expectJudge('ac.cpp', 'cc14', 0, cases);
   // c++17
-  await expectJudge('a.cpp', 'cc17', 0, cases);
+  await expectJudge('ac.cpp', 'cc17', 0, cases);
   // python3
   await expectJudge('a.py', 'python', 0, cases);
   // python2
@@ -143,4 +142,18 @@ async function judge(src, lang, cases = [], time = 1, memory = 64) {
   await expectJudge('Main.java', 'java', 0, cases);
 
   console.log(`\nTest finish: ${ok}/${sum}`);
+
+  console.log(`\nStep 5: Stress test`);
+
+  tasks.splice(0, tasks.length);
+  tasks.push(judge('ac.cpp', 'cpp', cases));
+  tasks.push(judge('tle.cpp', 'cpp', cases));
+  tasks.push(judge('wa.cpp', 'cpp', cases));
+  tasks.push(judge('ac.cpp', 'cpp', cases));
+  tasks.push(judge('tle.cpp', 'cpp', cases));
+  tasks.push(judge('wa.cpp', 'cpp', cases));
+
+  console.log(await axios.all(tasks));
+
+  console.log('Test OK');
 })();
