@@ -13,7 +13,7 @@ WORKDIR /judge
 
 ARG port=3000
 
-ARG mode=production
+ARG mode=devlopment
 
 ENV LANG=en_US.UTF-8 LANGUAGE=en_US:en LC_ALL=en_US.UTF-8 NODE_ENV=${mode} PORT=${port}
 
