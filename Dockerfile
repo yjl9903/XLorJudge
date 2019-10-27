@@ -19,7 +19,7 @@ ENV LANG=en_US.UTF-8 LANGUAGE=en_US:en LC_ALL=en_US.UTF-8 NODE_ENV=${mode} PORT=
 
 RUN curl -sL https://deb.nodesource.com/setup_12.x | bash - \
     && apt-get install -y nodejs \
-    && npm install -g yarn && yarn \
+    && npm install -g yarn && yarn global add typescript && yarn \
     && mkdir -p /judge/run/sub /judge/run/temp /judge/run/data /judge/run/checker \
     && useradd -r compiler \
     && wget https://raw.githubusercontent.com/MikeMirzayanov/testlib/master/testlib.h -O /usr/local/include/testlib.h \
