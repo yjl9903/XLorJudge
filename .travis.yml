@@ -18,5 +18,3 @@ script:
   - yarn run test
   - docker build -t xlor-judge .
   - docker run --name=judge -d --privileged -p 3000:3000 xlor-judge
-  - docker build -t test-judge -f scripts/testdocker/Dockerfile .
-  - docker run --rm test-judge
