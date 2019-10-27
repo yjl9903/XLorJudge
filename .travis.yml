@@ -13,8 +13,8 @@ cache:
 install:
   - yarn
   - yarn run build
-  - yarn run test
 
 script:
+  - yarn run test
   - docker build -t xlor-judge .
   - docker run --name=judge -d --privileged -p 3000:3000 xlor-judge
