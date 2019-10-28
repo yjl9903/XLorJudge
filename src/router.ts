@@ -71,6 +71,7 @@ router.ws('/judge', (ws, req) => {
         Reflect.set(msg, 'status', 'ok');
         ws.send(JSON.stringify(msg));
         if (msg.verdict > -2) {
+          flag = false;
           unsubscribe(body.id, fn);
         }
       };
