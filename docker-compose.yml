@@ -16,6 +16,8 @@ services:
       - redis
     links:
       - redis
+    volumnes:
+      - ./data:/judge/run/data
   redis:
     container_name: redis
     image: redis
