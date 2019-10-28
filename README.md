@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.com/yjl9903/XLorJudge.svg?token=yA9RS9wdcppy1BXxiyCQ&branch=master)](https://travis-ci.com/yjl9903/XLorJudge) ![GitHub](https://img.shields.io/github/license/yjl9903/XLorJudge)
 
-In development.
+:tada: XLorJudge v1.0 has now been released.
 
 XLorJudge is a competitive programming contest judge core for XLor Online Judge. It can use uploaded testcase to judge contestants' untrusted code in a reliable sandbox.
 
@@ -25,6 +25,10 @@ docker-compose up -d
 XLorJudge will listen `3000` port.
 
 You can run `npm run mytest` to check whether judge core is working.
+
+## Docs
+
+Docs is coming soon.
 
 ## License
 
