@@ -12,5 +12,4 @@ chown compiler -R /sys/fs/cgroup/memory/NSJAIL /sys/fs/cgroup/cpu/NSJAIL /sys/fs
 chgrp compiler -R /sys/fs/cgroup/memory/NSJAIL /sys/fs/cgroup/cpu/NSJAIL /sys/fs/cgroup/pids/NSJAIL
 chown compiler:compiler /judge/run/temp /judge/run/sub /judge/run/checker
 
-memcached -p 11211 -u compiler -m 64m -d
 yarn run start
