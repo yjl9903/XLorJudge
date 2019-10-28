@@ -5,6 +5,7 @@ import { Verdict } from '../verdict';
 
 import Result from './result';
 import Submission from './submission';
+import { JudgeError } from './error';
 
 export default class Checker extends Submission {
   constructor(id: string, lang: string) {
@@ -17,7 +18,7 @@ export default class Checker extends Submission {
     const { verdict, exit_code } = result;
     if (verdict !== Verdict.Accepted) {
       if (result.exit_code === 3) {
-        return Verdict.JudgeError;
+        throw new JudgeError('');
       }
       if (exit_code === 7) {
         return Verdict.Point;

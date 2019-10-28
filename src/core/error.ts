@@ -24,4 +24,12 @@ export class TestCaseError extends Error {
   }
 }
 
+export class JudgeError extends Error {
+  readonly verdict: Verdict;
+  constructor(msg: string) {
+    super(msg);
+    this.verdict = Verdict.JudgeError;
+  }
+}
+
 export default CompileError;

@@ -17,7 +17,7 @@ export default async function(
   cases: Array<string>
 ): Promise<
   | { verdict: Verdict; message: string }
-  | { verdict: Verdict; sum: number; time: number; memory: number }
+  | { verdict: Verdict; passed: number; time: number; memory: number }
 > {
   cache.set(sub_id, { verdict: Verdict.Compiling }, 3600, err => {});
 
@@ -37,9 +37,9 @@ export default async function(
     return result;
   }
 
-  cache.set(sub_id, { verdict: Verdict.Judging, sum: 0 }, 3600, () => {});
+  cache.set(sub_id, { verdict: Verdict.Judging, passed: 0 }, 3600, () => {});
 
-  const result = { verdict: Verdict.Accepted, sum: 0, time: 0, memory: 0 };
+  const result = { verdict: Verdict.Accepted, passed: 0, time: 0, memory: 0 };
   const runner = new Runner(sub, chk, max_time, max_memory);
 
   for (const fingerprint of cases) {
@@ -52,10 +52,10 @@ export default async function(
         result.verdict = tot.verdict;
         break;
       }
-      result.sum += 1;
+      result.passed += 1;
       cache.set(
         sub_id,
-        { verdict: Verdict.Judging, sum: result.sum },
+        { verdict: Verdict.Judging, passed: result.passed },
         3600,
         () => {}
       );
