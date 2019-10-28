@@ -19,7 +19,6 @@
     "crypto-random-string": "^3.0.1",
     "execa": "^3.2.0",
     "express": "^4.16.4",
-    "memcached": "^2.2.2",
     "redis": "^2.8.0",
     "rimraf": "^2.6.3"
   },

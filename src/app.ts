@@ -1,13 +1,11 @@
 import basicAuth from 'basic-auth';
 import bodyParser from 'body-parser';
 import express from 'express';
-import Memcached from 'memcached';
 
 import tokens from './configs/token';
 import router from './router';
 
 const app = express();
-const cache = new Memcached('0.0.0.0:11211');
 
 app.set('port', process.env.PORT ? process.env.PORT : 3000);
 
@@ -45,5 +43,3 @@ app.get('/ping', (req, res) => {
 app.use(router);
 
 export default app;
-
-export { app, cache };

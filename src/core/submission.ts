@@ -168,7 +168,6 @@ class Submission {
     } catch (err) {
       rimraf(info_dir, () => {});
       rimraf(root_dir, () => {});
-      // return new Result(0, 0, 0, 0, Verdict.TestCaseError);
       throw new TestCaseError(err.msg);
     }
 
