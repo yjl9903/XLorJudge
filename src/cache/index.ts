@@ -15,6 +15,10 @@ client.on('error', err => {
   console.error(err);
 });
 
+export function closeRedis() {
+  client.quit();
+}
+
 export type WatingMsg = { verdict: Verdict.Waiting | Verdict.Compiling };
 export type ErrorMsg = {
   verdict: Verdict.CompileError | Verdict.SystemError | Verdict.JudgeError;

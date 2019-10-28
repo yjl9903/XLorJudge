@@ -1,3 +1,5 @@
+process.env = Object.assign(process.env, { DEFAULT_REDIS: true });
+
 module.exports = {
   globals: {
     "ts-jest": {

@@ -1,5 +1,7 @@
 import request from 'supertest';
+
 import app from '../src/app';
+import { closeRedis } from '../src/cache';
 import token from '../src/configs/token';
 
 describe('Ping app', () => {
@@ -11,3 +13,5 @@ describe('Ping app', () => {
     expect(res.text).toBe('XLor Online Judge Core');
   });
 });
+
+afterAll(closeRedis);
