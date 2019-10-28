@@ -1,4 +1,5 @@
 const axios = require('axios');
+const WebSocket  = require('ws');
 const fs = require('fs');
 const path = require('path');
 
@@ -42,11 +43,11 @@ async function queryState(id) {
           resolve(res.data);
         }
       });
-    }, 1000);
+    }, 500);
   });
 }
 
-async function judge(src, lang, cases = [], time = 1, memory = 64) {
+async function httpJudge(src, lang, cases = [], time = 1, memory = 64) {
   const id = random_string();
   await api.post('/judge', {
     id: id, 
@@ -58,6 +59,42 @@ async function judge(src, lang, cases = [], time = 1, memory = 64) {
     code: b64encode(await fs.promises.readFile(path.join(__dirname, 'testcode', src), 'utf8'))
   });
   return await queryState(id);
+}
+
+function wsJudge(src, lang, cases = [], time = 1, memory = 64) {
+  const url = `ws://${baseURL.replace(/^(http(s|):\/\/)/, '').replace(/(\/)$/, '')}/judge`;
+  const ws = new WebSocket(url, {
+    headers: {
+      "Authorization": `Basic ${b64encode(name + ':' + pass)}`
+    }
+  });
+  const send = async () => {
+    const body = {
+      id: random_string(), 
+      max_time: time, 
+      max_memory: memory,
+      cases: cases, 
+      checker: { id: 'chk', lang: 'cpp' },
+      lang: lang,
+      code: b64encode(await fs.promises.readFile(path.join(__dirname, 'testcode', src), 'utf8'))
+    };
+    ws.send(JSON.stringify(body));
+  }
+  ws.on('open', send);
+  return new Promise((res, rej) => {
+    ws.on('message', msg => {
+      const obj = JSON.parse(msg);
+      if (obj.status === 'error') {
+        send();
+        return ;
+      }
+      if (obj.verdict > -2) {
+        ws.terminate();
+        res(obj);
+      }
+    });
+    ws.on('error', err => rej(err));
+  });
 }
 
 (async () => {
@@ -93,19 +130,34 @@ async function judge(src, lang, cases = [], time = 1, memory = 64) {
   }
   await axios.all(tasks);
 
-  console.log(`\nStep 4: Judge test`);
+  console.log(`\nStep 4: Http Judge test`);
 
-  let ok = 0, sum = 0;
+  let okh = 0, sumh = 0, okw = 0, sumw = 0;
 
   async function expectJudge(src, lang, expect, cases, time = 1, memory = 64) {
-    sum++;
+    sumh++;
     console.log(`\nTest ${src} using ${lang}`);
-    const result = await judge(src, lang, cases, time, memory);
+    const result = await httpJudge(src, lang, cases, time, memory);
     if (result.verdict === 6) result.message = b64decode(result.message);
     console.log(`Result:`);
     console.log(JSON.stringify(result, null, 2));
     if (expect === result.verdict) {
-      ok++;
+      okh++;
+      console.log(`OK, Expect: ${expect}`);
+    } else {
+      console.log(`No, Expect: ${expect}, but get: ${result.verdict}`);
+    }
+  }
+
+  async function expectJudgeW(src, lang, expect, cases, time = 1, memory = 64) {
+    sumw++;
+    console.log(`\nTest ${src} using ${lang}`);
+    const result = await wsJudge(src, lang, cases, time, memory);
+    if (result.verdict === 6) result.message = b64decode(result.message);
+    console.log(`Result:`);
+    console.log(JSON.stringify(result, null, 2));
+    if (expect === result.verdict) {
+      okw++;
       console.log(`OK, Expect: ${expect}`);
     } else {
       console.log(`No, Expect: ${expect}, but get: ${result.verdict}`);
@@ -141,19 +193,36 @@ async function judge(src, lang, cases = [], time = 1, memory = 64) {
   // java
   await expectJudge('Main.java', 'java', 0, cases);
 
-  console.log(`\nTest finish: ${ok}/${sum}`);
+  console.log(`\nTest finish: ${okh}/${sumh}`);
 
   console.log(`\nStep 5: Stress test`);
 
   tasks.splice(0, tasks.length);
-  tasks.push(judge('ac.cpp', 'cpp', cases));
-  tasks.push(judge('tle.cpp', 'cpp', cases));
-  tasks.push(judge('wa.cpp', 'cpp', cases));
-  tasks.push(judge('ac.cpp', 'cpp', cases));
-  tasks.push(judge('tle.cpp', 'cpp', cases));
-  tasks.push(judge('wa.cpp', 'cpp', cases));
+  tasks.push(httpJudge('ac.cpp', 'cpp', cases));
+  tasks.push(httpJudge('tle.cpp', 'cpp', cases));
+  tasks.push(httpJudge('wa.cpp', 'cpp', cases));
+  tasks.push(httpJudge('ac.cpp', 'cpp', cases));
+  tasks.push(httpJudge('tle.cpp', 'cpp', cases));
+  tasks.push(httpJudge('wa.cpp', 'cpp', cases));
 
+  const start = new Date().getTime();
   console.log(await axios.all(tasks));
+  const end = new Date().getTime();
+  
+  console.log(`Test OK, done in ${(end - start)} ms`);
 
-  console.log('Test OK');
+  console.log(`\nStep 6: Websocket Judge test`);
+
+  await expectJudgeW('ac.cpp', 'cpp', 0, cases);
+  await expectJudgeW('tle.cpp', 'cpp', 1, cases);
+  await expectJudgeW('mle.cpp', 'cpp', 3, cases);
+  await expectJudgeW('ce.cpp', 'cpp', 6, cases);
+  await expectJudgeW('re.cpp', 'cpp', 4, cases);
+  await expectJudgeW('wa.cpp', 'cpp', -1, cases);
+  await expectJudgeW('stk.cpp', 'cpp', 0, cases);
+  await expectJudgeW('ac.cpp', 'cpp', 9, ['wa']);
+
+  console.log(`\nTest finish: ${okw}/${sumw}`);
+
+  console.log('');
 })();

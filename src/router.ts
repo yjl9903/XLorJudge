@@ -1,6 +1,6 @@
 import { Router } from 'express';
 
-import { update, query } from './cache';
+import { update, query, subscribe, Msg, unsubscribe } from './cache';
 import { Checker, judge, TestCase } from './core';
 import { b64decode } from './util';
 import { Verdict } from './verdict';
@@ -59,6 +59,37 @@ router.post('/judge', async (req, res) => {
 
 router.get('/query', async (req, res) => {
   res.send(await query(req.query.id));
+});
+
+router.ws('/judge', (ws, req) => {
+  let flag = false;
+  ws.on('message', msg => {
+    if (flag) return;
+    try {
+      const body = JSON.parse(msg.toString());
+      const fn = (msg: Msg) => {
+        Reflect.set(msg, 'status', 'ok');
+        ws.send(JSON.stringify(msg));
+        if (msg.verdict > -2) {
+          unsubscribe(body.id, fn);
+        }
+      };
+      subscribe(body.id, fn);
+      judge(
+        body.id,
+        b64decode(body.code),
+        body.lang,
+        new Checker(body.checker.id, body.checker.lang),
+        body.max_time,
+        body.max_memory,
+        body.cases
+      );
+      flag = true;
+    } catch (err) {
+      flag = false;
+      ws.send(JSON.stringify({ status: 'error' }));
+    }
+  });
 });
 
 export default router;
