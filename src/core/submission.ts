@@ -16,7 +16,7 @@ import {
 import { exec, make_temp_dir, random_string } from '../util';
 import { Verdict } from '../verdict';
 
-import { CompileError, SystemError } from './error';
+import { CompileError, SystemError, TestCaseError } from './error';
 import Result from './result';
 import Usage from './usage';
 
@@ -168,7 +168,8 @@ class Submission {
     } catch (err) {
       rimraf(info_dir, () => {});
       rimraf(root_dir, () => {});
-      return new Result(0, 0, 0, 0, Verdict.TestCaseError);
+      // return new Result(0, 0, 0, 0, Verdict.TestCaseError);
+      throw new TestCaseError(err.msg);
     }
 
     const nsjail_args = [

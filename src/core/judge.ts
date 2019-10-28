@@ -37,7 +37,7 @@ export default async function(
     return result;
   }
 
-  cache.set(sub_id, { verdict: Verdict.Judging }, 3600, () => {});
+  cache.set(sub_id, { verdict: Verdict.Judging, sum: 0 }, 3600, () => {});
 
   const result = { verdict: Verdict.Accepted, sum: 0, time: 0, memory: 0 };
   const runner = new Runner(sub, chk, max_time, max_memory);
@@ -62,13 +62,9 @@ export default async function(
     } catch (err) {
       sub.clear();
       runner.clear();
-      cache.set(
-        sub_id,
-        { verdict: Verdict.SystemError, message: err.message },
-        3600,
-        () => {}
-      );
-      return { verdict: Verdict.SystemError, message: err.message };
+      const verdict = 'verdict' in err ? err.verdict : Verdict.SystemError;
+      cache.set(sub_id, { verdict, message: err.message }, 3600, () => {});
+      return { verdict, message: err.message };
     }
   }
 

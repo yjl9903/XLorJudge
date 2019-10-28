@@ -1,7 +1,7 @@
 import { Verdict } from '../verdict';
 
 export class CompileError extends Error {
-  verdict: Verdict;
+  readonly verdict: Verdict;
   constructor(msg: string) {
     super(msg);
     this.verdict = Verdict.CompileError;
@@ -9,10 +9,18 @@ export class CompileError extends Error {
 }
 
 export class SystemError extends Error {
-  verdict: Verdict;
+  readonly verdict: Verdict;
   constructor(msg: string) {
     super(msg);
     this.verdict = Verdict.SystemError;
+  }
+}
+
+export class TestCaseError extends Error {
+  readonly verdict: Verdict;
+  constructor(msg: string) {
+    super(msg);
+    this.verdict = Verdict.TestCaseError;
   }
 }
 
