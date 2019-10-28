@@ -1,6 +1,5 @@
 import { Router } from 'express';
 
-// import { cache } from './app';
 import { update, query } from './cache';
 import { Checker, judge, TestCase } from './core';
 import { b64decode } from './util';

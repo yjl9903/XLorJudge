@@ -4,6 +4,10 @@ node_js:
 
 services:
   - docker
+  - redis-server
+
+env:
+  - DEFAULT_REDIS=true
 
 cache:
   yarn: true

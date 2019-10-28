@@ -5,7 +5,9 @@ import { createClient } from 'redis';
 import { Verdict } from '../verdict';
 
 const redisURL = 'redis://redis:6379';
-const client = createClient(redisURL);
+const client = process.env.DEFAULT_REDIS
+  ? createClient()
+  : createClient(redisURL);
 
 const get = promisify(client.get).bind(client);
 
