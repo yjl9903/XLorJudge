@@ -1,11 +1,13 @@
 import basicAuth from 'basic-auth';
 import bodyParser from 'body-parser';
 import express from 'express';
+import expressWs from 'express-ws';
 
 import tokens from './configs/token';
 import router from './router';
 
 const app = express();
+expressWs(app);
 
 app.set('port', process.env.PORT ? process.env.PORT : 3000);
 

@@ -14,10 +14,12 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
+    "@types/express-ws": "^3.0.0",
     "basic-auth": "^2.0.1",
     "body-parser": "^1.18.3",
     "crypto-random-string": "^3.0.1",
     "express": "^4.16.4",
+    "express-ws": "^4.0.0",
     "redis": "^2.8.0",
     "rimraf": "^2.6.3"
   },
