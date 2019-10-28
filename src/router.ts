@@ -1,6 +1,7 @@
 import { Router } from 'express';
 
-import { cache } from './app';
+// import { cache } from './app';
+import { update, query } from './cache';
 import { Checker, judge, TestCase } from './core';
 import { b64decode } from './util';
 import { Verdict } from './verdict';
@@ -43,7 +44,8 @@ router.post('/checker', async (req, res) => {
 });
 
 router.post('/judge', async (req, res) => {
-  cache.set(req.body.id, { verdict: Verdict.Waiting }, 3600, err => {});
+  // cache.set(req.body.id, { verdict: Verdict.Waiting }, 3600, err => {});
+  update(req.body.id, { verdict: Verdict.Waiting });
   const code = b64decode(req.body.code);
   judge(
     req.body.id,
@@ -58,10 +60,11 @@ router.post('/judge', async (req, res) => {
 });
 
 router.get('/query', async (req, res) => {
-  cache.get(req.query.id, (err, data) => {
-    if (err) res.sendStatus(400);
-    else res.send(data);
-  });
+  // cache.get(req.query.id, (err, data) => {
+  //   if (err) res.sendStatus(400);
+  //   else res.send(data);
+  // });
+  res.send(await query(req.query.id));
 });
 
 export default router;

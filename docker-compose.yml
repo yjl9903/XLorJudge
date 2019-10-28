@@ -12,3 +12,12 @@ services:
     privileged: true
     ports:
       - 3000:3000
+    depends_on:
+      - redis
+    links:
+      - redis
+  redis:
+    container_name: redis
+    image: redis
+    expose:
+      - 6379
