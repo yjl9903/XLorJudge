@@ -34,20 +34,19 @@ const api = axios.create({
 const cases = [];
 const CaseNum = 5;
 
-async function queryState(id) {
-  return new Promise((resolve, reject) => {
-    let loopid = setInterval(() => {
-      api.get('/query', { params: { id: id } }).then(res => {
-        if (res.data.verdict > -2) {
-          clearInterval(loopid);
-          resolve(res.data);
-        }
-      });
-    }, 500);
-  });
-}
-
 async function httpJudge(src, lang, cases = [], time = 1, memory = 64) {
+  async function queryState(id) {
+    return new Promise((resolve, reject) => {
+      let loopid = setInterval(() => {
+        api.get('/query', { params: { id: id } }).then(res => {
+          if (res.data.verdict > -2) {
+            clearInterval(loopid);
+            resolve(res.data);
+          }
+        });
+      }, 500);
+    });
+  }
   const id = random_string();
   await api.post('/judge', {
     id: id, 
@@ -195,7 +194,7 @@ function wsJudge(src, lang, cases = [], time = 1, memory = 64) {
 
   console.log(`\nTest finish: ${okh}/${sumh}`);
 
-  console.log(`\nStep 5: Stress test`);
+  console.log(`\nStep 5: Http Stress test`);
 
   tasks.splice(0, tasks.length);
   tasks.push(httpJudge('ac.cpp', 'cpp', cases));
@@ -205,9 +204,9 @@ function wsJudge(src, lang, cases = [], time = 1, memory = 64) {
   tasks.push(httpJudge('tle.cpp', 'cpp', cases));
   tasks.push(httpJudge('wa.cpp', 'cpp', cases));
 
-  const start = new Date().getTime();
+  let start = new Date().getTime();
   console.log(await axios.all(tasks));
-  const end = new Date().getTime();
+  let end = new Date().getTime();
   
   console.log(`Test OK, done in ${(end - start)} ms`);
 
@@ -223,6 +222,22 @@ function wsJudge(src, lang, cases = [], time = 1, memory = 64) {
   await expectJudgeW('ac.cpp', 'cpp', 9, ['wa']);
 
   console.log(`\nTest finish: ${okw}/${sumw}`);
+
+  console.log(`\nStep 7: Websocket Stress test`);
+
+  tasks.splice(0, tasks.length);
+  tasks.push(wsJudge('ac.cpp', 'cpp', cases));
+  tasks.push(wsJudge('tle.cpp', 'cpp', cases));
+  tasks.push(wsJudge('wa.cpp', 'cpp', cases));
+  tasks.push(wsJudge('ac.cpp', 'cpp', cases));
+  tasks.push(wsJudge('tle.cpp', 'cpp', cases));
+  tasks.push(wsJudge('wa.cpp', 'cpp', cases));
+
+  start = new Date().getTime();
+  console.log(await axios.all(tasks));
+  end = new Date().getTime();
+  
+  console.log(`Test OK, done in ${(end - start)} ms`);
 
   console.log('');
 })();
