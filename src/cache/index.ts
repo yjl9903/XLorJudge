@@ -35,7 +35,7 @@ type Msg = WatingMsg | ErrorMsg | JudgeMsg | ResultMsg;
 
 export function update(token: string, msg: Msg) {
   const str = JSON.stringify(msg);
-  client.set(token, str);
+  client.set(token, str, 'EX', 3600 * 24);
 }
 
 export async function query(token: string): Promise<Msg> {
