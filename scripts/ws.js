@@ -127,6 +127,11 @@ module.exports = async function testWs(baseURL, name, pass, cases, casesBin) {
   await expectJudgeW('ac.cc17', 'cc17', 0, casesBin);
   await expectJudgeW('ac.java', 'java', 0, casesBin);
   await expectJudgeW('ac.py3', 'python', 0, casesBin);
+  await expectJudgeW('wa.cpp', 'cpp', -1, casesBin);
+  await expectJudgeW('mle.cpp', 'cpp', 3, casesBin);
+  await expectJudgeW('tleafter.cpp', 'cpp', 1, casesBin);
+  await expectJudgeW('tleflush.cpp', 'cpp', 1, casesBin);
+  await expectJudgeW('tlenotflush.cpp', 'cpp', 1, casesBin);
 
   console.log(`\nTest finish: ${ok}/${sum}`);
 

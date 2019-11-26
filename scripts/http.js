@@ -136,6 +136,11 @@ module.exports = async function testHttp(api, cases, casesBin) {
   await expectJudge('ac.cc17', 'cc17', 0, casesBin);
   await expectJudge('ac.java', 'java', 0, casesBin);
   await expectJudge('ac.py3', 'python', 0, casesBin);
+  await expectJudge('wa.cpp', 'cpp', -1, casesBin);
+  await expectJudge('mle.cpp', 'cpp', 3, casesBin);
+  await expectJudge('tleafter.cpp', 'cpp', 1, casesBin);
+  await expectJudge('tleflush.cpp', 'cpp', 1, casesBin);
+  await expectJudge('tlenotflush.cpp', 'cpp', 1, casesBin);
 
   console.log(`\nTest finish: ${ok}/${sum}`);
 
