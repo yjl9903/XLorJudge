@@ -72,6 +72,9 @@ export default class InteractorRunner extends Runner {
       const sub = spawn(sub_cmd, sub_args);
       const int = spawn(int_cmd, int_args);
 
+      sub.stdin.on('error', () => {});
+      int.stdin.on('error', () => {});
+
       sub.stdout.on('data', chunk => {
         int.stdin.write(chunk);
       });
