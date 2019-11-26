@@ -9,7 +9,7 @@ RUN apt-get update \
     && wget https://raw.githubusercontent.com/MikeMirzayanov/testlib/master/testlib.h -O /usr/local/include/testlib.h \
     && curl -sL https://deb.nodesource.com/setup_12.x | bash - \
     && apt-get install -y nodejs \
-    && npm install -g yarn
+    && npm install -g yarn typescript
 
 ADD . /judge
 
@@ -21,7 +21,7 @@ ARG mode=production
 
 ENV LANG=en_US.UTF-8 LANGUAGE=en_US:en LC_ALL=en_US.UTF-8 NODE_ENV=${mode} PORT=${port}
 
-RUN yarn install --production=false \
+RUN yarn install && tsc \
     && mkdir -p /judge/run/sub /judge/run/temp /judge/run/data /judge/run/checker \
     && useradd -r compiler \
     && git submodule update --init --recursive && cd nsjail && make && mv nsjail /bin/nsjail && cd .. \

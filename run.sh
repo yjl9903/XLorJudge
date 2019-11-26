@@ -12,4 +12,4 @@ chown compiler -R /sys/fs/cgroup/memory/NSJAIL /sys/fs/cgroup/cpu/NSJAIL /sys/fs
 chgrp compiler -R /sys/fs/cgroup/memory/NSJAIL /sys/fs/cgroup/cpu/NSJAIL /sys/fs/cgroup/pids/NSJAIL
 chown compiler:compiler /judge/run/temp /judge/run/sub /judge/run/checker
 
-yarn run start
+node dist/index.js

@@ -4,10 +4,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "yarn tsc && node ./dist/index.js",
+    "start": "yarn tsc && node dist/index.js",
     "watch": "nodemon -L",
     "build": "yarn tsc",
-    "mytest": "node ./scripts/index.js",
+    "mytest": "node scripts/index.js",
     "test": "jest",
     "lint": "yarn prettier --write --parser typescript src/**/*.ts"
   },
