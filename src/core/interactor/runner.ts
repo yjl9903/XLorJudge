@@ -3,7 +3,7 @@ import rimraf from 'rimraf';
 import Runner from '../runner';
 import Submission from '../submission';
 import Interactor, { buildCmd } from './interactor';
-import Checker from '../checker';
+import Checker, { getVerdict } from '../checker';
 import Result from '../result';
 import TestCase from '../testcase';
 import { make_temp_dir } from '../../util';
@@ -136,8 +136,9 @@ export default class InteractorRunner extends Runner {
       );
 
       if (sub_result.verdict !== Verdict.Accepted) {
+        return sub_result;
       } else if (int_result.verdict !== Verdict.Accepted) {
-        sub_result.verdict = int_result.verdict;
+        sub_result.verdict = getVerdict(int_result);
       } else if (this.checker) {
         sub_result.verdict = await this.check(testcase, run_out);
       }

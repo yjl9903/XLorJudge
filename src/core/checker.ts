@@ -17,20 +17,20 @@ export default class Checker extends Submission {
   }
 
   clear(): void {}
+}
 
-  getVerdict({ verdict, exit_code }: Result) {
-    if (verdict !== Verdict.Accepted) {
-      if (exit_code === 3) {
-        throw new JudgeError('');
-      }
-      if (exit_code === 7) {
-        return Verdict.Point;
-      }
-      if (verdict !== Verdict.RuntimeError) {
-        return verdict;
-      }
-      return Verdict.WrongAnswer;
+export function getVerdict({ verdict, exit_code }: Result) {
+  if (verdict !== Verdict.Accepted) {
+    if (exit_code === 3) {
+      throw new JudgeError('');
     }
-    return Verdict.Accepted;
+    if (exit_code === 7) {
+      return Verdict.Point;
+    }
+    if (verdict !== Verdict.RuntimeError) {
+      return verdict;
+    }
+    return Verdict.WrongAnswer;
   }
+  return Verdict.Accepted;
 }

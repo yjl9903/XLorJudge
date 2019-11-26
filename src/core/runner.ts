@@ -5,7 +5,7 @@ import rimraf from 'rimraf';
 import { make_temp_dir, random_string } from '../util';
 import { Verdict } from '../verdict';
 
-import Checker from './checker';
+import Checker, { getVerdict } from './checker';
 import Result from './result';
 import Submission from './submission';
 import TestCase from './testcase';
@@ -90,7 +90,7 @@ class Runner {
         this.max_time,
         this.max_memory
       );
-      return this.checker.getVerdict(chk_result);
+      return getVerdict(chk_result);
     } finally {
       rimraf(run_dir, () => {});
     }
