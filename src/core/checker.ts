@@ -18,10 +18,9 @@ export default class Checker extends Submission {
 
   clear(): void {}
 
-  getVerdict(result: Result) {
-    const { verdict, exit_code } = result;
+  getVerdict({ verdict, exit_code }: Result) {
     if (verdict !== Verdict.Accepted) {
-      if (result.exit_code === 3) {
+      if (exit_code === 3) {
         throw new JudgeError('');
       }
       if (exit_code === 7) {
