@@ -2,7 +2,7 @@ import { Router } from 'express';
 
 import { update, query, subscribe, Msg, unsubscribe } from './cache';
 import { Checker, Interactor, judge, TestCase } from './core';
-import { b64decode, checkJudgeField } from './util';
+import { b64decode, checkJudgeField, b64encode } from './util';
 import { Verdict } from './verdict';
 
 const router = Router();
@@ -38,7 +38,14 @@ router.post('/checker', async (req, res) => {
     await chk.compile(code, 30);
     res.send({ status: 'ok' });
   } catch (err) {
-    res.sendStatus(500);
+    const result = {
+      verdict: Verdict.CompileError,
+      message: b64encode(err.message)
+    };
+    if ('verdict' in err && err.verdict === Verdict.SystemError) {
+      result.verdict = Verdict.SystemError;
+    }
+    res.status(400).send(result);
   }
 });
 
