@@ -1,4 +1,4 @@
-export default {
+const LangConfig = {
   c: {
     compile: {
       cmd: '/usr/bin/gcc',
@@ -135,3 +135,16 @@ export default {
     exe_ext: 'txt'
   }
 };
+
+export default LangConfig;
+
+const LangList = Reflect.ownKeys(LangConfig);
+
+function checkLang(x: string) {
+  for (const lang in LangConfig) {
+    if (x === lang) return true;
+  }
+  return false;
+}
+
+export { LangConfig, LangList, checkLang };

@@ -2,7 +2,7 @@ import { Router } from 'express';
 
 import { update, query, subscribe, Msg, unsubscribe } from './cache';
 import { Checker, judge, TestCase } from './core';
-import { b64decode } from './util';
+import { b64decode, checkJudgeField } from './util';
 import { Verdict } from './verdict';
 
 const router = Router();
@@ -43,6 +43,15 @@ router.post('/checker', async (req, res) => {
 });
 
 router.post('/judge', async (req, res) => {
+  const checkResult = checkJudgeField(req.body);
+  if (checkResult) {
+    res.status(400).send({
+      status: 'error',
+      message: checkResult
+    });
+    return;
+  }
+
   update(req.body.id, { verdict: Verdict.Waiting });
   const code = b64decode(req.body.code);
   judge(
