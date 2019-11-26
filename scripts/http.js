@@ -130,10 +130,13 @@ module.exports = async function testHttp(api, cases, casesBin) {
       id: 'int', lang: 'cpp'
     }
   };
+  ok = sum = 0;
 
   await expectJudge('ac.cpp', 'cpp', 0, casesBin);
   await expectJudge('ac.cc17', 'cc17', 0, casesBin);
   await expectJudge('ac.java', 'java', 0, casesBin);
   await expectJudge('ac.py3', 'python', 0, casesBin);
-  
+
+  console.log(`\nTest finish: ${ok}/${sum}`);
+
 }

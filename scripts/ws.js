@@ -121,10 +121,13 @@ module.exports = async function testWs(baseURL, name, pass, cases, casesBin) {
       id: 'int', lang: 'cpp'
     }
   };
+  ok = sum = 0;
 
   await expectJudgeW('ac.cpp', 'cpp', 0, casesBin);
   await expectJudgeW('ac.cc17', 'cc17', 0, casesBin);
   await expectJudgeW('ac.java', 'java', 0, casesBin);
   await expectJudgeW('ac.py3', 'python', 0, casesBin);
+
+  console.log(`\nTest finish: ${ok}/${sum}`);
 
 };
