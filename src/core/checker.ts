@@ -4,12 +4,16 @@ import { CHK_PATH, LANG_CONFIG } from '../configs';
 import { Verdict } from '../verdict';
 
 import Result from './result';
-import Submission from './submission';
+import Submission, { SubmissionType } from './submission';
 import { JudgeError } from './error';
 
 export default class Checker extends Submission {
   constructor(id: string, lang: string) {
-    super(lang, path.join(CHK_PATH, id + '.' + LANG_CONFIG[lang]['exe_ext']));
+    super(
+      lang,
+      path.join(CHK_PATH, id + '.' + LANG_CONFIG[lang]['exe_ext']),
+      SubmissionType.CHK
+    );
   }
 
   clear(): void {}

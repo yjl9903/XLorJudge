@@ -20,12 +20,25 @@ import { CompileError, SystemError, TestCaseError } from './error';
 import Result from './result';
 import Usage from './usage';
 
+export enum SubmissionType {
+  SUB = 'Submission',
+  CHK = 'Checker',
+  GEN = 'Generator',
+  VAL = 'Validator',
+  INT = 'Interactor'
+}
+
 class Submission {
   lang: string;
   lang_config: Object;
   exe_file: string;
+  type: SubmissionType;
 
-  constructor(lang: string, exe_file?: string) {
+  constructor(
+    lang: string,
+    exe_file?: string,
+    type: SubmissionType = SubmissionType.SUB
+  ) {
     this.lang = lang;
     this.lang_config = LANG_CONFIG[lang];
     if (exe_file === undefined) {
@@ -36,6 +49,7 @@ class Submission {
     } else {
       this.exe_file = exe_file;
     }
+    this.type = type;
   }
 
   clear(): void {
