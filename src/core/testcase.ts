@@ -7,12 +7,12 @@ import { DATA_PATH } from '../configs';
 class TestCase {
   fingerprint: string;
   input_file: string;
-  output_file: string;
+  answer_file: string;
 
   constructor(fingerprint: string) {
     this.fingerprint = fingerprint;
     this.input_file = path.join(DATA_PATH, fingerprint, fingerprint + '.in');
-    this.output_file = path.join(DATA_PATH, fingerprint, fingerprint + '.out');
+    this.answer_file = path.join(DATA_PATH, fingerprint, fingerprint + '.ans');
   }
 
   async write(type: string, content: string): Promise<void> {

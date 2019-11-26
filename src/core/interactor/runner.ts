@@ -60,7 +60,7 @@ export default class InteractorRunner extends Runner {
       [
         { src: testcase.input_file, dst: 'in', mode: '-R' },
         { src: run_out, dst: 'out', mode: '-B' },
-        { src: testcase.output_file, dst: 'ans', mode: '-R' },
+        { src: testcase.answer_file, dst: 'ans', mode: '-R' },
         { src: chk_out, dst: 'result', mode: '-B' }
       ],
       false,

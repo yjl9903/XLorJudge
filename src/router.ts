@@ -12,7 +12,7 @@ router.post('/case/:id/:type', async (req, res) => {
     params: { id, type },
     body: content
   } = req;
-  if (type !== 'in' && type !== 'out') {
+  if (type !== 'in' && type !== 'ans') {
     res.sendStatus(400);
   } else {
     const c = new TestCase(id);

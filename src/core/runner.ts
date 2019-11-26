@@ -75,7 +75,7 @@ class Runner {
     const files = [
       { src: testcase.input_file, dst: 'in', mode: '-R' },
       { src: output, dst: 'out', mode: '-R' },
-      { src: testcase.output_file, dst: 'ans', mode: '-R' },
+      { src: testcase.answer_file, dst: 'ans', mode: '-R' },
       { src: chk_out, dst: 'result', mode: '-B' }
     ];
     const run_dir = await make_temp_dir();

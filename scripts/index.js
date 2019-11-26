@@ -72,7 +72,7 @@ const CaseNum = 5;
       { headers: { "Content-Type": "text/plain" } }
     ));
     tasks.push(api.post(
-      `/case/${id}/out`, 
+      `/case/${id}/ans`, 
       `${a + b}`, 
       { headers: { "Content-Type": "text/plain" } }
     ));
@@ -94,7 +94,7 @@ const CaseNum = 5;
       { headers: { "Content-Type": "text/plain" } }
     ));
     tasks.push(api.post(
-      `/case/${id}/out`,
+      `/case/${id}/ans`,
       `1`,
       { headers: { "Content-Type": "text/plain" } }
     ));
