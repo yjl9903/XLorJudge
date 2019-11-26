@@ -1,7 +1,7 @@
 import { Router } from 'express';
 
 import { update, query, subscribe, Msg, unsubscribe } from './cache';
-import { Checker, judge, TestCase } from './core';
+import { Checker, Interactor, judge, TestCase } from './core';
 import { b64decode, checkJudgeField } from './util';
 import { Verdict } from './verdict';
 
@@ -58,7 +58,12 @@ router.post('/judge', async (req, res) => {
     req.body.id,
     code,
     req.body.lang,
-    new Checker(req.body.checker.id, req.body.checker.lang),
+    req.body.checker
+      ? new Checker(req.body.checker.id, req.body.checker.lang)
+      : null,
+    req.body.interactor
+      ? new Interactor(req.body.interactor.id, req.body.interactor.lang)
+      : null,
     req.body.max_time,
     req.body.max_memory,
     req.body.cases
@@ -89,7 +94,11 @@ router.ws('/judge', (ws, req) => {
         body.id,
         b64decode(body.code),
         body.lang,
-        new Checker(body.checker.id, body.checker.lang),
+        // new Checker(body.checker.id, body.checker.lang),
+        body.checker ? new Checker(body.checker.id, body.checker.lang) : null,
+        body.interactor
+          ? new Interactor(body.interactor.id, body.interactor.lang)
+          : null,
         body.max_time,
         body.max_memory,
         body.cases

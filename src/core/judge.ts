@@ -3,16 +3,17 @@ import { b64encode } from '../util';
 import { Verdict } from '../verdict';
 
 import Checker from './checker';
+import { Interactor, InteractorRunner } from './interactor';
 import Runner from './runner';
 import Submission from './submission';
 import TestCase from './testcase';
-// import { cache } from '../app';
 
 export default async function(
   sub_id: string,
   sub_code: string,
   sub_lang: string,
-  chk: Checker,
+  chk: Checker | null,
+  interactor: Interactor | null,
   max_time: number,
   max_memory: number,
   cases: Array<string>
@@ -43,7 +44,10 @@ export default async function(
     time: 0,
     memory: 0
   };
-  const runner = new Runner(sub, chk, max_time, max_memory);
+
+  const runner = interactor
+    ? new InteractorRunner(sub, interactor, chk, max_time, max_memory)
+    : new Runner(sub, chk, max_time, max_memory);
 
   for (const fingerprint of cases) {
     try {
