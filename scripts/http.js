@@ -18,7 +18,13 @@ function random_string(length = 32) {
   return Array.apply(null, Array(length)).map(() => character_table[rand(0, character_table.length - 1)]).join('');
 }
 
-module.exports = async function testHttp(api, cases) {
+module.exports = async function testHttp(api, cases, casesBin) {
+  let folder = 'aplusb';
+  let checker = {
+    checker: {
+      id: 'chk', lang: 'cpp'
+    }
+  };
 
   async function httpJudge(src, lang, cases = [], time = 1, memory = 64) {
     async function queryState(id) {
@@ -39,9 +45,9 @@ module.exports = async function testHttp(api, cases) {
       max_time: time, 
       max_memory: memory,
       cases: cases, 
-      checker: { id: 'chk', lang: 'cpp' },
+      ...checker,
       lang: lang,
-      code: b64encode(await fs.promises.readFile(path.join(__dirname, 'testcode', src), 'utf8'))
+      code: b64encode(await fs.promises.readFile(path.join(__dirname, folder, src), 'utf8'))
     });
     return await queryState(id);
   }
@@ -112,4 +118,22 @@ module.exports = async function testHttp(api, cases) {
   let end = new Date().getTime();
   
   console.log(`Test OK, done in ${(end - start)} ms\n`);
+
+  console.log('Http Interactor Test');
+
+  folder = 'binary';
+  checker = {
+    checker: {
+      id: 'int_chk', lang: 'cpp'
+    },
+    interactor: {
+      id: 'int', lang: 'cpp'
+    }
+  };
+
+  await expectJudge('ac.cpp', 'cpp', 0, casesBin);
+  await expectJudge('ac.cc17', 'cc17', 0, casesBin);
+  await expectJudge('ac.java', 'java', 0, casesBin);
+  await expectJudge('ac.py3', 'python', 0, casesBin);
+  
 }

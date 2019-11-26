@@ -19,7 +19,13 @@ function random_string(length = 32) {
   return Array.apply(null, Array(length)).map(() => character_table[rand(0, character_table.length - 1)]).join('');
 }
 
-module.exports = async function testWs(baseURL, name, pass, cases) {
+module.exports = async function testWs(baseURL, name, pass, cases, casesBin) {
+  let folder = 'aplusb';
+  let checker = {
+    checker: {
+      id: 'chk', lang: 'cpp'
+    }
+  };
 
   function wsJudge(src, lang, cases = [], time = 1, memory = 64) {
     const url = `ws://${baseURL.replace(/^(http(s|):\/\/)/, '').replace(/(\/)$/, '')}/judge`;
@@ -34,9 +40,9 @@ module.exports = async function testWs(baseURL, name, pass, cases) {
         max_time: time, 
         max_memory: memory,
         cases: cases, 
-        checker: { id: 'chk', lang: 'cpp' },
+        ...checker,
         lang: lang,
-        code: b64encode(await fs.promises.readFile(path.join(__dirname, 'testcode', src), 'utf8'))
+        code: b64encode(await fs.promises.readFile(path.join(__dirname, folder, src), 'utf8'))
       };
       ws.send(JSON.stringify(body));
     }
@@ -103,4 +109,22 @@ module.exports = async function testWs(baseURL, name, pass, cases) {
   let end = new Date().getTime();
   
   console.log(`Test OK, done in ${(end - start)} ms\n`);
+
+  console.log('WebSocker Interactor Test');
+
+  folder = 'binary';
+  checker = {
+    checker: {
+      id: 'int_chk', lang: 'cpp'
+    },
+    interactor: {
+      id: 'int', lang: 'cpp'
+    }
+  };
+
+  await expectJudgeW('ac.cpp', 'cpp', 0, casesBin);
+  await expectJudgeW('ac.cc17', 'cc17', 0, casesBin);
+  await expectJudgeW('ac.java', 'java', 0, casesBin);
+  await expectJudgeW('ac.py3', 'python', 0, casesBin);
+
 };

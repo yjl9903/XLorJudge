@@ -33,7 +33,8 @@ const api = axios.create({
   }
 });
 
-const cases = [];
+const casesAB = [];
+const casesBin = [];
 const CaseNum = 5;
 
 (async () => {
@@ -46,7 +47,17 @@ const CaseNum = 5;
   await api.post('/checker', {
     id: 'chk',
     lang: 'cpp',
-    code: b64encode(await fs.promises.readFile(path.join(__dirname, 'testcode', 'chk.cpp'), 'utf8'))
+    code: b64encode(await fs.promises.readFile(path.join(__dirname, 'aplusb', 'chk.cpp'), 'utf8'))
+  });
+  await api.post('/checker', {
+    id: 'int',
+    lang: 'cpp',
+    code: b64encode(await fs.promises.readFile(path.join(__dirname, 'binary', 'int.cpp'), 'utf8'))
+  });
+  await api.post('/checker', {
+    id: 'int_chk',
+    lang: 'cpp',
+    code: b64encode(await fs.promises.readFile(path.join(__dirname, 'binary', 'chk.cpp'), 'utf8'))
   });
 
   console.log(`\nStep 3: Upload testcase`);
@@ -54,7 +65,7 @@ const CaseNum = 5;
   const tasks = [];
   for (let i = 0; i < CaseNum; i++) {
     const id = random_string();
-    a = rand(0, 100000), b = rand(0, 100000);
+    let a = rand(0, 100000), b = rand(0, 100000);
     tasks.push(api.post(
       `/case/${id}/in`, 
       `${a} ${b}`, 
@@ -65,16 +76,38 @@ const CaseNum = 5;
       `${a + b}`, 
       { headers: { "Content-Type": "text/plain" } }
     ));
-    cases.push(id);
+    casesAB.push(id);
+  }
+
+  const BinData = [ 
+    '12 20',
+    '2 10',
+    '1 1000000',
+    '1000000 1000000',
+    '1 1'
+  ];
+  for (let i = 0; i < BinData.length; i++) {
+    const id = random_string();
+    tasks.push(api.post(
+      `/case/${id}/in`,
+      `${BinData[i]}`,
+      { headers: { "Content-Type": "text/plain" } }
+    ));
+    tasks.push(api.post(
+      `/case/${id}/out`,
+      `1`,
+      { headers: { "Content-Type": "text/plain" } }
+    ));
+    casesBin.push(id);
   }
   await axios.all(tasks);
 
   console.log(`\nStep 4: Http Judge test`);
 
-  await testHttp(api, cases);
+  await testHttp(api, casesAB, casesBin);
 
   console.log(`\nStep 5: WebSocket Judge test`);
 
-  await testWs(baseURL, name, pass, cases);
+  await testWs(baseURL, name, pass, casesAB, casesBin);
 
 })();
