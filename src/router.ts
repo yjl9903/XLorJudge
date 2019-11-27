@@ -1,53 +1,17 @@
 import { Router } from 'express';
 
+import { ENABLE_POLYGON } from './configs';
 import { update, query, subscribe, Msg, unsubscribe } from './cache';
-import { Checker, Interactor, judge, TestCase } from './core';
-import { b64decode, checkJudgeField, b64encode } from './util';
+import { Checker, Interactor, judge } from './core';
+import { b64decode, checkJudgeField } from './util';
 import { Verdict } from './verdict';
+import { router as polygonRouter } from './polygon';
 
 const router = Router();
 
-router.post('/case/:id/:type', async (req, res) => {
-  const {
-    params: { id, type },
-    body: content
-  } = req;
-  if (type !== 'in' && type !== 'ans') {
-    res.sendStatus(400);
-  } else {
-    const c = new TestCase(id);
-    try {
-      await c.write(type, content);
-      res.send({ status: 'ok' });
-    } catch (err) {
-      res.sendStatus(500);
-    }
-  }
-});
-
-router.delete('/case/:id', async (req, res) => {
-  const c = new TestCase(req.params.id);
-  await c.clear();
-  res.send({ status: 'ok' });
-});
-
-router.post('/checker', async (req, res) => {
-  const code = b64decode(req.body.code);
-  const chk = new Checker(req.body.id, req.body.lang);
-  try {
-    await chk.compile(code, 30);
-    res.send({ status: 'ok' });
-  } catch (err) {
-    const result = {
-      verdict: Verdict.CompileError,
-      message: b64encode(err.message)
-    };
-    if ('verdict' in err && err.verdict === Verdict.SystemError) {
-      result.verdict = Verdict.SystemError;
-    }
-    res.status(400).send(result);
-  }
-});
+if (ENABLE_POLYGON) {
+  router.use('/', polygonRouter);
+}
 
 router.post('/judge', async (req, res) => {
   const checkResult = checkJudgeField(req.body);
@@ -88,6 +52,17 @@ router.ws('/judge', (ws, req) => {
     if (flag) return;
     try {
       const body = JSON.parse(msg.toString());
+      const checkResult = checkJudgeField(req.body);
+      if (checkResult) {
+        flag = true;
+        ws.send(
+          JSON.stringify({
+            status: 'error',
+            message: checkResult
+          })
+        );
+        return;
+      }
       const fn = (msg: Msg) => {
         Reflect.set(msg, 'status', 'ok');
         ws.send(JSON.stringify(msg));
@@ -101,7 +76,6 @@ router.ws('/judge', (ws, req) => {
         body.id,
         b64decode(body.code),
         body.lang,
-        // new Checker(body.checker.id, body.checker.lang),
         body.checker ? new Checker(body.checker.id, body.checker.lang) : null,
         body.interactor
           ? new Interactor(body.interactor.id, body.interactor.lang)
