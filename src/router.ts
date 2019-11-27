@@ -52,7 +52,7 @@ router.ws('/judge', (ws, req) => {
     if (flag) return;
     try {
       const body = JSON.parse(msg.toString());
-      const checkResult = checkJudgeField(req.body);
+      const checkResult = checkJudgeField(body);
       if (checkResult) {
         flag = true;
         ws.send(
