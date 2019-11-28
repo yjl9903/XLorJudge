@@ -4,6 +4,7 @@ import rimraf from 'rimraf';
 
 import { DATA_PATH } from '../configs';
 import { make_temp_dir } from '../util';
+import { Verdict } from '../verdict';
 import Submission from './submission';
 
 class TestCase {
@@ -57,7 +58,7 @@ class TestCase {
     const run_dir = await make_temp_dir();
 
     try {
-      return await sub.run(
+      const result = await sub.run(
         run_dir,
         undefined,
         sub.lang_config['execute']['args'],
@@ -69,6 +70,13 @@ class TestCase {
         this.answer_file,
         null
       );
+      if (result.verdict !== Verdict.Accepted) {
+        await promises.unlink(this.answer_file);
+      }
+      return result;
+    } catch (err) {
+      await promises.unlink(this.answer_file);
+      throw err;
     } finally {
       rimraf(run_dir, () => {});
     }
