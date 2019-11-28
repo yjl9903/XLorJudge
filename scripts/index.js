@@ -49,7 +49,7 @@ const CaseNum = 5;
     lang: 'cpp',
     code: b64encode(await fs.promises.readFile(path.join(__dirname, 'aplusb', 'chk.cpp'), 'utf8'))
   });
-  await api.post('/checker', {
+  await api.post('/interactor', {
     id: 'int',
     lang: 'cpp',
     code: b64encode(await fs.promises.readFile(path.join(__dirname, 'binary', 'int.cpp'), 'utf8'))
