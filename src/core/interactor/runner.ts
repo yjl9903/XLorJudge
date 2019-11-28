@@ -26,8 +26,14 @@ export default class InteractorRunner extends Runner {
     this.interactor = interactor;
   }
 
-  async run(testcase: TestCase): Promise<Result> {
-    const run_out = await this.make_write_file();
+  async run(
+    testcase: TestCase,
+    gen_ans: boolean = false,
+    run_out: string = ''
+  ): Promise<Result> {
+    if (run_out === '') {
+      run_out = await this.make_write_file();
+    }
     // const run_err = await this.make_write_file();
     const chk_out = await this.make_write_file();
 
@@ -51,19 +57,26 @@ export default class InteractorRunner extends Runner {
       this.max_memory
     );
 
+    const files = gen_ans
+      ? [
+          { src: testcase.input_file, dst: 'in', mode: '-R' },
+          { src: run_out, dst: 'out', mode: '-B' }
+        ]
+      : [
+          { src: testcase.input_file, dst: 'in', mode: '-R' },
+          { src: run_out, dst: 'out', mode: '-B' },
+          { src: testcase.answer_file, dst: 'ans', mode: '-R' },
+          { src: chk_out, dst: 'result', mode: '-B' }
+        ];
+
     const [int_cmd, int_args] = buildCmd(
       int_root,
       int_info,
       this.interactor,
       int_run,
       ['in', 'out', 'ans', 'result'],
-      [
-        { src: testcase.input_file, dst: 'in', mode: '-R' },
-        { src: run_out, dst: 'out', mode: '-B' },
-        { src: testcase.answer_file, dst: 'ans', mode: '-R' },
-        { src: chk_out, dst: 'result', mode: '-B' }
-      ],
-      false,
+      files,
+      gen_ans,
       this.max_time,
       this.max_memory
     );

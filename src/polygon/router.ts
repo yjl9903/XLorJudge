@@ -70,15 +70,25 @@ router.post('/answer/:id', async (req, res) => {
   const code = b64decode(req.body.code);
   const c = new TestCase(req.params.id);
   try {
-    await c.generateAns(
+    const result = await c.generateAns(
       code,
       req.body.lang,
       req.body.max_time,
-      req.body.max_memory
+      req.body.max_memory,
+      'interactor' in req.body
+        ? new Interactor(req.body.interactor.id, req.body.interactor.lang)
+        : null
     );
-    res.send({
-      status: 'ok'
-    });
+    if (result.verdict === Verdict.Accepted) {
+      res.send({
+        status: 'ok'
+      });
+    } else {
+      res.status(400).send({
+        status: 'error',
+        ...result
+      });
+    }
   } catch (err) {
     let message = err.message;
     if (err.code === 'ENOENT') {

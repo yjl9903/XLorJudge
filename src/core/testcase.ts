@@ -6,6 +6,7 @@ import { DATA_PATH } from '../configs';
 import { make_temp_dir } from '../util';
 import { Verdict } from '../verdict';
 import Submission from './submission';
+import { Interactor, InteractorRunner } from './interactor';
 
 class TestCase {
   fingerprint: string;
@@ -43,7 +44,8 @@ class TestCase {
     code: string,
     lang: string,
     max_time: number,
-    max_memory: number
+    max_memory: number,
+    interactor: Interactor = null
   ) {
     await promises.writeFile(this.answer_file, '');
 
@@ -55,30 +57,49 @@ class TestCase {
       throw err;
     }
 
-    const run_dir = await make_temp_dir();
-
-    try {
-      const result = await sub.run(
-        run_dir,
-        undefined,
-        sub.lang_config['execute']['args'],
-        undefined,
-        true,
-        max_time,
-        max_memory,
-        this.input_file,
-        this.answer_file,
-        null
-      );
-      if (result.verdict !== Verdict.Accepted) {
+    if (interactor === null) {
+      const run_dir = await make_temp_dir();
+      try {
+        const result = await sub.run(
+          run_dir,
+          undefined,
+          sub.lang_config['execute']['args'],
+          undefined,
+          true,
+          max_time,
+          max_memory,
+          this.input_file,
+          this.answer_file,
+          null
+        );
+        if (result.verdict !== Verdict.Accepted) {
+          await promises.unlink(this.answer_file);
+        }
+        return result;
+      } catch (err) {
         await promises.unlink(this.answer_file);
+        throw err;
+      } finally {
+        rimraf(run_dir, () => {});
       }
-      return result;
-    } catch (err) {
-      await promises.unlink(this.answer_file);
-      throw err;
-    } finally {
-      rimraf(run_dir, () => {});
+    } else {
+      const int = new InteractorRunner(
+        sub,
+        interactor,
+        null,
+        max_time,
+        max_memory
+      );
+      try {
+        const result = await int.run(this, true, this.answer_file);
+        if (result.verdict !== Verdict.Accepted) {
+          await promises.unlink(this.answer_file);
+        }
+        return result;
+      } catch (err) {
+        await promises.unlink(this.answer_file);
+        throw err;
+      }
     }
   }
 }
