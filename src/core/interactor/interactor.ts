@@ -1,7 +1,7 @@
 import path from 'path';
 
 import {
-  CHK_PATH,
+  INT_PATH,
   LANG_CONFIG,
   NSJAIL_PATH,
   OUTPUT_LIMIT,
@@ -11,16 +11,14 @@ import {
   RUN_USER_ID,
   RUN_GROUP_ID
 } from '../../configs';
-// import { Verdict } from '../../verdict';
 
 import Submission, { SubmissionType } from '../submission';
-// import Result from '../result';
 
 export default class Interactor extends Submission {
   constructor(id: string, lang: string) {
     super(
       lang,
-      path.join(CHK_PATH, id + '.' + LANG_CONFIG[lang]['exe_ext']),
+      path.join(INT_PATH, id + '.' + LANG_CONFIG[lang]['exe_ext']),
       SubmissionType.INT
     );
   }
@@ -33,15 +31,12 @@ export function buildCmd(
   info_dir: string,
   { exe_file, lang_config }: Submission,
   work_dir: string,
-  // exe_file: string = null,
   args: Array<string> = [],
   files: Array<{ src: string; dst: string; mode: string }> = [],
   trusted: boolean = false,
   max_time: number,
   max_memory: number
 ): [string, string[]] {
-  // const root_dir = await make_temp_dir();
-  // const info_dir = await make_temp_dir();
   const real_time_limit = max_time * 2;
 
   const uid = trusted ? COMPILER_USER_ID : RUN_USER_ID;
