@@ -30,7 +30,7 @@ export default class Generator extends Submission {
       const result = await this.run(
         run_dir,
         undefined,
-        [...this.lang_config['execute']['args'], args],
+        [...this.lang_config['execute']['args'], ...args],
         undefined,
         true,
         30,
