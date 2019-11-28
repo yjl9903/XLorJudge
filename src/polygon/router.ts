@@ -1,27 +1,64 @@
-import { Router } from 'express';
+import path from 'path';
 
+import { Router } from 'express';
+import multer, { diskStorage } from 'multer';
+
+import { DATA_PATH } from '../configs';
 import { TestCase, Checker, Interactor } from '../core';
 import { Verdict } from '../verdict';
 import { b64decode, b64encode } from '../util';
 
 const router = Router();
 
-router.post('/case/:id/:type', async (req, res) => {
+// const upload = multer({
+//   storage: diskStorage({
+//     destination(req, file, nxt) {
+//       const id = req.
+//       nxt(null, path.join(DATA_PATH, id));
+//     },
+//     filename(req, file, nxt) {
+
+//     }
+//   })
+// });
+
+router.post('/case/:id/:type', (req, res) => {
   const {
-    params: { id, type },
-    body: content
+    params: { id, type }
+    // body: content
   } = req;
-  if (type !== 'in' && type !== 'ans') {
-    res.sendStatus(400);
-  } else {
-    const c = new TestCase(id);
-    try {
-      await c.write(type, content);
-      res.send({ status: 'ok' });
-    } catch (err) {
-      res.sendStatus(500);
+  // if (type !== 'in' && type !== 'ans') {
+  //   res.sendStatus(400);
+  // } else {
+  //   const c = new TestCase(id);
+  //   try {
+  //     await c.write(type, content);
+  //     res.send({ status: 'ok' });
+  //   } catch (err) {
+  //     res.sendStatus(500);
+  //   }
+  // }
+  const upload = multer({
+    storage: diskStorage({
+      destination: path.join(DATA_PATH, id),
+      filename(req, file, nxt) {
+        nxt(null, id + '.' + type);
+      }
+    })
+  }).single(type);
+
+  upload(req, res, err => {
+    if (err) {
+      res.send({
+        status: 'error',
+        message: err.message
+      });
+    } else {
+      res.send({
+        status: 'ok'
+      });
     }
-  }
+  });
 });
 
 router.delete('/case/:id', async (req, res) => {

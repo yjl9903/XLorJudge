@@ -13,17 +13,17 @@ app.set('port', process.env.PORT ? process.env.PORT : 3000);
 
 app.use(bodyParser.json());
 
-app.use((req, res, next) => {
-  // parse text/plain
-  if (req.is('text/*')) {
-    req.body = '';
-    req.setEncoding('utf8');
-    req.on('data', chunk => (req.body += chunk));
-    req.on('end', next);
-  } else {
-    next();
-  }
-});
+// app.use((req, res, next) => {
+//   // parse text/plain
+//   if (req.is('text/*')) {
+//     req.body = '';
+//     req.setEncoding('utf8');
+//     req.on('data', chunk => (req.body += chunk));
+//     req.on('end', next);
+//   } else {
+//     next();
+//   }
+// });
 
 app.all('/*', (req, res, nxt) => {
   const auth = basicAuth(req);
