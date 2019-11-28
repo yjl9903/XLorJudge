@@ -76,6 +76,9 @@ router.post('/answer/:id', async (req, res) => {
       req.body.max_time,
       req.body.max_memory
     );
+    res.send({
+      status: 'ok'
+    });
   } catch (err) {
     res.status(400).send({
       status: 'error',

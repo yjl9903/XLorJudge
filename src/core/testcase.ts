@@ -59,9 +59,9 @@ class TestCase {
     try {
       return await sub.run(
         run_dir,
-        null,
+        undefined,
         sub.lang_config['execute']['args'],
-        null,
+        undefined,
         true,
         max_time,
         max_memory,
