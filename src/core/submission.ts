@@ -260,15 +260,15 @@ class Submission {
     if (exe_file === '' || exe_file === null) {
       // when exe_file has value, sub use compiler or interpreter
       // otherwise, sub will mount excutable file to sandbox
-      exe_file = path.basename(this.exe_file);
+      const basename = path.basename(this.exe_file);
       extra_files.push('-R');
-      extra_files.push(this.exe_file + ':/app/' + exe_file);
-      args = args.map((s: string) => {
-        return s.replace(/({exe_file})/, exe_file);
-      });
+      extra_files.push(this.exe_file + ':/app/' + basename);
+      args = args.map((s: string) =>
+        String(s).replace(/({exe_file})/, basename)
+      );
       exe_file = this.lang_config['execute']['cmd'].replace(
         /({exe_file})/,
-        exe_file
+        basename
       );
     }
     for (const { mode, src, dst } of files) {
