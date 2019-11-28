@@ -80,9 +80,13 @@ router.post('/answer/:id', async (req, res) => {
       status: 'ok'
     });
   } catch (err) {
+    let message = err.message;
+    if (err.code === 'ENOENT') {
+      message = `${req.params.id}.in not exists`;
+    }
     res.status(400).send({
       status: 'error',
-      message: err.message
+      message
     });
   }
 });
