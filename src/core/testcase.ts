@@ -20,11 +20,10 @@ class TestCase {
   }
 
   async mkdir() {
-    try {
-      promises.mkdir(path.join(DATA_PATH, this.fingerprint));
-    } finally {
-      return true;
-    }
+    await promises
+      .mkdir(path.join(DATA_PATH, this.fingerprint))
+      .catch(() => {});
+    return true;
   }
 
   async write(type: string, content: string): Promise<void> {
