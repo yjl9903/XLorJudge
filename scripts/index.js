@@ -68,12 +68,17 @@ const CaseNum = 5;
     const id = random_string();
     let a = rand(0, 100000), b = rand(0, 100000);
     tasks.push(api.post(
-      `/case/${id}/in`, 
+      `/case/${id}`, 
       { in: `${a} ${b}` }
     ));
     tasks.push(api.post(
-      `/case/${id}/ans`, 
-      { ans: `${a + b}` }
+      `/answer/${id}`,
+      {
+        lang: 'cpp',
+        max_time: 2,
+        max_memory: 128,
+        code: b64encode(await fs.promises.readFile(path.join(__dirname, 'aplusb/ac.cpp'), 'utf8'))
+      }
     ));
     casesAB.push(id);
   }
@@ -88,12 +93,21 @@ const CaseNum = 5;
   for (let i = 0; i < BinData.length; i++) {
     const id = random_string();
     tasks.push(api.post(
-      `/case/${id}/in`,
+      `/case/${id}`,
       { in: BinData[i] }
     ));
     tasks.push(api.post(
-      `/case/${id}/ans`,
-      { ans: '1' }
+      `/answer/${id}`,
+      {
+        lang: 'cpp',
+        max_time: 2,
+        max_memory: 128,
+        interactor: {
+          id: 'int',
+          lang: 'cpp'
+        },
+        code: b64encode(await fs.promises.readFile(path.join(__dirname, 'binary/ac.cpp'), 'utf8'))
+      }
     ));
     casesBin.push(id);
   }
