@@ -13,16 +13,19 @@ function rand(l, r) {
   return l + Math.round(Math.random() * (r - l));
 }
 
-const character_table = "0123456789abcdefghijklmnopqrstuvwxyz";
+const character_table = '0123456789abcdefghijklmnopqrstuvwxyz';
 function random_string(length = 32) {
-  return Array.apply(null, Array(length)).map(() => character_table[rand(0, character_table.length - 1)]).join('');
+  return Array.apply(null, Array(length))
+    .map(() => character_table[rand(0, character_table.length - 1)])
+    .join('');
 }
 
 module.exports = async function testHttp(api, cases, casesBin) {
   let folder = 'aplusb';
   let checker = {
     checker: {
-      id: 'chk', lang: 'cpp'
+      id: 'chk',
+      lang: 'cpp'
     }
   };
 
@@ -41,18 +44,21 @@ module.exports = async function testHttp(api, cases, casesBin) {
     }
     const id = random_string();
     await api.post('/judge', {
-      id: id, 
-      max_time: time, 
+      id: id,
+      max_time: time,
       max_memory: memory,
-      cases: cases, 
+      cases: cases,
       ...checker,
       lang: lang,
-      code: b64encode(await fs.promises.readFile(path.join(__dirname, folder, src), 'utf8'))
+      code: b64encode(
+        await fs.promises.readFile(path.join(__dirname, folder, src), 'utf8')
+      )
     });
     return await queryState(id);
   }
 
-  let ok = 0, sum = 0;
+  let ok = 0,
+    sum = 0;
 
   async function expectJudge(src, lang, expect, cases, time = 1, memory = 64) {
     sum++;
@@ -116,18 +122,20 @@ module.exports = async function testHttp(api, cases, casesBin) {
   let start = new Date().getTime();
   console.log(await axios.all(tasks));
   let end = new Date().getTime();
-  
-  console.log(`Test OK, done in ${(end - start)} ms\n`);
+
+  console.log(`Test OK, done in ${end - start} ms\n`);
 
   console.log('Http Interactor Test');
 
   folder = 'binary';
   checker = {
     checker: {
-      id: 'int_chk', lang: 'cpp'
+      id: 'int_chk',
+      lang: 'cpp'
     },
     interactor: {
-      id: 'int', lang: 'cpp'
+      id: 'int',
+      lang: 'cpp'
     }
   };
   ok = sum = 0;
@@ -143,5 +151,4 @@ module.exports = async function testHttp(api, cases, casesBin) {
   await expectJudge('tlenotflush.cpp', 'cpp', 1, casesBin);
 
   console.log(`\nTest finish: ${ok}/${sum}`);
-
-}
+};
