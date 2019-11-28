@@ -83,7 +83,7 @@ router.ws('/judge', (ws, req) => {
         body.max_time,
         body.max_memory,
         body.cases
-      );
+      ).catch(() => {});
       flag = true;
     } catch (err) {
       flag = false;
