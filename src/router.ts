@@ -43,7 +43,14 @@ router.post('/judge', async (req, res) => {
 });
 
 router.get('/query', async (req, res) => {
-  res.send(await query(req.query.id));
+  const result = await query(req.query.id);
+  if (result !== null && result !== undefined) {
+    Reflect.set(result, 'status', 'ok');
+    Reflect.set(result, 'id', req.params.id);
+    res.send(result);
+  } else {
+    res.sendStatus(400);
+  }
 });
 
 router.ws('/judge', (ws, req) => {
@@ -65,6 +72,7 @@ router.ws('/judge', (ws, req) => {
       }
       const fn = (msg: Msg) => {
         Reflect.set(msg, 'status', 'ok');
+        Reflect.set(msg, 'id', body.id);
         ws.send(JSON.stringify(msg));
         if (msg.verdict > -2) {
           flag = false;
