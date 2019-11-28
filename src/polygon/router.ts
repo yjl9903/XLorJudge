@@ -10,14 +10,15 @@ import { b64decode, b64encode } from '../util';
 
 const router = Router();
 
-router.post('/case/:id/:type', (req, res) => {
+// Upload testcase input file
+router.post('/case/:id', (req, res) => {
   const {
-    params: { id, type }
+    params: { id, type = 'in' }
   } = req;
 
-  if (type !== 'in' && type !== 'ans') {
-    res.sendStatus(400);
-  }
+  // if (type !== 'in' && type !== 'ans') {
+  //   res.sendStatus(400);
+  // }
 
   const upload = multer({
     storage: diskStorage({
@@ -29,6 +30,7 @@ router.post('/case/:id/:type', (req, res) => {
       }
     })
   }).single(type);
+  // filesize: 10 MB ?
 
   upload(req, res, async err => {
     if (req.file !== undefined) {
@@ -56,11 +58,37 @@ router.post('/case/:id/:type', (req, res) => {
   });
 });
 
+// Delete testcase
 router.delete('/case/:id', async (req, res) => {
   const c = new TestCase(req.params.id);
   await c.clear();
   res.send({ status: 'ok' });
 });
+
+// Use std to generate answer file
+router.post('/answer/:id', async (req, res) => {
+  const code = b64decode(req.body.code);
+  const c = new TestCase(req.params.id);
+  try {
+    await c.generateAns(
+      code,
+      req.body.lang,
+      req.body.max_time,
+      req.body.max_memory
+    );
+  } catch (err) {
+    res.status(400).send({
+      status: 'error',
+      message: err.message
+    });
+  }
+});
+
+// Use generator to generate input file
+router.post('/generate/:id', async (req, res) => {});
+
+// Validate an input file
+router.post('/validate/:id', async (req, res) => {});
 
 router.post('/checker', async (req, res) => {
   const code = b64decode(req.body.code);

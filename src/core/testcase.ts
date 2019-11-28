@@ -3,6 +3,8 @@ import path from 'path';
 import rimraf from 'rimraf';
 
 import { DATA_PATH } from '../configs';
+import { make_temp_dir } from '../util';
+import Submission from './submission';
 
 class TestCase {
   fingerprint: string;
@@ -33,6 +35,40 @@ class TestCase {
         else res();
       });
     });
+  }
+
+  async generateAns(
+    code: string,
+    lang: string,
+    max_time: number,
+    max_memory: number
+  ) {
+    const sub = new Submission(lang);
+
+    try {
+      await sub.compile(code, Math.max(max_time * 5, 15));
+    } catch (err) {
+      throw err;
+    }
+
+    const run_dir = await make_temp_dir();
+
+    try {
+      return await sub.run(
+        run_dir,
+        null,
+        sub.lang_config['execute']['args'],
+        null,
+        true,
+        max_time,
+        max_memory,
+        this.input_file,
+        this.answer_file,
+        null
+      );
+    } finally {
+      rimraf(run_dir, () => {});
+    }
   }
 }
 
