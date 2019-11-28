@@ -53,6 +53,17 @@ router.get('/query', async (req, res) => {
   }
 });
 
+router.get('/query/:id', async (req, res) => {
+  const result = await query(req.params.id);
+  if (result !== null && result !== undefined) {
+    Reflect.set(result, 'status', 'ok');
+    Reflect.set(result, 'id', req.params.id);
+    res.send(result);
+  } else {
+    res.sendStatus(400);
+  }
+});
+
 router.ws('/judge', (ws, req) => {
   let flag = false;
   ws.on('message', msg => {
