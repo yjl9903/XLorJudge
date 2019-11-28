@@ -113,8 +113,9 @@ router.post('/generate/:id', async (req, res) => {
   const code = b64decode(req.body.code);
   const gen = new Generator(random_string(), req.body.lang);
   const c = new TestCase(req.params.id);
+  const args = req.body.args.map(s => String(s));
   try {
-    const result = await gen.generate(c, code, req.body.args);
+    const result = await gen.generate(c, code, args);
     if (result.verdict === Verdict.Accepted) {
       res.send({
         status: 'ok'
