@@ -6,12 +6,13 @@ services:
     image: xlor-judge
     build:
       context: .
-      args:
-        port: 3000
-        mode: production
     privileged: true
     ports:
       - 3000:3000
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - ENABLE_POLYGON=true
     depends_on:
       - redis
     links:

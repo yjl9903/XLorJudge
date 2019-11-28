@@ -15,11 +15,7 @@ ADD . /judge
 
 WORKDIR /judge
 
-ARG port=3000
-
-ARG mode=production
-
-ENV LANG=en_US.UTF-8 LANGUAGE=en_US:en LC_ALL=en_US.UTF-8 NODE_ENV=${mode} PORT=${port}
+ENV LANG=en_US.UTF-8 LANGUAGE=en_US:en LC_ALL=en_US.UTF-8
 
 RUN yarn install --production=false && yarn tsc \
     && mkdir -p /judge/run/submission /judge/run/temp /judge/run/data \
@@ -28,6 +24,6 @@ RUN yarn install --production=false && yarn tsc \
     && git submodule update --init --recursive && cd nsjail && make && mv nsjail /bin/nsjail && cd .. \
     && chmod +x run.sh
 
-EXPOSE ${port}
+EXPOSE 3000
 
 CMD ./run.sh

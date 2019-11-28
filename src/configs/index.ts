@@ -3,7 +3,7 @@ import LANG_CONFIG from './lang';
 
 export { LANG_CONFIG };
 
-export const ENABLE_POLYGON = true;
+export const ENABLE_POLYGON = process.env.ENABLE_POLYGON === 'true';
 
 export const NSJAIL_PATH = '/bin/nsjail';
 
