@@ -10,9 +10,12 @@ export const NSJAIL_PATH = '/bin/nsjail';
 export const PROJECT_PATH = path.join(__dirname, '../..');
 export const RUN_PATH = path.join(PROJECT_PATH, 'run');
 export const DATA_PATH = path.join(RUN_PATH, 'data');
-export const SUB_PATH = path.join(RUN_PATH, 'sub');
+export const SUB_PATH = path.join(RUN_PATH, 'submission');
 export const TEMP_PATH = path.join(RUN_PATH, 'temp');
 export const CHK_PATH = path.join(RUN_PATH, 'checker');
+export const INT_PATH = path.join(RUN_PATH, 'interactor');
+export const GEN_PATH = path.join(RUN_PATH, 'generator');
+export const VAL_PATH = path.join(RUN_PATH, 'validator');
 
 export const COMPILER_USER_ID = 999;
 export const COMPILER_GROUP_ID = 999;

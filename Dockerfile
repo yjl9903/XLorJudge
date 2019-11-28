@@ -22,7 +22,8 @@ ARG mode=production
 ENV LANG=en_US.UTF-8 LANGUAGE=en_US:en LC_ALL=en_US.UTF-8 NODE_ENV=${mode} PORT=${port}
 
 RUN yarn install && tsc \
-    && mkdir -p /judge/run/sub /judge/run/temp /judge/run/data /judge/run/checker \
+    && mkdir -p /judge/run/submission /judge/run/temp /judge/run/data \
+       /judge/run/checker /judge/run/interactor /judge/run/generator /judge/run/validator \
     && useradd -r compiler \
     && git submodule update --init --recursive && cd nsjail && make && mv nsjail /bin/nsjail && cd .. \
     && chmod +x run.sh
