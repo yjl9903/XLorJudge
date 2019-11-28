@@ -63,15 +63,15 @@ const CaseNum = 5;
 
   console.log(`\nStep 3: Upload testcase`);
 
-  const tasks = [];
+  const taskA = [], taskB = [];
   for (let i = 0; i < CaseNum; i++) {
     const id = random_string();
     let a = rand(0, 100000), b = rand(0, 100000);
-    tasks.push(api.post(
+    taskA.push(api.post(
       `/case/${id}`, 
       { in: `${a} ${b}` }
     ));
-    tasks.push(api.post(
+    taskB.push(api.post(
       `/answer/${id}`,
       {
         lang: 'cpp',
@@ -92,11 +92,11 @@ const CaseNum = 5;
   ];
   for (let i = 0; i < BinData.length; i++) {
     const id = random_string();
-    tasks.push(api.post(
+    taskA.push(api.post(
       `/case/${id}`,
       { in: BinData[i] }
     ));
-    tasks.push(api.post(
+    taskB.push(api.post(
       `/answer/${id}`,
       {
         lang: 'cpp',
@@ -111,7 +111,8 @@ const CaseNum = 5;
     ));
     casesBin.push(id);
   }
-  await axios.all(tasks);
+  await axios.all(taskA);
+  await axios.all(taskB);
 
   console.log(`\nStep 4: Http Judge test`);
 
