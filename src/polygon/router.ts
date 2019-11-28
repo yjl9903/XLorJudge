@@ -31,7 +31,7 @@ router.post('/case/:id/:type', (req, res) => {
   }).single(type);
 
   upload(req, res, async err => {
-    if (req.file) {
+    if (req.file !== undefined) {
       if (err) {
         res.status(500).send({
           status: 'error',
@@ -42,7 +42,7 @@ router.post('/case/:id/:type', (req, res) => {
           status: 'ok'
         });
       }
-    } else if (req.body && type in req.body) {
+    } else if (type in req.body) {
       const c = new TestCase(id);
       try {
         await c.write(type, req.body[type]);
