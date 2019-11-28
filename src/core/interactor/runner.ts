@@ -57,25 +57,23 @@ export default class InteractorRunner extends Runner {
       this.max_memory
     );
 
-    const files = gen_ans
-      ? [
-          { src: testcase.input_file, dst: 'in', mode: '-R' },
-          { src: run_out, dst: 'out', mode: '-B' }
-        ]
-      : [
-          { src: testcase.input_file, dst: 'in', mode: '-R' },
-          { src: run_out, dst: 'out', mode: '-B' },
-          { src: testcase.answer_file, dst: 'ans', mode: '-R' },
-          { src: chk_out, dst: 'result', mode: '-B' }
-        ];
-
     const [int_cmd, int_args] = buildCmd(
       int_root,
       int_info,
       this.interactor,
       int_run,
-      ['in', 'out', 'ans', 'result'],
-      files,
+      gen_ans ? ['in', 'out'] : ['in', 'out', 'ans', 'result'],
+      gen_ans
+        ? [
+            { src: testcase.input_file, dst: 'in', mode: '-R' },
+            { src: run_out, dst: 'out', mode: '-B' }
+          ]
+        : [
+            { src: testcase.input_file, dst: 'in', mode: '-R' },
+            { src: run_out, dst: 'out', mode: '-B' },
+            { src: testcase.answer_file, dst: 'ans', mode: '-R' },
+            { src: chk_out, dst: 'result', mode: '-B' }
+          ],
       gen_ans,
       this.max_time,
       this.max_memory
