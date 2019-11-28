@@ -4,7 +4,6 @@ import { GEN_PATH, LANG_CONFIG } from '../configs';
 import { Submission, SubmissionType, TestCase } from '../core';
 import { Verdict } from '../verdict';
 import { make_temp_dir } from '../util';
-import { promises } from 'fs';
 import rimraf from 'rimraf';
 
 export default class Generator extends Submission {
