@@ -5,8 +5,8 @@ import rimraf from 'rimraf';
 import { DATA_PATH } from '../configs';
 import { make_temp_dir } from '../util';
 import { Verdict } from '../verdict';
-import Submission from './submission';
 import { Interactor, InteractorRunner } from './interactor';
+import Submission from './submission';
 
 class TestCase {
   fingerprint: string;

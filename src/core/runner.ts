@@ -51,9 +51,9 @@ class Runner {
     try {
       const result = await this.submission.run(
         run_dir,
-        '',
+        undefined,
         this.submission.lang_config['execute']['args'],
-        [],
+        undefined,
         false,
         this.max_time,
         this.max_memory,

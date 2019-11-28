@@ -18,7 +18,7 @@ import { Verdict } from '../verdict';
 
 import { CompileError, SystemError, TestCaseError } from './error';
 import Result from './result';
-import Usage, { usage2Result } from './usage';
+import { usage2Result } from './usage';
 
 export enum SubmissionType {
   SUB = 'Submission',
@@ -152,6 +152,22 @@ class Submission {
     rimraf(compile_dir, () => {});
   }
 
+  /**
+   * Run execute under sandbox
+   *
+   * @param {string} work_dir
+   * @param {string} [exe_file=null] null means use lang_config command
+   * @param {Array<string>} [args=[]] empty means use lang_config args
+   * @param {Array<{ src: string; dst: string; mode: string }>} [files=[]] map these files into sandbox, be care of access mode
+   * @param {boolean} [trusted=false]
+   * @param {number} max_time
+   * @param {number} max_memory
+   * @param {string} [stdin_file=null]
+   * @param {string} [stdout_file=null]
+   * @param {string} [stderr_file=null]
+   * @returns {Promise<Result>}
+   * @memberof Submission
+   */
   async run(
     work_dir: string,
     exe_file: string = null,

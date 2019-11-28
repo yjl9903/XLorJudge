@@ -1,16 +1,16 @@
+import { spawn } from 'child_process';
 import rimraf from 'rimraf';
 
+import { make_temp_dir } from '../../util';
+import { Verdict } from '../../verdict';
+import Checker, { getVerdict } from '../checker';
+import { SystemError } from '../error';
+import Result from '../result';
 import Runner from '../runner';
 import Submission from '../submission';
-import Interactor, { buildCmd } from './interactor';
-import Checker, { getVerdict } from '../checker';
-import Result from '../result';
 import TestCase from '../testcase';
-import { make_temp_dir } from '../../util';
-import { SystemError } from '../error';
-import { spawn } from 'child_process';
 import { usage2Result } from '../usage';
-import { Verdict } from '../../verdict';
+import Interactor, { buildCmd } from './interactor';
 
 export default class InteractorRunner extends Runner {
   interactor: Interactor;
@@ -26,6 +26,18 @@ export default class InteractorRunner extends Runner {
     this.interactor = interactor;
   }
 
+  /**
+   * Run interactor
+   *
+   * When judge interactor submission, run_out is ''
+   * When generator answer file, run_out is <testcase>.ans
+   *
+   * @param {TestCase} testcase
+   * @param {boolean} [gen_ans=false] whether under generate answer file mode
+   * @param {string} [run_out=''] redirect interactor output to run_out
+   * @returns {Promise<Result>}
+   * @memberof InteractorRunner
+   */
   async run(
     testcase: TestCase,
     gen_ans: boolean = false,

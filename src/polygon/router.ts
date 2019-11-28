@@ -1,12 +1,11 @@
-import path from 'path';
-
 import { Router } from 'express';
 import multer, { diskStorage } from 'multer';
+import path from 'path';
 
 import { DATA_PATH } from '../configs';
-import { TestCase, Checker, Interactor } from '../core';
-import { Verdict } from '../verdict';
+import { Checker, Interactor, TestCase } from '../core';
 import { b64decode, b64encode } from '../util';
+import { Verdict } from '../verdict';
 
 const router = Router();
 
