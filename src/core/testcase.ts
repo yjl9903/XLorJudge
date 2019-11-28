@@ -19,15 +19,10 @@ class TestCase {
     this.answer_file = path.join(DATA_PATH, fingerprint, fingerprint + '.ans');
   }
 
-  async mkdir() {
+  async write(type: string, content: string): Promise<void> {
     await promises
       .mkdir(path.join(DATA_PATH, this.fingerprint))
       .catch(() => {});
-    return true;
-  }
-
-  async write(type: string, content: string): Promise<void> {
-    await this.mkdir();
     return promises.writeFile(
       path.join(DATA_PATH, this.fingerprint, this.fingerprint + '.' + type),
       content,
