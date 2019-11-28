@@ -21,7 +21,7 @@ ARG mode=production
 
 ENV LANG=en_US.UTF-8 LANGUAGE=en_US:en LC_ALL=en_US.UTF-8 NODE_ENV=${mode} PORT=${port}
 
-RUN yarn install && tsc \
+RUN yarn install --production=false && yarn tsc \
     && mkdir -p /judge/run/submission /judge/run/temp /judge/run/data \
        /judge/run/checker /judge/run/interactor /judge/run/generator /judge/run/validator \
     && useradd -r compiler \
