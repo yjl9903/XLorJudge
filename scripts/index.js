@@ -83,11 +83,12 @@ const CaseNum = 5;
   const tasks = [];
   for (let i = 0; i < CaseNum - 1; i++) {
     const id = random_string();
-    let a = rand(0, 100000),
+    const a = rand(0, 100000),
       b = rand(0, 100000);
     tasks.push(
-      api.post(`/case/${id}`, { in: `${a} ${b}` }).then(
-        api.post(`/answer/${id}`, {
+      (async () => {
+        await api.post(`/case/${id}`, { in: `${a} ${b}` });
+        await api.post(`/answer/${id}`, {
           lang: 'cpp',
           max_time: 2,
           max_memory: 128,
@@ -97,8 +98,8 @@ const CaseNum = 5;
               'utf8'
             )
           )
-        })
-      )
+        });
+      })()
     );
     casesAB.push(id);
   }
@@ -107,8 +108,9 @@ const CaseNum = 5;
   for (let i = 0; i < BinData.length; i++) {
     const id = random_string();
     tasks.push(
-      api.post(`/case/${id}`, { in: BinData[i] }).then(
-        api.post(`/answer/${id}`, {
+      (async () => {
+        await api.post(`/case/${id}`, { in: BinData[i] });
+        await api.post(`/answer/${id}`, {
           lang: 'cpp',
           max_time: 2,
           max_memory: 128,
@@ -122,17 +124,12 @@ const CaseNum = 5;
               'utf8'
             )
           )
-        })
-      )
+        });
+      })()
     );
     casesBin.push(id);
   }
-
-  try {
-    await axios.all(tasks);
-  } catch (err) {
-    console.log(err);
-  }
+  await Promise.all(tasks);
 
   console.log(`\nStep 4: Generator test`);
 
