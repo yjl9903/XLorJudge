@@ -33,7 +33,7 @@ router.post('/case/:id/:type', (req, res) => {
   upload(req, res, async err => {
     if (req.file) {
       if (err) {
-        res.send({
+        res.status(500).send({
           status: 'error',
           message: err.message
         });
