@@ -46,7 +46,7 @@ router.get('/query', async (req, res) => {
   const result = await query(req.query.id);
   if (result !== null && result !== undefined) {
     Reflect.set(result, 'status', 'ok');
-    Reflect.set(result, 'id', req.params.id);
+    Reflect.set(result, 'id', req.query.id);
     res.send(result);
   } else {
     res.sendStatus(400);
