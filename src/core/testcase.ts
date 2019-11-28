@@ -20,12 +20,13 @@ class TestCase {
   async write(type: string, content: string): Promise<void> {
     try {
       await promises.mkdir(path.join(DATA_PATH, this.fingerprint));
-    } catch (err) {}
-    return promises.writeFile(
-      path.join(DATA_PATH, this.fingerprint, this.fingerprint + '.' + type),
-      content,
-      'utf8'
-    );
+    } finally {
+      return promises.writeFile(
+        path.join(DATA_PATH, this.fingerprint, this.fingerprint + '.' + type),
+        content,
+        'utf8'
+      );
+    }
   }
 
   clear(): Promise<void> {
@@ -43,6 +44,8 @@ class TestCase {
     max_time: number,
     max_memory: number
   ) {
+    await promises.writeFile(this.answer_file, '');
+
     const sub = new Submission(lang);
 
     try {
