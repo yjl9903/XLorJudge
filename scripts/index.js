@@ -44,6 +44,7 @@ const CaseNum = 5;
   console.log((await api.get('/ping')).data);
 
   console.log(`\nStep 2: Upload checker`);
+
   await api.post('/checker', {
     id: 'chk',
     lang: 'cpp',
@@ -68,13 +69,11 @@ const CaseNum = 5;
     let a = rand(0, 100000), b = rand(0, 100000);
     tasks.push(api.post(
       `/case/${id}/in`, 
-      `${a} ${b}`, 
-      { headers: { "Content-Type": "text/plain" } }
+      { in: `${a} ${b}` }
     ));
     tasks.push(api.post(
       `/case/${id}/ans`, 
-      `${a + b}`, 
-      { headers: { "Content-Type": "text/plain" } }
+      { ans: `${a + b}` }
     ));
     casesAB.push(id);
   }
@@ -90,13 +89,11 @@ const CaseNum = 5;
     const id = random_string();
     tasks.push(api.post(
       `/case/${id}/in`,
-      `${BinData[i]}`,
-      { headers: { "Content-Type": "text/plain" } }
+      { in: BinData[i] }
     ));
     tasks.push(api.post(
       `/case/${id}/ans`,
-      `1`,
-      { headers: { "Content-Type": "text/plain" } }
+      { ans: '1' }
     ));
     casesBin.push(id);
   }
