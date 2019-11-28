@@ -10,53 +10,48 @@ import { b64decode, b64encode } from '../util';
 
 const router = Router();
 
-// const upload = multer({
-//   storage: diskStorage({
-//     destination(req, file, nxt) {
-//       const id = req.
-//       nxt(null, path.join(DATA_PATH, id));
-//     },
-//     filename(req, file, nxt) {
-
-//     }
-//   })
-// });
-
 router.post('/case/:id/:type', (req, res) => {
   const {
     params: { id, type }
-    // body: content
   } = req;
-  // if (type !== 'in' && type !== 'ans') {
-  //   res.sendStatus(400);
-  // } else {
-  //   const c = new TestCase(id);
-  //   try {
-  //     await c.write(type, content);
-  //     res.send({ status: 'ok' });
-  //   } catch (err) {
-  //     res.sendStatus(500);
-  //   }
-  // }
+
+  if (type !== 'in' && type !== 'ans') {
+    res.sendStatus(400);
+  }
+
   const upload = multer({
     storage: diskStorage({
-      destination: path.join(DATA_PATH, id),
+      destination(req, file, nxt) {
+        nxt(null, path.join(DATA_PATH, id));
+      },
       filename(req, file, nxt) {
         nxt(null, id + '.' + type);
       }
     })
   }).single(type);
 
-  upload(req, res, err => {
-    if (err) {
-      res.send({
-        status: 'error',
-        message: err.message
-      });
+  upload(req, res, async err => {
+    if (req.file) {
+      if (err) {
+        res.send({
+          status: 'error',
+          message: err.message
+        });
+      } else {
+        res.send({
+          status: 'ok'
+        });
+      }
+    } else if (req.body && type in req.body) {
+      const c = new TestCase(id);
+      try {
+        await c.write(type, req.body[type]);
+        res.send({ status: 'ok' });
+      } catch (err) {
+        res.sendStatus(500);
+      }
     } else {
-      res.send({
-        status: 'ok'
-      });
+      res.sendStatus(400);
     }
   });
 });
