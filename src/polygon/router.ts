@@ -4,8 +4,16 @@ import path from 'path';
 
 import { DATA_PATH } from '../configs';
 import { Checker, Interactor, TestCase } from '../core';
-import { b64decode, b64encode } from '../util';
+import { b64decode, b64encode, random_string } from '../util';
 import { Verdict } from '../verdict';
+import Generator from './generator';
+
+function checkCPP(lang) {
+  if (lang === 'cpp') return true;
+  if (lang === 'cc14') return true;
+  if (lang === 'cc17') return true;
+  return false;
+}
 
 const router = Router();
 
@@ -101,12 +109,41 @@ router.post('/answer/:id', async (req, res) => {
 });
 
 // Use generator to generate input file
-router.post('/generate/:id', async (req, res) => {});
+router.post('/generate/:id', async (req, res) => {
+  const code = b64decode(req.body.code);
+  const gen = new Generator(random_string(), req.body.lang);
+  const c = new TestCase(req.params.id);
+  try {
+    const result = await gen.generate(c, code, req.body.args);
+    if (result.verdict === Verdict.Accepted) {
+      res.send({
+        status: 'ok'
+      });
+    } else {
+      res.status(400).send({
+        status: 'error',
+        ...result
+      });
+    }
+  } catch (err) {
+    res.status(400).send({
+      status: 'error',
+      message: err.message
+    });
+  }
+});
 
 // Validate an input file
 router.post('/validate/:id', async (req, res) => {});
 
 router.post('/checker', async (req, res) => {
+  if (!checkCPP(req.body.lang)) {
+    return res.status(400).send({
+      status: 'error',
+      message: 'only allow cpp/cc14/cc17'
+    });
+  }
+
   const code = b64decode(req.body.code);
   const chk = new Checker(req.body.id, req.body.lang);
   try {
@@ -125,6 +162,13 @@ router.post('/checker', async (req, res) => {
 });
 
 router.post('/interactor', async (req, res) => {
+  if (!checkCPP(req.body.lang)) {
+    return res.status(400).send({
+      status: 'error',
+      message: 'only allow cpp/cc14/cc17'
+    });
+  }
+
   const code = b64decode(req.body.code);
   const int = new Interactor(req.body.id, req.body.lang);
   try {
