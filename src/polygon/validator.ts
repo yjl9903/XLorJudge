@@ -25,7 +25,7 @@ export default class Generator extends Submission {
 
     const run_dir = await make_temp_dir();
     const val_dir = await make_temp_dir();
-    const val_out = path.join(val_dir, 'val.out');
+    const val_err = path.join(val_dir, 'val.err');
 
     try {
       const result = await this.run(
@@ -37,13 +37,17 @@ export default class Generator extends Submission {
         30,
         1024,
         testcase.input_file,
-        val_out,
+        val_err,
         null
       );
       if (result.verdict === Verdict.Accepted) {
         return result;
       }
-      Reflect.set(result, 'message', await promises.readFile(val_out, 'utf8'));
+      Reflect.set(
+        result,
+        'message',
+        (await promises.readFile(val_err, 'utf8')).trim()
+      );
       return result;
     } catch (err) {
       throw err;
