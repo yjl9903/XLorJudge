@@ -9,7 +9,8 @@
     "build": "yarn tsc",
     "mytest": "node scripts/index.js",
     "test": "jest",
-    "lint": "yarn prettier --write --parser typescript src/**/*.ts"
+    "lint": "yarn prettier --write --parser typescript src/**/*.ts",
+    "token": "node scripts/token.js"
   },
   "author": "",
   "license": "MIT",
