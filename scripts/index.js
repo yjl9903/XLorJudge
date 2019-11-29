@@ -87,7 +87,7 @@ const CaseNum = 5;
       b = rand(0, 100000);
     tasks.push(
       (async () => {
-        await api.post(`/case/${id}`, { in: `${a} ${b}` });
+        await api.post(`/case/${id}`, { in: `${a} ${b}\n` });
         await api.post(`/answer/${id}`, {
           lang: 'cpp',
           max_time: 2,
@@ -151,11 +151,26 @@ const CaseNum = 5;
   });
   casesAB.push(id);
 
-  console.log(`\nStep 5: Http Judge test`);
+  console.log(`\nStep 5: Validate test`);
+
+  tasks.splice(0, tasks.length);
+  for (const id of casesAB) {
+    tasks.push(
+      api.post(`/validate/${id}`, {
+        lang: 'cpp',
+        code: b64encode(
+          await fs.promises.readFile(path.join(__dirname, 'aplusb/val.cpp'), 'utf8')
+        )
+      })
+    );
+  }
+  await Promise.all(tasks);
+
+  console.log(`\nStep 6: Http Judge test`);
 
   await testHttp(api, casesAB, casesBin);
 
-  console.log(`\nStep 6: WebSocket Judge test`);
+  console.log(`\nStep 7: WebSocket Judge test`);
 
   await testWs(baseURL, name, pass, casesAB, casesBin);
 })();
