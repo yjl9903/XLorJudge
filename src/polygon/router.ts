@@ -4,7 +4,7 @@ import path from 'path';
 
 import { DATA_PATH } from '../configs';
 import { Checker, Interactor, TestCase } from '../core';
-import { b64decode, b64encode, random_string } from '../util';
+import { b64decode, random_string } from '../util';
 import { Verdict } from '../verdict';
 import Generator from './generator';
 import Validator from './validator';

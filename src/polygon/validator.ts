@@ -1,3 +1,4 @@
+import { promises } from 'fs';
 import path from 'path';
 import rimraf from 'rimraf';
 
@@ -5,7 +6,6 @@ import { LANG_CONFIG, VAL_PATH } from '../configs';
 import { Submission, SubmissionType, TestCase } from '../core';
 import { make_temp_dir } from '../util';
 import { Verdict } from '../verdict';
-import { promises } from 'fs';
 
 export default class Generator extends Submission {
   constructor(id: string, lang: string) {

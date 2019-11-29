@@ -1,10 +1,10 @@
 import path from 'path';
+import rimraf from 'rimraf';
 
 import { GEN_PATH, LANG_CONFIG } from '../configs';
 import { Submission, SubmissionType, TestCase } from '../core';
-import { Verdict } from '../verdict';
 import { make_temp_dir } from '../util';
-import rimraf from 'rimraf';
+import { Verdict } from '../verdict';
 
 export default class Generator extends Submission {
   constructor(id: string, lang: string) {
