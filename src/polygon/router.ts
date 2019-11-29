@@ -177,6 +177,7 @@ router.post('/checker', checkCPP, async (req, res) => {
     res.send({ status: 'ok' });
   } catch (err) {
     const result = {
+      status: 'error',
       verdict: Verdict.CompileError,
       message: err.message
     };
@@ -195,6 +196,7 @@ router.post('/interactor', checkCPP, async (req, res) => {
     res.send({ status: 'ok' });
   } catch (err) {
     const result = {
+      status: 'error',
       verdict: Verdict.CompileError,
       message: err.message
     };
