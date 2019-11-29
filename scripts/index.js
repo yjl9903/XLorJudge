@@ -166,11 +166,30 @@ const CaseNum = 5;
   }
   await Promise.all(tasks);
 
+  let ans = 0;
+
   console.log(`\nStep 6: Http Judge test`);
 
-  await testHttp(api, casesAB, casesBin);
+  ans += await testHttp(api, casesAB, casesBin);
 
   console.log(`\nStep 7: WebSocket Judge test`);
 
-  await testWs(baseURL, name, pass, casesAB, casesBin);
+  ans += await testWs(baseURL, name, pass, casesAB, casesBin);
+
+  console.log(`\nStep 8: Clear Data`);
+
+  tasks.splice(0, tasks.length);
+  for (const id of casesAB) {
+    tasks.push(
+      api.delete(`/case/${id}`)
+    );
+  }
+  for (const id of casesBin) {
+    tasks.push(
+      api.delete(`/case/${id}`)
+    );
+  }
+  await Promise.all(tasks);
+
+  console.log(`\nFinal test result: ${ans}/4\n`);
 })();

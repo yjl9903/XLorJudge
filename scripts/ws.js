@@ -22,6 +22,8 @@ function random_string(length = 32) {
 }
 
 module.exports = async function testWs(baseURL, name, pass, cases, casesBin) {
+  let ans = 0;
+
   let folder = 'aplusb';
   let checker = {
     checker: {
@@ -99,6 +101,8 @@ module.exports = async function testWs(baseURL, name, pass, cases, casesBin) {
 
   console.log(`\nTest finish: ${ok}/${sum}`);
 
+  if (ok === sum) ans++;
+
   console.log(`\nWebSocket Stress test`);
 
   const tasks = [];
@@ -144,4 +148,8 @@ module.exports = async function testWs(baseURL, name, pass, cases, casesBin) {
   await expectJudgeW('tlenotflush.cpp', 'cpp', 1, casesBin);
 
   console.log(`\nTest finish: ${ok}/${sum}`);
+
+  if (ok === sum) ans++;
+
+  return ans;
 };

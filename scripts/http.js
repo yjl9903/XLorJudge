@@ -21,6 +21,8 @@ function random_string(length = 32) {
 }
 
 module.exports = async function testHttp(api, cases, casesBin) {
+  let ans = 0;
+
   let folder = 'aplusb';
   let checker = {
     checker: {
@@ -106,6 +108,8 @@ module.exports = async function testHttp(api, cases, casesBin) {
 
   console.log(`\nTest finish: ${ok}/${sum}`);
 
+  if (ok === sum) ans++;
+
   console.log(`\nHttp Stress test`);
 
   const tasks = [];
@@ -151,4 +155,8 @@ module.exports = async function testHttp(api, cases, casesBin) {
   await expectJudge('tlenotflush.cpp', 'cpp', 1, casesBin);
 
   console.log(`\nTest finish: ${ok}/${sum}`);
+
+  if (ok === sum) ans++;
+
+  return ans;
 };
