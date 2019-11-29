@@ -7,6 +7,7 @@ import { Checker, Interactor, TestCase } from '../core';
 import { b64decode, b64encode, random_string } from '../util';
 import { Verdict } from '../verdict';
 import Generator from './generator';
+import Validator from './validator';
 
 function checkCPP(lang) {
   if (lang === 'cpp') return true;
@@ -135,7 +136,40 @@ router.post('/generate/:id', async (req, res) => {
 });
 
 // Validate an input file
-router.post('/validate/:id', async (req, res) => {});
+router.post('/validate/:id', async (req, res) => {
+  if (!checkCPP(req.body.lang)) {
+    return res.status(400).send({
+      status: 'error',
+      message: 'only allow cpp/cc14/cc17'
+    });
+  }
+
+  const code = b64decode(req.body.code);
+  const val = new Validator(random_string(), req.body.lang);
+  const c = new TestCase(req.params.id);
+  try {
+    const result = await val.validate(c, code);
+    if (result.verdict === Verdict.Accepted) {
+      res.send({
+        status: 'ok'
+      });
+    } else {
+      res.status(400).send({
+        status: 'error',
+        ...result
+      });
+    }
+  } catch (err) {
+    let message = err.message;
+    if (err.code === 'ENOENT') {
+      message = `${req.params.id}.in not exists`;
+    }
+    res.status(400).send({
+      status: 'error',
+      message
+    });
+  }
+});
 
 router.post('/checker', async (req, res) => {
   if (!checkCPP(req.body.lang)) {
