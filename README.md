@@ -4,7 +4,7 @@
 
 :tada: XLorJudge v1.0 has now been released.
 
-XLorJudge is a competitive programming contest judge core for XLor Online Judge. It can use uploaded testcase to run contestants' untrusted code in a reliable sandbox [nsjail](https://github.com/google/nsjail), and check if its result is correct with [testlib](https://github.com/MikeMirzayanov/testlib) (XLorJudge supports Checker and Interactor).
+XLorJudge is a competitive programming contest judge core for XLor Online Judge. It can use uploaded testcase to run contestants' untrusted code in a reliable sandbox [nsjail](https://github.com/google/nsjail), and check if its result is correct with [testlib](https://github.com/MikeMirzayanov/testlib) (XLorJudge now fully supports testlib).
 
 > :heavy_exclamation_mark: XLorJudge must run in Linux with a kernel vision higher than 4.15.
 
