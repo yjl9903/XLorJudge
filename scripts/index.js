@@ -151,7 +151,7 @@ const CaseNum = 5;
   });
   casesAB.push(id);
 
-  console.log(`\nStep 5: Validate test`);
+  console.log(`\nStep 5: Validator test`);
 
   tasks.splice(0, tasks.length);
   for (const id of casesAB) {
