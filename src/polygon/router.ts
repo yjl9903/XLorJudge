@@ -1,4 +1,4 @@
-import { Router } from 'express';
+import { Router, Request, Response, NextFunction } from 'express';
 import multer, { diskStorage } from 'multer';
 import path from 'path';
 
@@ -9,11 +9,16 @@ import { Verdict } from '../verdict';
 import Generator from './generator';
 import Validator from './validator';
 
-function checkCPP(lang) {
-  if (lang === 'cpp') return true;
-  if (lang === 'cc14') return true;
-  if (lang === 'cc17') return true;
-  return false;
+function checkCPP(req: Request, res: Response, nxt: NextFunction) {
+  if (req.body.lang === 'cpp') nxt();
+  else if (req.body.lang === 'cc14') nxt();
+  else if (req.body.lang === 'cc17') nxt();
+  else {
+    res.status(400).send({
+      status: 'error',
+      message: 'only allow cpp/cc14/cc17'
+    });
+  }
 }
 
 const router = Router();
@@ -136,14 +141,7 @@ router.post('/generate/:id', async (req, res) => {
 });
 
 // Validate an input file
-router.post('/validate/:id', async (req, res) => {
-  if (!checkCPP(req.body.lang)) {
-    return res.status(400).send({
-      status: 'error',
-      message: 'only allow cpp/cc14/cc17'
-    });
-  }
-
+router.post('/validate/:id', checkCPP, async (req, res) => {
   const code = b64decode(req.body.code);
   const val = new Validator(random_string(), req.body.lang);
   const c = new TestCase(req.params.id);
@@ -171,14 +169,7 @@ router.post('/validate/:id', async (req, res) => {
   }
 });
 
-router.post('/checker', async (req, res) => {
-  if (!checkCPP(req.body.lang)) {
-    return res.status(400).send({
-      status: 'error',
-      message: 'only allow cpp/cc14/cc17'
-    });
-  }
-
+router.post('/checker', checkCPP, async (req, res) => {
   const code = b64decode(req.body.code);
   const chk = new Checker(req.body.id, req.body.lang);
   try {
@@ -187,7 +178,7 @@ router.post('/checker', async (req, res) => {
   } catch (err) {
     const result = {
       verdict: Verdict.CompileError,
-      message: b64encode(err.message)
+      message: err.message
     };
     if ('verdict' in err && err.verdict === Verdict.SystemError) {
       result.verdict = Verdict.SystemError;
@@ -196,14 +187,7 @@ router.post('/checker', async (req, res) => {
   }
 });
 
-router.post('/interactor', async (req, res) => {
-  if (!checkCPP(req.body.lang)) {
-    return res.status(400).send({
-      status: 'error',
-      message: 'only allow cpp/cc14/cc17'
-    });
-  }
-
+router.post('/interactor', checkCPP, async (req, res) => {
   const code = b64decode(req.body.code);
   const int = new Interactor(req.body.id, req.body.lang);
   try {
@@ -212,7 +196,7 @@ router.post('/interactor', async (req, res) => {
   } catch (err) {
     const result = {
       verdict: Verdict.CompileError,
-      message: b64encode(err.message)
+      message: err.message
     };
     if ('verdict' in err && err.verdict === Verdict.SystemError) {
       result.verdict = Verdict.SystemError;
