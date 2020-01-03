@@ -13,6 +13,10 @@ jobs:
 
     steps:
       - uses: actions/checkout@v1
+      - name: Setup python
+        uses: actions/setup-python@v1
+        with:
+          python-version: 3.x
       - uses: borales/actions-yarn@v2.0.0
         with:
           cmd: install # will run `yarn install` command
