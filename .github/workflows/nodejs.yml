@@ -1,6 +1,11 @@
 name: Node CI
 
-on: [push]
+on:
+  push:
+    branches:
+      - master
+  schedule:
+    - cron: "0 0 * * 1"
 
 jobs:
   build:
@@ -20,4 +25,3 @@ jobs:
       - run: yarn install
       - run: yarn build
       - run: yarn test
-
