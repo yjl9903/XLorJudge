@@ -9,17 +9,15 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [10.x, 12.x]
+        node: [10.x, 12.x]
 
     steps:
       - uses: actions/checkout@v1
-      - run: apt-get install python
-      - uses: borales/actions-yarn@v2.0.0
+      - name: Setup node
+        uses: actions/setup-node@v1
         with:
-          cmd: install # will run `yarn install` command
-      - uses: borales/actions-yarn@v2.0.0
-        with:
-          cmd: build # will run `yarn build` command
-      - uses: borales/actions-yarn@v2.0.0
-        with:
-          cmd: test # will run `yarn test` command
+          node-version: ${{ matrix.node }}
+      - run: yarn install
+      - run: yarn build
+      - run: yarn test
+
