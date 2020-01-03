@@ -1,4 +1,5 @@
 import path from 'path';
+import { uid, gid } from 'userid';
 import LANG_CONFIG from './lang';
 
 export { LANG_CONFIG };
@@ -17,11 +18,11 @@ export const INT_PATH = path.join(RUN_PATH, 'interactor');
 export const GEN_PATH = path.join(RUN_PATH, 'generator');
 export const VAL_PATH = path.join(RUN_PATH, 'validator');
 
-export const COMPILER_USER_ID = 999;
-export const COMPILER_GROUP_ID = 999;
+export const COMPILER_USER_ID = uid('compiler');
+export const COMPILER_GROUP_ID = gid('compiler');
 
-export const RUN_USER_ID = 65534;
-export const RUN_GROUP_ID = 65534;
+export const RUN_USER_ID = uid('nobody');
+export const RUN_GROUP_ID = gid('nogroup');
 
 export const OUTPUT_LIMIT = 256;
 
