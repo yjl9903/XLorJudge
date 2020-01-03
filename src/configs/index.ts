@@ -18,11 +18,11 @@ export const INT_PATH = path.join(RUN_PATH, 'interactor');
 export const GEN_PATH = path.join(RUN_PATH, 'generator');
 export const VAL_PATH = path.join(RUN_PATH, 'validator');
 
-export const COMPILER_USER_ID = uid('compiler');
-export const COMPILER_GROUP_ID = gid('compiler');
+export const COMPILER_USER_ID = getpwnam('compiler') || 0;
+export const COMPILER_GROUP_ID = getgrnam('compiler') || 0;
 
-export const RUN_USER_ID = uid('nobody');
-export const RUN_GROUP_ID = gid('nogroup');
+export const RUN_USER_ID = getpwnam('nobody');
+export const RUN_GROUP_ID = getgrnam('nogroup');
 
 export const OUTPUT_LIMIT = 256;
 
@@ -32,3 +32,19 @@ export const ENV = {
   LANGUAGE: 'en_US:en',
   LC_ALL: 'en_US.UTF-8'
 };
+
+function getpwnam(name: string) {
+  try {
+    return uid(name);
+  } catch (err) {
+    return undefined;
+  }
+}
+
+function getgrnam(name: string) {
+  try {
+    return gid(name);
+  } catch (err) {
+    return undefined;
+  }
+}
