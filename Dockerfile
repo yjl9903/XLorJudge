@@ -1,6 +1,6 @@
 FROM ubuntu:19.10
 
-RUN sed -i s@/archive.ubuntu.com/@/mirrors.aliyun.com/@g /etc/apt/sources.list
+# RUN sed -i s@/archive.ubuntu.com/@/mirrors.aliyun.com/@g /etc/apt/sources.list
 
 RUN apt-get update \
     && apt-get install -y wget git curl locales memcached \
