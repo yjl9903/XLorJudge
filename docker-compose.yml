@@ -3,7 +3,7 @@ version: '2.1'
 services:
   judge:
     container_name: judge
-    image: xlor-judge
+    image: xloj-judge-server
     build:
       context: .
     privileged: true
@@ -11,16 +11,5 @@ services:
       - 3000:3000
     environment:
       - NODE_ENV=production
-      - PORT=3000
-      - ENABLE_POLYGON=true
-    depends_on:
-      - redis
-    links:
-      - redis
     volumes:
       - ./data:/judge/run/data
-  redis:
-    container_name: redis
-    image: redis
-    expose:
-      - 6379
