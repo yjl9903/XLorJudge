@@ -13,7 +13,7 @@ export function isDef(x: any) {
   return x !== undefined && x !== null;
 }
 
-export function random_string(length = 32): string {
+export function randomString(length = 32): string {
   return cryptoRandomString({ length });
 }
 
@@ -25,15 +25,15 @@ export function b64decode(s: string): string {
   return Buffer.from(s, 'base64').toString();
 }
 
-export async function make_temp_dir(): Promise<string> {
-  const dir = path.join(TEMP_PATH, random_string());
+export async function makeTempDir(): Promise<string> {
+  const dir = path.join(TEMP_PATH, randomString());
   await promises.mkdir(dir);
   return dir;
 }
 
 export async function exec(
   command: string,
-  args: string[] = [],
+  args: any[] = [],
   options: object = {}
 ): Promise<{ code: number; signal: string }> {
   return new Promise((res, rej) => {

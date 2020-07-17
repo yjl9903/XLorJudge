@@ -11,7 +11,7 @@ RUN apt-get update \
     && wget https://raw.githubusercontent.com/MikeMirzayanov/testlib/master/testlib.h -O /usr/local/include/testlib.h \
     && curl -sL https://deb.nodesource.com/setup_14.x | bash - \
     && apt-get install -y nodejs \
-    && npm install -g yarn typescript
+    && npm install -g yarn typescript @nest/cli
 
 ADD . /judge
 
@@ -19,7 +19,8 @@ WORKDIR /judge
 
 ENV LANG=en_US.UTF-8 LANGUAGE=en_US:en LC_ALL=en_US.UTF-8
 
-RUN yarn install --production=false && yarn tsc \
+RUN yarn install --production=false \
+    && yarn prebuild && yarn build \ 
     && mkdir -p /judge/run/submission /judge/run/temp /judge/run/data \
        /judge/run/checker /judge/run/interactor /judge/run/generator /judge/run/validator \
     && useradd -r compiler \
