@@ -5,19 +5,19 @@ import { Verdict } from '../verdict';
 export class Result {
   time: number;
   memory: number;
-  exit_code: number;
+  exitCode: number;
   signal: number;
   verdict: Verdict;
   constructor(
     time: number,
     memory: number,
-    exit_code: number,
+    exitCode: number,
     signal: number,
     verdict: Verdict = Verdict.Accepted
   ) {
     this.time = time;
     this.memory = memory;
-    this.exit_code = exit_code;
+    this.exitCode = exitCode;
     this.signal = signal;
     this.verdict = verdict;
   }
@@ -45,14 +45,14 @@ export class Usage {
   }
 }
 
-export async function usage2Result(
-  info_dir: string,
-  max_time: number,
-  max_memory: number,
-  real_time_limit: number
+export async function usageToResult(
+  infoDir: string,
+  maxTime: number,
+  maxMemory: number,
+  realTimeLimit: number
 ) {
   const usage = new Usage(
-    await promises.readFile(path.join(info_dir, 'usage'), 'utf8')
+    await promises.readFile(path.join(infoDir, 'usage'), 'utf8')
   );
   const result = new Result(
     usage.parseUser(),
@@ -61,14 +61,14 @@ export async function usage2Result(
     usage.signal
   );
   // important
-  if (result.exit_code !== 0) {
+  if (result.exitCode !== 0) {
     result.verdict = Verdict.RuntimeError;
   }
-  if (max_memory > 0 && result.memory > max_memory) {
+  if (maxMemory > 0 && result.memory > maxMemory) {
     result.verdict = Verdict.MemoryLimitExceeded;
-  } else if (max_time > 0 && result.time > max_time) {
+  } else if (maxTime > 0 && result.time > maxTime) {
     result.verdict = Verdict.TimeLimitExceeded;
-  } else if (real_time_limit > 0 && usage.pass / 1000 > real_time_limit) {
+  } else if (realTimeLimit > 0 && usage.pass / 1000 > realTimeLimit) {
     result.verdict = Verdict.IdlenessLimitExceeded;
   } else if (result.signal !== 0) {
     result.verdict = Verdict.RuntimeError;

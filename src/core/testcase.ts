@@ -20,9 +20,9 @@ export class TestCase {
   }
 
   async write(type: 'in' | 'ans', content: string): Promise<void> {
-    await promises
-      .mkdir(path.join(DATA_PATH, this.fingerprint))
-      .catch(() => {});
+    try {
+      await promises.mkdir(path.join(DATA_PATH, this.fingerprint));
+    } catch (err) {}
     if (type === 'in') {
       return promises.writeFile(this.inputFile, content, 'utf8');
     } else {
@@ -33,8 +33,11 @@ export class TestCase {
   clear(): Promise<void> {
     return new Promise((res, rej) => {
       rimraf(path.join(DATA_PATH, this.fingerprint), err => {
-        if (err) rej(err);
-        else res();
+        if (err) {
+          rej(err);
+        } else {
+          res();
+        }
       });
     });
   }
