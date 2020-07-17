@@ -28,7 +28,11 @@ describe('Test echo', () => {
       if (code !== 0) {
         hasNsjail = false;
       }
-    } catch (error) {}
+    } catch (error) {
+      workDir = '';
+      outFile = '';
+      errFile = '';
+    }
   });
 
   test('Run echo', async () => {
@@ -50,7 +54,9 @@ describe('Test echo', () => {
 
   afterEach(() => {
     try {
-      rimraf(workDir, () => {});
+      if (workDir !== '') {
+        rimraf(workDir, () => {});
+      }
     } catch (error) {}
   });
 });
