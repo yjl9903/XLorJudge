@@ -147,14 +147,12 @@ export class Submission {
           }
         );
         await this.closeRedirect(stdin, stdout, stderr);
-        const result = await usageToResult(
+        return await usageToResult(
           infoDir,
           maxTime,
           maxMemory,
           readlTimeLimit
         );
-        await this.clearWorkDir(rootDir, infoDir);
-        return result;
       } catch (err) {
         // Logger here
         throw new SystemError(err.message);
