@@ -1,5 +1,5 @@
 import { promises } from 'fs';
-import path from 'path';
+import * as path from 'path';
 import { Verdict } from '../verdict';
 
 export class Result {
