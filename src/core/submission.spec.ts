@@ -15,15 +15,15 @@ describe('Test echo', () => {
   let errFile = '';
 
   beforeEach(async () => {
-    workDir = await makeTempDir();
-    outFile = path.join(workDir, 'out');
-    errFile = path.join(workDir, 'err');
-    await promises.writeFile(outFile, '', 'utf8');
-    await promises.writeFile(errFile, '', 'utf8');
-    await promises.chmod(outFile, 0o766);
-    await promises.chmod(errFile, 0o766);
-
     try {
+      workDir = await makeTempDir();
+      outFile = path.join(workDir, 'out');
+      errFile = path.join(workDir, 'err');
+      await promises.writeFile(outFile, '', 'utf8');
+      await promises.writeFile(errFile, '', 'utf8');
+      await promises.chmod(outFile, 0o766);
+      await promises.chmod(errFile, 0o766);
+
       const { code } = await exec('/bin/nsjail', ['-h']);
       if (code !== 0) {
         hasNsjail = false;
