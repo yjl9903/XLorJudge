@@ -17,7 +17,7 @@ export interface ISubmissionRunParam {
   fileBindings?: IFileBinding[];
   trusted?: boolean;
 
-  executeFile?: string;
+  executeCommand?: string;
   executeArgs?: string[];
 
   maxTime: number;

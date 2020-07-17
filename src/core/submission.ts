@@ -16,10 +16,9 @@ import {
 import { randomString, makeTempDir, exec } from '../utils';
 import { Verdict } from '../verdict';
 
-import { SubmissionType, ISubmissionRunParam } from './type';
+import { SubmissionType, ISubmissionRunParam, IFileBinding } from './type';
 import { TestCaseError, SystemError } from './error';
 import { usageToResult } from './result';
-import { rejects } from 'assert';
 
 const envArgs = [];
 for (const env of ENV) {
@@ -29,19 +28,33 @@ for (const env of ENV) {
 export class Submission {
   lang: string;
   type: SubmissionType;
-  executeFile: string;
+  execute: {
+    file: string;
+    command: string;
+    args: string[];
+  };
 
   constructor(lang: string, type = SubmissionType.SUB) {
     this.lang = lang;
     this.type = type;
-    this.executeFile = path.join(
-      SUB_PATH,
-      randomString() + '.' + LangConfig[lang].compiledExtension
-    );
+
+    const fileName = randomString() + '.' + LangConfig[lang].compiledExtension;
+    const langConfig = LangConfig[lang];
+
+    this.execute = {
+      file: fileName,
+      command: langConfig.execute.command.replace(
+        '${executableFile}',
+        fileName
+      ),
+      args: langConfig.execute.args.map(s =>
+        String(s).replace('${executableFile}', fileName)
+      )
+    };
   }
 
   clear() {
-    return promises.unlink(this.executeFile);
+    return promises.unlink(path.join(SUB_PATH, this.execute.file));
   }
 
   async compile() {}
@@ -50,8 +63,8 @@ export class Submission {
     workDir,
     fileBindings = [],
     trusted = false,
-    executeFile = this.executeFile,
-    executeArgs = [],
+    executeCommand = this.execute.command,
+    executeArgs = this.execute.args,
     maxTime,
     maxMemory,
     stdinFile = null,
@@ -60,6 +73,58 @@ export class Submission {
   }: ISubmissionRunParam) {
     const [rootDir, infoDir] = await this.prepareWorkDir();
 
+    try {
+      const [stdin, stdout, stderr] = await Submission.openRedirect(
+        stdinFile,
+        stdoutFile,
+        stderrFile
+      );
+
+      try {
+        await exec(
+          NSJAIL_PATH,
+          [
+            ...Submission.buildNsjailArgs(
+              workDir,
+              rootDir,
+              infoDir,
+              trusted,
+              fileBindings,
+              maxTime,
+              maxMemory
+            ),
+            executeCommand,
+            ...executeArgs
+          ],
+          {
+            stdio: [stdin, stdout, stderr],
+            uid: 0,
+            gid: 0
+          }
+        );
+
+        await Submission.closeRedirect(stdin, stdout, stderr);
+        return await usageToResult(infoDir, maxTime, maxMemory, maxTime * 2);
+      } catch (err) {
+        // Logger here
+        throw new SystemError(err.message);
+      }
+    } catch (err) {
+      throw err;
+    } finally {
+      await Submission.clearWorkDir(rootDir, infoDir);
+    }
+  }
+
+  private static buildNsjailArgs(
+    workDir: string,
+    rootDir: string,
+    infoDir: string,
+    trusted: boolean,
+    fileBindings: IFileBinding[],
+    maxTime: number,
+    maxMemory: number
+  ) {
     const uid = trusted ? COMPILER_USER_ID : RUN_USER_ID;
     const gid = trusted ? COMPILER_GROUP_ID : RUN_GROUP_ID;
 
@@ -119,57 +184,23 @@ export class Submission {
       extraFiles.push(mode, src + ':/app/' + dst);
     }
 
-    try {
-      const [stdin, stdout, stderr] = await this.openRedirect(
-        stdinFile,
-        stdoutFile,
-        stderrFile
-      );
-
-      try {
-        await exec(
-          NSJAIL_PATH,
-          [
-            ...nsjailArgs,
-            ...extraFiles,
-            '-D',
-            '/app',
-            ...limitArgs,
-            ...envArgs,
-            '--',
-            executeFile,
-            ...executeArgs
-          ],
-          {
-            stdio: [stdin, stdout, stderr],
-            uid: 0,
-            gid: 0
-          }
-        );
-        await this.closeRedirect(stdin, stdout, stderr);
-        return await usageToResult(
-          infoDir,
-          maxTime,
-          maxMemory,
-          readlTimeLimit
-        );
-      } catch (err) {
-        // Logger here
-        throw new SystemError(err.message);
-      }
-    } catch (err) {
-      throw err;
-    } finally {
-      await this.clearWorkDir(rootDir, infoDir);
-    }
+    return [
+      ...nsjailArgs,
+      ...extraFiles,
+      '-D',
+      '/app',
+      ...limitArgs,
+      ...envArgs,
+      '--'
+    ];
   }
 
   private async prepareWorkDir() {
     return Promise.all([makeTempDir(), makeTempDir()]);
   }
 
-  private async clearWorkDir(rootDir: string, infoDir: string) {
-    return new Promise((res, rej) => {
+  private static async clearWorkDir(rootDir: string, infoDir: string) {
+    return new Promise(res => {
       let ok = 0;
       rimraf(rootDir, () => {
         ok += 1;
@@ -186,7 +217,7 @@ export class Submission {
     });
   }
 
-  private async openRedirect(
+  private static async openRedirect(
     stdinFile?: string,
     stdoutFile?: string,
     stderrFile?: string
@@ -212,7 +243,7 @@ export class Submission {
     }
   }
 
-  private async closeRedirect(
+  private static async closeRedirect(
     stdin: 'ignore' | promises.FileHandle,
     stdout: 'ignore' | promises.FileHandle,
     stderr: 'ignore' | promises.FileHandle
