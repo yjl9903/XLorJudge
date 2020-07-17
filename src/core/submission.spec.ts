@@ -40,7 +40,7 @@ describe('Test echo', () => {
       try {
         await submission.run({
           workDir,
-          executeFile: '/bin/echo',
+          executeCommand: '/bin/echo',
           executeArgs: ['Hello World'],
           maxTime: 10,
           maxMemory: 128,
