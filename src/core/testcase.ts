@@ -1,6 +1,6 @@
 import { promises } from 'fs';
 import * as path from 'path';
-import rimraf from 'rimraf';
+import * as rimraf from 'rimraf';
 
 import { DATA_PATH } from '../configs';
 // import { make_temp_dir } from '../util';
