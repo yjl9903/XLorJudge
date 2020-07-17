@@ -11,7 +11,7 @@ RUN apt-get update \
     && wget https://raw.githubusercontent.com/MikeMirzayanov/testlib/master/testlib.h -O /usr/local/include/testlib.h \
     && curl -sL https://deb.nodesource.com/setup_14.x | bash - \
     && apt-get install -y nodejs \
-    && npm install -g yarn typescript @nest/cli
+    && npm install -g yarn
 
 ADD . /judge
 
