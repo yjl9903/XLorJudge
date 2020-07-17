@@ -1,4 +1,5 @@
 import * as path from 'path';
+import { uid, gid } from 'userid';
 
 export { LangConfig, LangList } from './lang';
 
@@ -30,27 +31,17 @@ export const ENV = {
 };
 
 function getpwnam(name: string) {
-  if (name === 'compiler') {
-    return 0;
-  } else {
-    return 999;
+  try {
+    return uid(name);
+  } catch (err) {
+    return undefined;
   }
-  // try {
-  //   return uid(name);
-  // } catch (err) {
-  //   return undefined;
-  // }
 }
 
 function getgrnam(name: string) {
-  if (name === 'compiler') {
-    return 0;
-  } else {
-    return 999;
+  try {
+    return gid(name);
+  } catch (err) {
+    return undefined;
   }
-  // try {
-  //   return gid(name);
-  // } catch (err) {
-  //   return undefined;
-  // }
 }
