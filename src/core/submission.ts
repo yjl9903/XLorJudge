@@ -171,19 +171,13 @@ export class Submission {
   private async clearWorkDir(rootDir: string, infoDir: string) {
     return new Promise((res, rej) => {
       let ok = 0;
-      rimraf(rootDir, err => {
-        if (err) {
-          rej(err);
-        }
+      rimraf(rootDir, () => {
         ok += 1;
         if (ok === 3) {
           res();
         }
       });
-      rimraf(infoDir, err => {
-        if (err) {
-          rej(err);
-        }
+      rimraf(infoDir, () => {
         ok += 2;
         if (ok === 3) {
           res();
