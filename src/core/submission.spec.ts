@@ -48,5 +48,9 @@ describe('Test echo', () => {
     }
   });
 
-  afterEach(() => rimraf(workDir, () => {}));
+  afterEach(() => {
+    try {
+      rimraf(workDir, () => {});
+    } catch (error) {}
+  });
 });
