@@ -15,8 +15,8 @@ export const INT_PATH = path.join(RUN_PATH, 'interactor');
 export const GEN_PATH = path.join(RUN_PATH, 'generator');
 export const VAL_PATH = path.join(RUN_PATH, 'validator');
 
-export const COMPILER_USER_ID = getpwnam('compiler') || 0;
-export const COMPILER_GROUP_ID = getgrnam('compiler') || 0;
+export const COMPILER_USER_ID = getpwnam('compiler');
+export const COMPILER_GROUP_ID = getgrnam('compiler');
 
 export const RUN_USER_ID = getpwnam('nobody');
 export const RUN_GROUP_ID = getgrnam('nogroup');

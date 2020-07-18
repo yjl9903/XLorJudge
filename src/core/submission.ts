@@ -17,7 +17,7 @@ import { randomString, makeTempDir, exec } from '../utils';
 import { Verdict } from '../verdict';
 
 import { SubmissionType, ISubmissionRunParam, IFileBinding } from './type';
-import { TestCaseError, SystemError } from './error';
+import { TestCaseError, SystemError, CompileError } from './error';
 import { usageToResult } from './result';
 
 const envArgs = [];
@@ -57,7 +57,75 @@ export class Submission {
     return promises.unlink(path.join(SUB_PATH, this.execute.file));
   }
 
-  async compile() {}
+  async compile(code: string, maxTime = 16) {
+    const langConfig = LangConfig[this.lang];
+
+    const compileDir = await makeTempDir();
+    const outFile = path.join(compileDir, 'compile');
+    const errorFile = path.join(compileDir, 'compile.err');
+
+    await Promise.all([
+      promises.writeFile(
+        path.join(compileDir, langConfig.sourceFileName),
+        code
+      ),
+      promises.writeFile(outFile, ''),
+      promises.writeFile(errorFile, '')
+    ]);
+
+    const compileConfigs = langConfig.compile;
+    const compileSteps =
+      compileConfigs instanceof Array ? compileConfigs : [compileConfigs];
+
+    try {
+      for (const { command, args, out = 'compile.out' } of compileSteps) {
+        const result = await this.run({
+          workDir: compileDir,
+          executeCommand: command,
+          executeArgs: args.map(s => {
+            if (s === '${sourceFile}') {
+              return langConfig.sourceFileName;
+            } else if (s === '${compiledFile}') {
+              return out;
+            }
+            return s;
+          }),
+          trusted: true,
+          maxTime,
+          maxMemory: 1024,
+          stdoutFile: outFile,
+          stderrFile: errorFile
+        });
+  
+        if (result.verdict !== Verdict.Accepted) {
+          const errorMsg = await promises.readFile(errorFile, 'utf8');
+          rimraf(compileDir, () => {});
+          if (errorMsg !== '') {
+            throw new CompileError(errorMsg);
+          } else if (result.verdict === Verdict.TimeLimitExceeded) {
+            throw new CompileError('Time limit exceeded when compiling');
+          } else if (result.verdict === Verdict.MemoryLimitExceeded) {
+            throw new CompileError('Memory limit exceeded when compiling');
+          } else {
+            throw new CompileError(
+              'Something is wrong, but, em, nothing is reported'
+            );
+          }
+        }
+      }
+  
+      const executeFilePath = path.join(SUB_PATH, this.execute.file);
+      await promises.copyFile(
+        path.join(compileDir, 'compile.out'),
+        executeFilePath
+      );
+      await promises.chmod(executeFilePath, 0o0775);
+    } catch (err) {
+      throw err;
+    } finally {
+      rimraf(compileDir, () => {});
+    }
+  }
 
   async run({
     workDir,

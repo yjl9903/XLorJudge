@@ -10,6 +10,7 @@ chgrp root -R /sys/fs/cgroup/memory/NSJAIL /sys/fs/cgroup/cpu/NSJAIL /sys/fs/cgr
 
 chown compiler -R /sys/fs/cgroup/memory/NSJAIL /sys/fs/cgroup/cpu/NSJAIL /sys/fs/cgroup/pids/NSJAIL
 chgrp compiler -R /sys/fs/cgroup/memory/NSJAIL /sys/fs/cgroup/cpu/NSJAIL /sys/fs/cgroup/pids/NSJAIL
+
 chown compiler:compiler /judge/run/temp /judge/run/submission
 chown compiler:compiler /judge/run/checker /judge/run/interactor /judge/run/generator /judge/run/validator
 
