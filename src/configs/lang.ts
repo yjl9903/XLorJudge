@@ -6,7 +6,7 @@ export interface ICompileConfig {
 
 export interface ILangConfig {
   sourceFileName: string;
-  compile: ICompileConfig | ICompileConfig[];
+  compile: ICompileConfig | ICompileConfig[]; // The last compile config can not have "out" filed
   compiledExtension: string;
   execute: {
     command: string;
