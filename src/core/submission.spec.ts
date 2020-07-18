@@ -74,9 +74,24 @@ describe('Test Compile Cpp', () => {
 describe('Test Compile Java', () => {
   const submission = new Submission('java');
 
-  test('Compile ac.java', async () => {
+  test('Compile Main.java', async () => {
     const code = readFileSync(
       path.join(__dirname, '../../test/assets/aplusb/Main.java'),
+      'utf8'
+    );
+
+    expect(code.length).toBeGreaterThan(0);
+
+    await submission.compile(code);
+  });
+});
+
+describe('Test Compile Python', () => {
+  const submission = new Submission('python');
+
+  test('Compile a.py', async () => {
+    const code = readFileSync(
+      path.join(__dirname, '../../test/assets/aplusb/a.py'),
       'utf8'
     );
 

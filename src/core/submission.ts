@@ -96,7 +96,7 @@ export class Submission {
           stdoutFile: outFile,
           stderrFile: errorFile
         });
-  
+
         if (result.verdict !== Verdict.Accepted) {
           const errorMsg = await promises.readFile(errorFile, 'utf8');
           rimraf(compileDir, () => {});
@@ -113,7 +113,7 @@ export class Submission {
           }
         }
       }
-  
+
       const executeFilePath = path.join(SUB_PATH, this.execute.file);
       await promises.copyFile(
         path.join(compileDir, 'compile.out'),
