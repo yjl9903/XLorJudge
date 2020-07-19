@@ -20,6 +20,7 @@ export class JudgeService {
       type,
       maxTime,
       maxMemory,
+      checker: checkerInfo,
       code: b64Code,
       lang,
       cases,
@@ -29,7 +30,7 @@ export class JudgeService {
   ) {
     const code = b64decode(b64Code);
     const submission = new Submission(lang);
-    const checker = new Checker('123', 'cpp'); // TODO: add checker
+    const checker = new Checker(checkerInfo.id, checkerInfo.lang);
     const runner = this.getRunner(
       type,
       submission,
@@ -38,6 +39,7 @@ export class JudgeService {
       maxMemory
     );
 
+    observer.next({ verdict: Verdict.Compiling });
     try {
       await submission.compile(code, Math.max(maxTime * 5, 15));
     } catch (err) {
@@ -52,11 +54,19 @@ export class JudgeService {
         const result = await runner.run(testcaseId, { returnReport });
 
         // TODO: design result message body
-        observer.next({
+        const message = {
+          testcaseId,
           verdict: result.verdict,
           time: result.time,
-          memory: result.memory
-        });
+          memory: result.memory,
+          ...(returnReport && 'output' in result
+            ? {
+                output: result.output,
+                checkerOutput: result.checkerOutput
+              }
+            : {})
+        };
+        observer.next(message);
 
         if (!isTestAllCases && result.verdict !== Verdict.Accepted) {
           break;

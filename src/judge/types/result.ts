@@ -19,8 +19,11 @@ export interface ErrorMessage {
 
 export interface JudgingMessage {
   verdict: JudgeVerdict;
+  testcaseId: string;
   time: number;
   memory: number;
+  output?: string;
+  checkerOutput?: string;
 }
 
 export type ResultMessage =

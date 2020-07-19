@@ -5,10 +5,19 @@ import {
   Max,
   IsBase64,
   IsBoolean,
-  IsEnum
+  IsEnum,
+  ValidateNested
 } from 'class-validator';
 
 import { ProblemType } from '../../core';
+
+export class SubmissionInfoDTO {
+  @IsNotEmpty()
+  id: string;
+
+  @IsNotEmpty()
+  lang: string;
+}
 
 export class JudgeSubmissionDTO {
   @IsEnum(ProblemType)
@@ -28,6 +37,9 @@ export class JudgeSubmissionDTO {
   @IsNumber()
   @IsNotEmpty()
   maxMemory: number; // mega bytes
+
+  @ValidateNested()
+  checker: SubmissionInfoDTO;
 
   @IsNotEmpty()
   cases: string[];
