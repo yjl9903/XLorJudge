@@ -35,6 +35,18 @@ describe('Test echo', () => {
     expect(readFileSync(outFile, 'utf8')).toEqual('Hello World\n');
   });
 
+  test('Run echo', async () => {
+    await submission.run({
+      workDir,
+      executeCommand: '/bin/echo1',
+      executeArgs: ['Hello World'],
+      maxTime: 10,
+      maxMemory: 128,
+      stdoutFile: outFile,
+      stderrFile: errFile
+    });
+  });
+
   afterEach(() => {
     rimraf(workDir, () => {});
   });

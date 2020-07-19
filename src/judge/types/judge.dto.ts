@@ -4,11 +4,15 @@ import {
   Min,
   Max,
   IsBase64,
-  IsBoolean
+  IsBoolean,
+  IsEnum
 } from 'class-validator';
 
+import { ProblemType } from '../../core';
+
 export class JudgeSubmissionDTO {
-  type: string = 'classic';
+  @IsEnum(ProblemType)
+  type: ProblemType = ProblemType.CLASSIC;
 
   @IsNotEmpty()
   id: string;
@@ -34,6 +38,8 @@ export class JudgeSubmissionDTO {
   @IsBase64()
   @IsNotEmpty()
   code: string;
+
+  returnReport = false;
 }
 
 export class HTTPJudgeSubmissionDTO extends JudgeSubmissionDTO {

@@ -13,7 +13,7 @@ import {
   ENV,
   NSJAIL_PATH
 } from '../configs';
-import { randomString, makeTempDir, exec } from '../utils';
+import { randomString, makeTempDir, exec, isDef } from '../utils';
 import { Verdict } from '../verdict';
 
 import { SubmissionType, ISubmissionRunParam, IFileBinding } from './type';
@@ -30,19 +30,30 @@ export class Submission {
   type: SubmissionType;
   execute: {
     file: string;
+    dir: string;
     command: string;
     args: string[];
   };
 
-  constructor(lang: string, type = SubmissionType.SUB) {
+  constructor(
+    lang: string,
+    type = SubmissionType.SUB,
+    options?: { file: string; dir: string }
+  ) {
     this.lang = lang;
     this.type = type;
 
-    const fileName = randomString() + '.' + LangConfig[lang].compiledExtension;
+    const file = isDef(options) ? options.file : undefined;
+    const dir = isDef(options) ? options.dir : undefined;
+
+    const fileName = file
+      ? file
+      : randomString() + '.' + LangConfig[lang].compiledExtension;
     const langConfig = LangConfig[lang];
 
     this.execute = {
       file: fileName,
+      dir: dir ? dir : SUB_PATH,
       command: langConfig.execute.command.replace(
         '${executableFile}',
         fileName
@@ -54,7 +65,7 @@ export class Submission {
   }
 
   clear() {
-    return promises.unlink(path.join(SUB_PATH, this.execute.file));
+    return promises.unlink(path.join(this.execute.dir, this.execute.file));
   }
 
   async compile(code: string, maxTime = 16) {
@@ -114,7 +125,7 @@ export class Submission {
         }
       }
 
-      const executeFilePath = path.join(SUB_PATH, this.execute.file);
+      const executeFilePath = path.join(this.execute.dir, this.execute.file);
       await promises.copyFile(
         path.join(compileDir, 'compile.out'),
         executeFilePath

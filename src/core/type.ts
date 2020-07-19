@@ -1,3 +1,10 @@
+import { Submission } from './submission';
+import { Result } from './result';
+
+export enum ProblemType {
+  CLASSIC = 'classic'
+}
+
 export enum SubmissionType {
   SUB = 'Submission',
   CHK = 'Checker',
@@ -26,4 +33,12 @@ export interface ISubmissionRunParam {
   stdinFile?: string;
   stdoutFile?: string;
   stderrFile?: string;
+}
+
+export interface IRunner {
+  submission: Submission;
+  maxTime: number;
+  maxMemory: number;
+
+  run(testcaseId: string): Promise<Result>;
 }

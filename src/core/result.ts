@@ -8,6 +8,7 @@ export class Result {
   exitCode: number;
   signal: number;
   verdict: Verdict;
+
   constructor(
     time: number,
     memory: number,
@@ -37,10 +38,10 @@ export class Usage {
     }
   }
 
-  parseUser() {
+  get userTime() {
     return Number((this.user / 1000.0).toFixed(3));
   }
-  parseMemory() {
+  get userMemory() {
     return Number((this.memory / 1024.0).toFixed(3));
   }
 }
@@ -55,8 +56,8 @@ export async function usageToResult(
     await promises.readFile(path.join(infoDir, 'usage'), 'utf8')
   );
   const result = new Result(
-    usage.parseUser(),
-    usage.parseMemory(),
+    usage.userTime,
+    usage.userMemory,
     usage.exit,
     usage.signal
   );
