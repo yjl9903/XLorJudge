@@ -1,12 +1,12 @@
 import * as path from 'path';
 import { promises } from 'fs';
 
-import { makeTempDir, randomString, rimraf } from '../utils';
+import { makeTempDir, randomString, rimraf, readFileHead } from '../utils';
 import { Verdict } from '../verdict';
 
-import { IRunner } from './type';
+import { IRunner, RunOptions, IFileBinding } from './type';
 import { Submission } from './submission';
-import { Result } from './result';
+import { Result, ResultWithReport } from './result';
 import { Checker } from './checker';
 import { TestCase } from './testcase';
 
@@ -29,11 +29,11 @@ export class Runner implements IRunner {
     this.maxMemory = maxMemory;
   }
 
-  private async makeWriteFile() {
+  private async makeWriteFile(extension = 'out') {
     if (!this.outDir) {
       this.outDir = await makeTempDir();
     }
-    const file = path.join(this.outDir, 'out_' + randomString());
+    const file = path.join(this.outDir, randomString() + '.' + extension);
     await promises.writeFile(file, '', 'utf8');
     await promises.chmod(file, 0o766);
     return file;
@@ -45,25 +45,25 @@ export class Runner implements IRunner {
     }
   }
 
-  async run(testcaseId: string) {
+  async run(
+    testcaseId: string,
+    { returnReport = false }: RunOptions = {}
+  ): Promise<Result | ResultWithReport> {
     const [runDir, runOut, runErr] = await Promise.all([
       makeTempDir(),
-      this.makeWriteFile(),
-      this.makeWriteFile()
+      this.makeWriteFile('out'),
+      this.makeWriteFile('err')
     ]);
 
     const testcase = new TestCase(testcaseId);
 
     try {
-      const result = await this.submission.run({
+      const result: Result | ResultWithReport = await this.submission.run({
         workDir: runDir,
         fileBindings: [
           {
             mode: '-R',
-            src: path.join(
-              this.submission.execute.dir,
-              this.submission.execute.file
-            ),
+            src: this.submission.fullFilePath,
             dst: this.submission.execute.file
           }
         ],
@@ -73,8 +73,21 @@ export class Runner implements IRunner {
         stdoutFile: runOut,
         stderrFile: runErr
       });
+
+      if (returnReport) {
+        (result as ResultWithReport).output = await readFileHead(runOut);
+      }
+
       if (result.verdict === Verdict.Accepted) {
-        result.verdict = await this.check(testcase, runOut);
+        if (returnReport) {
+          result.verdict = await this.check(
+            testcase,
+            runOut,
+            result as ResultWithReport
+          );
+        } else {
+          result.verdict = await this.check(testcase, runOut);
+        }
       }
       return result;
     } finally {
@@ -82,7 +95,42 @@ export class Runner implements IRunner {
     }
   }
 
-  private async check(testcase: TestCase, runOut: string) {
-    return Verdict.Accepted;
+  private async check(
+    testcase: TestCase,
+    runOut: string,
+    result?: ResultWithReport
+  ) {
+    const chkOut = await this.makeWriteFile('chk');
+    const workDir = await makeTempDir();
+
+    const files: IFileBinding[] = [
+      {
+        src: this.checker.fullFilePath,
+        dst: this.checker.execute.file,
+        mode: '-R'
+      },
+      { src: testcase.inputFile, dst: 'in', mode: '-R' },
+      { src: runOut, dst: 'out', mode: '-R' },
+      { src: testcase.answerFile, dst: 'ans', mode: '-R' },
+      { src: chkOut, dst: 'result', mode: '-B' }
+    ];
+
+    try {
+      const chkResult = await this.checker.run({
+        workDir,
+        fileBindings: files,
+        executeArgs: ['in', 'out', 'ans', 'result'],
+        maxTime: this.maxTime * 2,
+        maxMemory: this.maxMemory * 2
+      });
+
+      if (result !== undefined) {
+        result.checkerOutput = await readFileHead(chkOut);
+      }
+
+      return Checker.getVerdict(chkResult);
+    } finally {
+      await rimraf(workDir);
+    }
   }
 }

@@ -22,8 +22,15 @@ describe('Test aplusb', () => {
 
     await submission.compile(code);
 
-    const result = await runner.run('aplusb1');
+    const result = await runner.run('aplusb1', { returnReport: true });
+
     expect(result.verdict).toBe(Verdict.Accepted);
+    if ('output' in result) {
+      expect(result.output).toBe('2');
+      expect(result.checkerOutput).toBe(`answer is '2'`);
+    } else {
+      expect.assertions(0);
+    }
   });
 
   afterAll(async () => {

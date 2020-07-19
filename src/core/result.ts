@@ -24,6 +24,11 @@ export class Result {
   }
 }
 
+export class ResultWithReport extends Result {
+  output: string;
+  checkerOutput?: string;
+}
+
 export class Usage {
   user: number;
   pass: number;

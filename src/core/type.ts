@@ -1,5 +1,5 @@
 import { Submission } from './submission';
-import { Result } from './result';
+import { Result, ResultWithReport } from './result';
 
 export enum ProblemType {
   CLASSIC = 'classic'
@@ -35,10 +35,17 @@ export interface ISubmissionRunParam {
   stderrFile?: string;
 }
 
+export interface RunOptions {
+  returnReport?: boolean;
+}
+
 export interface IRunner {
   submission: Submission;
   maxTime: number;
   maxMemory: number;
 
-  run(testcaseId: string): Promise<Result>;
+  run(
+    testcaseId: string,
+    runOptions?: RunOptions
+  ): Promise<Result | ResultWithReport>;
 }

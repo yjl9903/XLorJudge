@@ -63,8 +63,12 @@ export class Submission {
     };
   }
 
+  get fullFilePath() {
+    return path.join(this.execute.dir, this.execute.file);
+  }
+
   clear() {
-    return promises.unlink(path.join(this.execute.dir, this.execute.file));
+    return promises.unlink(this.fullFilePath);
   }
 
   async compile(code: string, maxTime = 16) {
@@ -123,7 +127,7 @@ export class Submission {
         }
       }
 
-      const executeFilePath = path.join(this.execute.dir, this.execute.file);
+      const executeFilePath = this.fullFilePath;
       await promises.copyFile(
         path.join(compileDir, 'compile.out'),
         executeFilePath
