@@ -1,5 +1,6 @@
 import { Submission } from './submission';
 import { Result, ResultWithReport } from './result';
+import { Checker } from './checker';
 
 export enum ProblemType {
   CLASSIC = 'classic'
@@ -41,6 +42,7 @@ export interface RunOptions {
 
 export interface IRunner {
   submission: Submission;
+  checker: Checker;
   maxTime: number;
   maxMemory: number;
 

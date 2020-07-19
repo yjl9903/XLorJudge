@@ -1,5 +1,5 @@
 import { CHK_PATH, LangConfig } from '../configs';
-import { Verdict } from '../verdict';
+import { Verdict, JudgeVerdict } from '../verdict';
 
 import { Result } from './result';
 import { Submission } from './submission';
@@ -18,7 +18,7 @@ export class Checker extends Submission {
     return;
   }
 
-  static getVerdict({ verdict, exitCode }: Result) {
+  static getVerdict({ verdict, exitCode }: Result): JudgeVerdict {
     if (verdict !== Verdict.Accepted) {
       if (exitCode === 3) {
         throw new JudgeError('');

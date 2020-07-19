@@ -34,31 +34,16 @@ export class PolygonService {
         timestamp: new Date().toISOString()
       };
     } catch (err) {
-      if (err instanceof CompileError) {
-        throw new HttpException(
-          {
-            id,
-            type,
-            lang,
-            status: 'COMPILE_ERROR',
-            error: err.message,
-            timestamp: new Date().toISOString()
-          },
-          HttpStatus.BAD_REQUEST
-        );
-      } else {
-        throw new HttpException(
-          {
-            id,
-            type,
-            lang,
-            status: 'SYSTEM_ERROR',
-            error: err.message,
-            timestamp: new Date().toISOString()
-          },
-          HttpStatus.BAD_REQUEST
-        );
-      }
+      throw new HttpException(
+        {
+          id,
+          type,
+          lang,
+          timestamp: new Date().toISOString(),
+          ...CompileError.toHttpException(err)
+        },
+        HttpStatus.BAD_REQUEST
+      );
     }
   }
 }

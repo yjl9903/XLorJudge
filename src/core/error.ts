@@ -6,6 +6,28 @@ export class CompileError extends Error {
     super(msg);
     this.verdict = Verdict.CompileError;
   }
+
+  static toHttpException(
+    err: Error
+  ): {
+    status: string;
+    verdict: Verdict.CompileError | Verdict.SystemError;
+    message: string;
+  } {
+    if (err instanceof CompileError) {
+      return {
+        status: 'COMPILE_ERROR',
+        verdict: Verdict.CompileError,
+        message: err.message
+      };
+    } else {
+      return {
+        status: 'SYSTEM_ERROR',
+        verdict: Verdict.SystemError,
+        message: err.message
+      };
+    }
+  }
 }
 
 export class SystemError extends Error {

@@ -26,10 +26,11 @@ export class JudgeController {
   async judge(@Body() body: HTTPJudgeSubmissionDTO) {
     const task: Observable<ResultMessage> = Observable.create(
       (observer: Observer<ResultMessage>) => {
-        observer.next({ id: body.id, verdict: Verdict.Waiting });
+        observer.next({ verdict: Verdict.Waiting });
         this.judgeService.judge(observer, body);
       }
     );
+    // TODO: add pipe to transform above messages
     if (body.isSync) {
       return task;
     }

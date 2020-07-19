@@ -1,20 +1,20 @@
 import { promises } from 'fs';
 import * as path from 'path';
-import { Verdict } from '../verdict';
+import { Verdict, JudgeVerdict } from '../verdict';
 
 export class Result {
   time: number;
   memory: number;
   exitCode: number;
   signal: number;
-  verdict: Verdict;
+  verdict: JudgeVerdict;
 
   constructor(
     time: number,
     memory: number,
     exitCode: number,
     signal: number,
-    verdict: Verdict = Verdict.Accepted
+    verdict: JudgeVerdict = Verdict.Accepted
   ) {
     this.time = time;
     this.memory = memory;

@@ -14,3 +14,12 @@ export enum Verdict {
   JudgeError,
   TestCaseError
 }
+
+export type JudgeVerdict =
+  | typeof Verdict.Accepted
+  | typeof Verdict.WrongAnswer
+  | typeof Verdict.TimeLimitExceeded
+  | typeof Verdict.IdlenessLimitExceeded
+  | typeof Verdict.MemoryLimitExceeded
+  | typeof Verdict.RuntimeError
+  | typeof Verdict.Point;

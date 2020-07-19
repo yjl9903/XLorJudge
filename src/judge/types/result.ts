@@ -1,4 +1,4 @@
-import { Verdict } from '../../verdict';
+import { Verdict, JudgeVerdict } from '../../verdict';
 
 export interface WaitingMessage {
   verdict: Verdict.Waiting;
@@ -17,8 +17,14 @@ export interface ErrorMessage {
   message: string;
 }
 
-export type ResultMessage = { id: string } & (
+export interface JudgingMessage {
+  verdict: JudgeVerdict;
+  time: number;
+  memory: number;
+}
+
+export type ResultMessage =
   | WaitingMessage
   | CompilingMessage
-  | Error
-);
+  | JudgingMessage
+  | ErrorMessage;

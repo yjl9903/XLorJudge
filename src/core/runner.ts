@@ -9,6 +9,7 @@ import { Submission } from './submission';
 import { Result, ResultWithReport } from './result';
 import { Checker } from './checker';
 import { TestCase } from './testcase';
+import { JudgeError } from './error';
 
 export class Runner implements IRunner {
   submission: Submission;
@@ -129,6 +130,12 @@ export class Runner implements IRunner {
       }
 
       return Checker.getVerdict(chkResult);
+    } catch(err) {
+      // handle judge error message
+      if (err instanceof JudgeError) {
+        err.message = await readFileHead(chkOut);
+      }
+      throw err;
     } finally {
       await rimraf(workDir);
     }
