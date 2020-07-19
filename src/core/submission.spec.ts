@@ -4,6 +4,7 @@ import * as rimraf from 'rimraf';
 import { makeTempDir } from '../utils';
 import { promises, readFileSync } from 'fs';
 import { Submission } from './submission';
+import { Verdict } from '../verdict';
 
 describe('Test echo', () => {
   const submission = new Submission('text');
@@ -23,7 +24,7 @@ describe('Test echo', () => {
   });
 
   test('Run echo', async () => {
-    await submission.run({
+    const { verdict } = await submission.run({
       workDir,
       executeCommand: '/bin/echo',
       executeArgs: ['Hello World'],
@@ -32,11 +33,12 @@ describe('Test echo', () => {
       stdoutFile: outFile,
       stderrFile: errFile
     });
+    expect(verdict).toBe(Verdict.Accepted);
     expect(readFileSync(outFile, 'utf8')).toEqual('Hello World\n');
   });
 
-  test('Run echo', async () => {
-    await submission.run({
+  test('Run echo1 fail', async () => {
+    const { verdict } = await submission.run({
       workDir,
       executeCommand: '/bin/echo1',
       executeArgs: ['Hello World'],
@@ -45,6 +47,7 @@ describe('Test echo', () => {
       stdoutFile: outFile,
       stderrFile: errFile
     });
+    expect(verdict).toBe(Verdict.RuntimeError);
   });
 
   afterEach(() => {
