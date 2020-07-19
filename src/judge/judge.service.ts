@@ -4,7 +4,7 @@ import { JudgeSubmissionDTO } from './types/judge.dto';
 import { ResultMessage } from './types/result';
 import { Runner } from '../core/runner';
 import { ProblemType } from '../core';
-import { b64decode } from 'src/utils';
+import { b64decode } from '../utils';
 
 const ProblemRunner = new Map([[ProblemType.CLASSIC, Runner]]);
 

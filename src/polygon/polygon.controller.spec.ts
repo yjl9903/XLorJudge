@@ -1,13 +1,14 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { PolygonController } from './polygon.controller';
 import { ConfigService } from '@nestjs/config';
+import { PolygonService } from './polygon.service';
 
 describe('Polygon Controller', () => {
   let controller: PolygonController;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [ConfigService],
+      providers: [ConfigService, PolygonService],
       controllers: [PolygonController]
     }).compile();
 

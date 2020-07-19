@@ -1,5 +1,6 @@
-import { SubmissionType } from 'src/core';
 import { IsNotEmpty, IsBase64, IsEnum } from 'class-validator';
+
+import { SubmissionType } from '../../core';
 
 export class CompileDTO {
   @IsNotEmpty()
