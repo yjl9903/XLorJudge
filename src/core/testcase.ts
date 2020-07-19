@@ -1,8 +1,8 @@
 import { promises } from 'fs';
 import * as path from 'path';
-import * as rimraf from 'rimraf';
 
 import { DATA_PATH } from '../configs';
+import { rimraf } from '../utils';
 // import { make_temp_dir } from '../util';
 // import { Verdict } from '../verdict';
 // import { Interactor, InteractorRunner } from './interactor';
@@ -30,15 +30,7 @@ export class TestCase {
     }
   }
 
-  clear(): Promise<void> {
-    return new Promise((res, rej) => {
-      rimraf(path.join(DATA_PATH, this.fingerprint), err => {
-        if (err) {
-          rej(err);
-        } else {
-          res();
-        }
-      });
-    });
+  async clear() {
+    await rimraf(path.join(DATA_PATH, this.fingerprint));
   }
 }

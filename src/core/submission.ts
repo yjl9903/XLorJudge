@@ -1,6 +1,5 @@
 import * as path from 'path';
 import { promises } from 'fs';
-import * as rimraf from 'rimraf';
 
 import {
   SUB_PATH,
@@ -13,7 +12,7 @@ import {
   ENV,
   NSJAIL_PATH
 } from '../configs';
-import { randomString, makeTempDir, exec, isDef } from '../utils';
+import { randomString, makeTempDir, exec, isDef, rimraf } from '../utils';
 import { Verdict } from '../verdict';
 
 import { SubmissionType, ISubmissionRunParam, IFileBinding } from './type';
@@ -110,7 +109,6 @@ export class Submission {
 
         if (result.verdict !== Verdict.Accepted) {
           const errorMsg = await promises.readFile(errorFile, 'utf8');
-          rimraf(compileDir, () => {});
           if (errorMsg !== '') {
             throw new CompileError(errorMsg);
           } else if (result.verdict === Verdict.TimeLimitExceeded) {
@@ -134,7 +132,7 @@ export class Submission {
     } catch (err) {
       throw err;
     } finally {
-      rimraf(compileDir, () => {});
+      await rimraf(compileDir);
     }
   }
 
@@ -279,21 +277,7 @@ export class Submission {
   }
 
   private static async clearWorkDir(rootDir: string, infoDir: string) {
-    return new Promise(res => {
-      let ok = 0;
-      rimraf(rootDir, () => {
-        ok += 1;
-        if (ok === 3) {
-          res();
-        }
-      });
-      rimraf(infoDir, () => {
-        ok += 2;
-        if (ok === 3) {
-          res();
-        }
-      });
-    });
+    await Promise.all([rimraf(rootDir), rimraf(infoDir)]);
   }
 
   private static async openRedirect(

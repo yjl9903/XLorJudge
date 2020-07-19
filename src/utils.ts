@@ -2,6 +2,7 @@ import { spawn } from 'child_process';
 import { promises } from 'fs';
 import * as cryptoRandomString from 'crypto-random-string';
 import * as path from 'path';
+import * as _rimraf from 'rimraf';
 
 import { TEMP_PATH } from './configs';
 
@@ -31,7 +32,7 @@ export async function makeTempDir(): Promise<string> {
   return dir;
 }
 
-export async function exec(
+export function exec(
   command: string,
   args: any[] = [],
   options: object = {}
@@ -43,4 +44,8 @@ export async function exec(
     });
     p.on('error', rej);
   });
+}
+
+export function rimraf(s: string) {
+  return new Promise(res => _rimraf(s, () => res()));
 }

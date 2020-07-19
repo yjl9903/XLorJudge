@@ -1,7 +1,6 @@
 import * as path from 'path';
-import * as rimraf from 'rimraf';
 
-import { makeTempDir } from '../utils';
+import { makeTempDir, rimraf } from '../utils';
 import { promises, readFileSync } from 'fs';
 import { Submission } from './submission';
 import { Verdict } from '../verdict';
@@ -50,8 +49,8 @@ describe('Test echo', () => {
     expect(verdict).toBe(Verdict.RuntimeError);
   });
 
-  afterEach(() => {
-    rimraf(workDir, () => {});
+  afterEach(async () => {
+    await rimraf(workDir);
   });
 });
 
