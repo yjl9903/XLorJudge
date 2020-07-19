@@ -130,7 +130,7 @@ export class Runner implements IRunner {
       }
 
       return Checker.getVerdict(chkResult);
-    } catch(err) {
+    } catch (err) {
       // handle judge error message
       if (err instanceof JudgeError) {
         err.message = await readFileHead(chkOut);

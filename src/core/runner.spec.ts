@@ -18,9 +18,7 @@ describe('Test aplusb', () => {
   });
 
   test('Run ac', async () => {
-    const code = readCode('ac.cpp');
-
-    await submission.compile(code);
+    await submission.compile(readCode('ac.cpp'));
 
     const result = await runner.run('aplusb1', { returnReport: true });
 
@@ -31,6 +29,42 @@ describe('Test aplusb', () => {
     } else {
       expect.assertions(0);
     }
+  });
+
+  test('Run wa', async () => {
+    await submission.compile(readCode('wa.cpp'));
+
+    const result = await runner.run('aplusb1', { returnReport: true });
+
+    expect(result.verdict).toBe(Verdict.WrongAnswer);
+  });
+
+  test('Run RE', async () => {
+    await submission.compile(readCode('re.cpp'));
+
+    const result = await runner.run('aplusb1', { returnReport: true });
+
+    expect(result.verdict).toBe(Verdict.RuntimeError);
+  });
+
+  test('Run MLE', async () => {
+    await submission.compile(readCode('mle.cpp'));
+
+    const result = await runner.run('aplusb1', { returnReport: true });
+
+    expect(result.verdict).toBe(Verdict.MemoryLimitExceeded);
+  });
+
+  test('Run TLE', async () => {
+    await submission.compile(readCode('tle.cpp'));
+
+    const result = await runner.run('aplusb1', { returnReport: true });
+
+    // Some environments may not support getting user time, and it will return IdlenessLimitExceeded.
+    expect.assertions(
+      Number(result.verdict === Verdict.IdlenessLimitExceeded) +
+        Number(result.verdict === Verdict.TimeLimitExceeded)
+    );
   });
 
   afterAll(async () => {
