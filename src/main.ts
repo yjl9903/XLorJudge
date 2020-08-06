@@ -1,9 +1,9 @@
 import { NestFactory } from '@nestjs/core';
 import { Logger } from '@nestjs/common';
-import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+import { ConfigService } from '@nestjs/config';
+// import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 
 import { AppModule } from './app.module';
-import { ConfigService } from '@nestjs/config';
 import { isUndef } from './utils';
 
 async function bootstrap() {
@@ -22,20 +22,20 @@ async function bootstrap() {
     process.exit(1);
   }
 
-  const documentOptions = new DocumentBuilder()
-    .setTitle('XLoJ Judge Server')
-    .setDescription(
-      'XLorJudge is Competitive Programming Contest Judge Server for XLor Online Judge.'
-    )
-    .setVersion('1.0')
-    .addTag('Judge')
-    .build();
-  const document = SwaggerModule.createDocument(app, documentOptions);
-  SwaggerModule.setup('api', app, document);
+  // const documentOptions = new DocumentBuilder()
+  //   .setTitle('XLoJ Judge Server')
+  //   .setDescription(
+  //     'XLorJudge is Competitive Programming Contest Judge Server for XLor Online Judge.'
+  //   )
+  //   .setVersion('1.0')
+  //   .addTag('Judge')
+  //   .build();
+  // const document = SwaggerModule.createDocument(app, documentOptions);
+  // SwaggerModule.setup('api', app, document);
 
   await app.listen(port, host);
 
-  console.log(`XLorJudge is running on: ${await app.getUrl()}`);
+  // console.log(`XLorJudge is running on: ${await app.getUrl()}`);
 }
 
 bootstrap();

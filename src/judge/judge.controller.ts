@@ -14,12 +14,12 @@ import { AuthGuard } from '../guards/auth.guard';
 import { JudgeService } from './judge.service';
 import { JudgeSubmissionDTO as HTTPJudgeSubmissionDTO } from './types/judge.dto';
 
-@Controller('/')
+@Controller('/judge')
 @UseGuards(AuthGuard)
 export class JudgeController {
   constructor(private judgeService: JudgeService) {}
 
-  @Post('/judge')
+  @Post('/')
   @UsePipes(new ValidationPipe({ transform: true }))
   async judge(@Body() body: HTTPJudgeSubmissionDTO) {
     const task = this.judgeService.judge(body);
@@ -33,7 +33,7 @@ export class JudgeController {
     }
   }
 
-  @Get('/query/:id')
+  @Get(':id')
   async query(@Param('id') id: string) {
     // TODO: query judge state
     return id;

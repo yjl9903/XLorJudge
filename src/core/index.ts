@@ -1,9 +1,9 @@
-export * from './type';
+export { ProblemType, SubmissionType } from './type';
 
-export * from './error';
+export { CompileError, JudgeError, SystemError, TestCaseError } from './error';
 
-export * from './submission';
+export { Submission } from './submission';
 
-export * from './testcase';
+export { TestCase } from './testcase';
 
-export * from './checker';
+export { Checker } from './checker';

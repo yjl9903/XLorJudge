@@ -1,2 +1,2 @@
-export * from './judge.dto';
-export * from './result';
+export { SubmissionInfoDTO, JudgeSubmissionDTO } from './judge.dto';
+export { ResultMessage } from './result';

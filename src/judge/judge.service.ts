@@ -10,10 +10,7 @@ import { b64decode } from '../utils';
 import { Runner as ClassicRunner } from '../core/runner';
 import { ProblemType, Submission, CompileError, Checker } from '../core';
 
-import {
-  JudgeSubmissionDTO,
-  ResultMessage
-} from './types';
+import { JudgeSubmissionDTO, ResultMessage } from './types';
 
 @Injectable()
 export class JudgeService {
