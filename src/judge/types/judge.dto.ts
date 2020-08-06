@@ -51,16 +51,9 @@ export class JudgeSubmissionDTO {
   @IsNotEmpty()
   code: string;
 
+  @IsBoolean()
   returnReport = false;
-}
 
-export interface HTTPJudgeSubmissionOptions {
-  isSync?: boolean;
-
-  isTestAllCases?: boolean;
-}
-
-export class HTTPJudgeSubmissionDTO extends JudgeSubmissionDTO {
   @IsBoolean()
   isSync: boolean = false;
 
