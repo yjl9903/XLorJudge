@@ -43,7 +43,7 @@ router.post('/judge', async (req, res) => {
 });
 
 router.get('/query', async (req, res) => {
-  const result = await query(req.query.id);
+  const result = await query(req.query.id as string);
   if (result !== null && result !== undefined) {
     Reflect.set(result, 'status', 'ok');
     Reflect.set(result, 'id', req.query.id);
