@@ -22,8 +22,8 @@ export interface JudgingMessage {
   testcaseId: string;
   time: number;
   memory: number;
-  output?: string;
-  checkerOutput?: string;
+  stdout?: string;
+  checkerOut?: string;
 }
 
 export type ResultMessage =

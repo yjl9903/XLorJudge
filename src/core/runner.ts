@@ -76,7 +76,7 @@ export class Runner implements IRunner {
       });
 
       if (returnReport) {
-        (result as ResultWithReport).output = await readFileHead(runOut);
+        (result as ResultWithReport).stdout = await readFileHead(runOut);
       }
 
       if (result.verdict === Verdict.Accepted) {
@@ -126,7 +126,7 @@ export class Runner implements IRunner {
       });
 
       if (result !== undefined) {
-        result.checkerOutput = await readFileHead(chkOut);
+        result.checkerOut = await readFileHead(chkOut);
       }
 
       return Checker.getVerdict(chkResult);

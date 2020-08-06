@@ -10,7 +10,7 @@ import { b64decode } from '../utils';
 import { Runner as ClassicRunner } from '../core/runner';
 import { ProblemType, Submission, CompileError, Checker } from '../core';
 
-import { JudgeSubmissionDTO, ResultMessage } from './types';
+import { JudgeSubmissionDTO, JudgingMessage, ResultMessage } from './types';
 
 @Injectable()
 export class JudgeService {
@@ -69,18 +69,21 @@ export class JudgeService {
         const result = await runner.run(testcaseId, { returnReport });
 
         // TODO: design result message body
-        const message = {
+        const message: JudgingMessage = {
           testcaseId,
           verdict: result.verdict,
           time: result.time,
-          memory: result.memory,
-          ...(returnReport && 'output' in result
-            ? {
-                output: result.output,
-                checkerOutput: result.checkerOutput
-              }
-            : {})
+          memory: result.memory
         };
+        if (returnReport) {
+          if ('stdout' in result) {
+            message.stdout = result.stdout;
+          }
+          if ('checkerOut' in result) {
+            message.checkerOut = result.checkerOut;
+          }
+        }
+
         observer.next(message);
 
         if (!isTestAllCases && result.verdict !== Verdict.Accepted) {

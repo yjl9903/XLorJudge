@@ -24,7 +24,7 @@ describe('Test aplusb', () => {
 
     expect(result.verdict).toBe(Verdict.Accepted);
     if ('output' in result) {
-      expect(result.output).toBe('2');
+      expect(result.stdout).toBe('2');
       expect(result.checkerOutput).toBe(`answer is '2'`);
     } else {
       expect.assertions(0);

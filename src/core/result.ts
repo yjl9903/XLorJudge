@@ -25,8 +25,8 @@ export class Result {
 }
 
 export class ResultWithReport extends Result {
-  output: string;
-  checkerOutput?: string;
+  stdout: string;
+  checkerOut?: string;
 }
 
 export class Usage {
