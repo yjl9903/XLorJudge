@@ -1,20 +1,36 @@
 import { Injectable } from '@nestjs/common';
-import { Observer } from 'rxjs';
+import { Observable, Observer } from 'rxjs';
+import 'rxjs/add/operator/map';
+import 'rxjs/add/operator/bufferCount';
+import 'rxjs/add/operator/skip';
+import 'rxjs/add/operator/first';
 
 import { Verdict } from '../verdict';
 import { b64decode } from '../utils';
 import { Runner as ClassicRunner } from '../core/runner';
-import { ProblemType, Submission, CompileError, Checker } from '../core';
+import { Submission, CompileError, Checker } from '../core';
 
 import {
   JudgeSubmissionDTO,
-  HTTPJudgeSubmissionOptions
-} from './types/judge.dto';
-import { ResultMessage } from './types/result';
+  ResultMessage
+} from './types';
 
 @Injectable()
 export class JudgeService {
-  async judge(
+  judge(body: JudgeSubmissionDTO) {
+    return new Observable((observer: Observer<ResultMessage>) => {
+      // Waiting.
+      observer.next({ verdict: Verdict.Waiting });
+      JudgeService.innerJudge(observer, body);
+    }).map((value: ResultMessage) => ({
+      id: body.id,
+      lang: body.lang,
+      timestamp: new Date().toISOString(),
+      ...value
+    }));
+  }
+
+  private static async innerJudge(
     observer: Observer<ResultMessage>,
     {
       type,
@@ -24,21 +40,14 @@ export class JudgeService {
       code: b64Code,
       lang,
       cases,
-      returnReport = false
-    }: JudgeSubmissionDTO,
-    { isTestAllCases = false }: HTTPJudgeSubmissionOptions = {}
+      returnReport = false,
+      isTestAllCases = false
+    }: JudgeSubmissionDTO
   ) {
     const code = b64decode(b64Code);
     const submission = new Submission(lang);
-    const checker = new Checker(checkerInfo.id, checkerInfo.lang);
-    const runner = this.getRunner(
-      type,
-      submission,
-      checker,
-      maxTime,
-      maxMemory
-    );
 
+    // Compile
     observer.next({ verdict: Verdict.Compiling });
     try {
       await submission.compile(code, Math.max(maxTime * 5, 15));
@@ -48,6 +57,15 @@ export class JudgeService {
       observer.complete();
       return;
     }
+
+    const checker = new Checker(checkerInfo.id, checkerInfo.lang);
+    const runner = JudgeService.getRunner(
+      type,
+      submission,
+      checker,
+      maxTime,
+      maxMemory
+    );
 
     for (const testcaseId of cases) {
       try {
@@ -79,13 +97,13 @@ export class JudgeService {
     observer.complete();
   }
 
-  private getRunner(
-    type: ProblemType,
+  private static getRunner(
     submission: Submission,
     checker: Checker,
     maxTime: number,
     maxMemory: number
   ) {
+    // TODO: classic runner and interactor.
     return new ClassicRunner(submission, checker, maxTime, maxMemory);
   }
 }
