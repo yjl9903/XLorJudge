@@ -152,7 +152,7 @@ export class Submission {
     stdoutFile = null,
     stderrFile = null
   }: ISubmissionRunParam) {
-    const [rootDir, infoDir] = await this.prepareWorkDir();
+    const [rootDir, infoDir] = await Submission.prepareWorkDir();
 
     try {
       const [stdin, stdout, stderr] = await Submission.openRedirect(
@@ -187,7 +187,7 @@ export class Submission {
         await Submission.closeRedirect(stdin, stdout, stderr);
         return await usageToResult(infoDir, maxTime, maxMemory, maxTime * 2);
       } catch (err) {
-        // Logger here
+        // TODO: Logger here
         throw new SystemError(err.message);
       }
     } catch (err) {
@@ -276,7 +276,7 @@ export class Submission {
     ];
   }
 
-  private async prepareWorkDir() {
+  private static async prepareWorkDir() {
     return Promise.all([makeTempDir(), makeTempDir()]);
   }
 
