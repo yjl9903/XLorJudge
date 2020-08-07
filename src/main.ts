@@ -14,11 +14,11 @@ async function bootstrap() {
   const port = configService.get<string>('PORT') ?? 3000;
 
   if (isUndef(configService.get('USERNAME'))) {
-    Logger.error('You shoulde specify a username');
+    Logger.error('You should specify a username');
     process.exit(1);
   }
   if (isUndef(configService.get('PASSWORD'))) {
-    Logger.error('You shoulde specify a password');
+    Logger.error('You should specify a password');
     process.exit(1);
   }
 
