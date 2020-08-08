@@ -37,7 +37,7 @@ async function bootstrap() {
 
   await app.listen(port, host);
 
-  Logger.log(`XLorJudge is running on: ${await app.getUrl()}`);
+  Logger.log(`XLorJudge is running on: ${await app.getUrl()}`, configService.get('SERVER_NAME'));
 }
 
 bootstrap();
