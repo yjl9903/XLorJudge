@@ -4,7 +4,6 @@ import {
   Injectable,
   UnauthorizedException
 } from '@nestjs/common';
-import { Observable } from 'rxjs';
 import { ConfigService } from '@nestjs/config';
 import * as basicAuth from 'basic-auth';
 
@@ -12,14 +11,18 @@ import * as basicAuth from 'basic-auth';
 export class AuthGuard implements CanActivate {
   constructor(private configService: ConfigService) {}
 
-  canActivate(
+  static getAuth(
     context: ExecutionContext
-  ): boolean | Promise<boolean> | Observable<boolean> {
-    const request = context.switchToHttp().getRequest();
-    const auth = basicAuth.parse(request.headers.authorization) as {
-      name: string;
-      pass: string;
-    };
+  ): { name: string; pass: string } | undefined {
+    if (context.getType() === 'http') {
+      const request = context.switchToHttp().getRequest();
+      return basicAuth.parse(request.headers.authorization);
+    }
+    return undefined;
+  }
+
+  canActivate(context: ExecutionContext): boolean {
+    const auth = AuthGuard.getAuth(context);
     if (
       auth &&
       auth.name === this.configService.get<string>('USERNAME') &&
