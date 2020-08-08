@@ -1,7 +1,4 @@
-import {
-  UsePipes,
-  ValidationPipe
-} from '@nestjs/common';
+import { UsePipes, ValidationPipe } from '@nestjs/common';
 import {
   MessageBody,
   OnGatewayInit,
