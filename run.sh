@@ -11,7 +11,7 @@ chgrp root -R /sys/fs/cgroup/memory/NSJAIL /sys/fs/cgroup/cpu/NSJAIL /sys/fs/cgr
 chown compiler -R /sys/fs/cgroup/memory/NSJAIL /sys/fs/cgroup/cpu/NSJAIL /sys/fs/cgroup/pids/NSJAIL
 chgrp compiler -R /sys/fs/cgroup/memory/NSJAIL /sys/fs/cgroup/cpu/NSJAIL /sys/fs/cgroup/pids/NSJAIL
 
-chown compiler:compiler /judge/run/temp /judge/run/submission
-chown compiler:compiler /judge/run/checker /judge/run/interactor /judge/run/generator /judge/run/validator
+chown compiler:compiler ./run/temp ./run/submission
+chown compiler:compiler ./run/checker ./run/interactor ./run/generator ./run/validator
 
-node dist/index.js
+yarn run start:prod
