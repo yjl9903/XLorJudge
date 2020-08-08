@@ -22,16 +22,18 @@ async function bootstrap() {
     process.exit(1);
   }
 
-  const documentOptions = new DocumentBuilder()
-    .setTitle('XLoJ Judge Server')
-    .setDescription(
-      'XLorJudge is Competitive Programming Contest Judge Server for XLor Online Judge.'
-    )
-    .setVersion('1.0')
-    .addTag('Judge')
-    .build();
-  const document = SwaggerModule.createDocument(app, documentOptions);
-  SwaggerModule.setup('api', app, document);
+  if (configService.get('NODE_ENV') !== 'PRODUCTION') {
+    const documentOptions = new DocumentBuilder()
+      .setTitle('XLoJ Judge Server')
+      .setDescription(
+        'XLorJudge is Competitive Programming Contest Judge Server for XLor Online Judge.'
+      )
+      .setVersion('1.0')
+      .addTag('Judge')
+      .build();
+    const document = SwaggerModule.createDocument(app, documentOptions);
+    SwaggerModule.setup('api', app, document);
+  }
 
   await app.listen(port, host);
 
