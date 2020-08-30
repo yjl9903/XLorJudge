@@ -7,8 +7,7 @@ import 'rxjs/add/operator/first';
 
 import { Verdict } from '../verdict';
 import { b64decode } from '../utils';
-import { Runner as ClassicRunner } from '../core/runner';
-import { ProblemType, Submission, CompileError, Checker } from '../core';
+import { Submission, CompileError, Checker, getRunner } from '../core';
 
 import { JudgeSubmissionDTO, JudgingMessage, ResultMessage } from './types';
 
@@ -56,8 +55,8 @@ export class JudgeService {
     }
 
     const checker = new Checker(checkerInfo.id, checkerInfo.lang);
-    const runner = JudgeService.getRunner(
-      type,
+    const runner = getRunner(
+      type, // may throw errors for unsupported problem type
       submission,
       checker,
       maxTime,
@@ -75,6 +74,7 @@ export class JudgeService {
           time: result.time,
           memory: result.memory
         };
+
         if (returnReport) {
           if ('stdout' in result) {
             message.stdout = result.stdout;
@@ -94,17 +94,8 @@ export class JudgeService {
       }
     }
 
-    observer.complete();
-  }
+    await runner.clear();
 
-  private static getRunner(
-    type: ProblemType,
-    submission: Submission,
-    checker: Checker,
-    maxTime: number,
-    maxMemory: number
-  ) {
-    // TODO: classic runner and interactor.
-    return new ClassicRunner(submission, checker, maxTime, maxMemory);
+    observer.complete();
   }
 }

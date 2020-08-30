@@ -50,4 +50,6 @@ export interface IRunner {
     testcaseId: string,
     runOptions?: RunOptions
   ): Promise<Result | ResultWithReport>;
+
+  clear(): Promise<void>;
 }
