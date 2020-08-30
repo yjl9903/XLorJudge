@@ -52,10 +52,10 @@ export class JudgeSubmissionDTO {
   code: string;
 
   @IsBoolean()
-  returnReport = false;
+  returnReport = true;
 
   @IsBoolean()
-  isSync: boolean = false;
+  isSync: boolean = true;
 
   @IsBoolean()
   isTestAllCases: boolean = false;
