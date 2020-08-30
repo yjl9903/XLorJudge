@@ -10,9 +10,13 @@ import { b64decode } from '../utils';
 import { Submission, CompileError, Checker, getRunner } from '../core';
 
 import { JudgeSubmissionDTO, JudgingMessage, ResultMessage } from './types';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class JudgeService {
+  constructor(private readonly configService: ConfigService) {
+  }
+
   judge(body: JudgeSubmissionDTO) {
     return new Observable((observer: Observer<ResultMessage>) => {
       // Waiting.
@@ -20,10 +24,11 @@ export class JudgeService {
       JudgeService.innerJudge(observer, body);
     }).map((value: ResultMessage) => ({
       id: body.id,
-      lang: body.lang,
       timestamp: new Date().toISOString(),
+      from: this.configService.get<string>('SERVER_NAME'),
       ...value
     }));
+    // TODO: logger
   }
 
   private static async innerJudge(
