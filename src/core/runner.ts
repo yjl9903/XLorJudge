@@ -1,7 +1,13 @@
 import * as path from 'path';
 import { promises } from 'fs';
 
-import { makeTempDir, randomString, rimraf, readFileHead } from '../utils';
+import {
+  makeTempDir,
+  randomString,
+  rimraf,
+  readFileHead,
+  isDef, isUndef
+} from '../utils';
 import { Verdict } from '../verdict';
 
 import { IRunner, RunOptions, IFileBinding } from './type';
@@ -31,7 +37,7 @@ export class Runner implements IRunner {
   }
 
   private async makeWriteFile(extension = 'out') {
-    if (!this.outDir) {
+    if (isUndef(this.outDir)) {
       this.outDir = await makeTempDir();
     }
     const file = path.join(this.outDir, randomString() + '.' + extension);
@@ -41,8 +47,10 @@ export class Runner implements IRunner {
   }
 
   async clear() {
-    if (this.outDir) {
-      await rimraf(this.outDir);
+    if (isDef(this.outDir)) {
+      const outDir = this.outDir;
+      this.outDir = undefined;
+      await rimraf(outDir);
     }
   }
 
@@ -50,11 +58,12 @@ export class Runner implements IRunner {
     testcaseId: string,
     { returnReport = false }: RunOptions = {}
   ): Promise<Result | ResultWithReport> {
-    const [runDir, runOut, runErr] = await Promise.all([
+    const [runDir, runOut] = await Promise.all([
       makeTempDir(),
-      this.makeWriteFile('out'),
-      this.makeWriteFile('err')
+      this.makeWriteFile('out')
     ]);
+
+    const runErr = await this.makeWriteFile('err');
 
     const testcase = new TestCase(testcaseId);
 
@@ -101,8 +110,10 @@ export class Runner implements IRunner {
     runOut: string,
     result?: ResultWithReport
   ) {
-    const chkOut = await this.makeWriteFile('chk');
-    const workDir = await makeTempDir();
+    const [workDir, chkOut] = await Promise.all([
+      makeTempDir(),
+      this.makeWriteFile('chk')
+    ]);
 
     const files: IFileBinding[] = [
       {

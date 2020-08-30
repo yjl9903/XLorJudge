@@ -6,15 +6,35 @@ import { Submission } from './submission';
 import { Checker } from './checker';
 import { Runner } from './runner';
 
+jest.setTimeout(10 * 1000);
+
+function readCode(file: string) {
+  return readFileSync(
+    path.join(__dirname, `../../test/assets/aplusb/${file}`),
+    'utf8'
+  );
+}
+
 describe('Test aplusb', () => {
-  const submission = new Submission('cpp');
-  const checker = new Checker('int_chk', 'cpp');
-  const runner = new Runner(submission, checker, 1, 64);
+  let submission: Submission;
+  let checker: Checker;
+  let runner: Runner;
 
   beforeAll(async () => {
-    const checkerCode = readCode('chk.cpp');
+    submission = new Submission('cpp');
+    checker = new Checker('int_chk', 'cpp');
+    runner = new Runner(submission, checker, 1, 64);
 
+    const checkerCode = readCode('chk.cpp');
     await checker.compile(checkerCode);
+  });
+
+  afterEach(async () => {
+    await submission.clear();
+  });
+
+  afterAll(async () => {
+    await runner.clear();
   });
 
   test('Run ac', async () => {
@@ -23,9 +43,9 @@ describe('Test aplusb', () => {
     const result = await runner.run('aplusb1', { returnReport: true });
 
     expect(result.verdict).toBe(Verdict.Accepted);
-    if ('output' in result) {
+    if ('stdout' in result) {
       expect(result.stdout).toBe('2');
-      expect(result.checkerOutput).toBe(`answer is '2'`);
+      expect(result.checkerOut).toBe(`answer is '2'`);
     } else {
       expect.assertions(0);
     }
@@ -66,15 +86,4 @@ describe('Test aplusb', () => {
         Number(result.verdict === Verdict.TimeLimitExceeded)
     );
   });
-
-  afterAll(async () => {
-    await runner.clear();
-  });
-
-  function readCode(file: string) {
-    return readFileSync(
-      path.join(__dirname, `../../test/assets/aplusb/${file}`),
-      'utf8'
-    );
-  }
 });

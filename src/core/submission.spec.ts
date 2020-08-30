@@ -50,7 +50,9 @@ describe('Test echo', () => {
   });
 
   afterEach(async () => {
-    await rimraf(workDir);
+    if (workDir !== '') {
+      await rimraf(workDir);
+    }
   });
 });
 
@@ -66,6 +68,8 @@ describe('Test Compile Cpp', () => {
     expect(code.length).toBeGreaterThan(0);
 
     await submission.compile(code);
+
+    await submission.clear();
   });
 
   test('Compile ce.cpp', async () => {
@@ -98,6 +102,10 @@ describe('Test Compile Java', () => {
 
     await submission.compile(code);
   });
+
+  afterEach(async () => {
+    await submission.clear();
+  });
 });
 
 describe('Test Compile Python', () => {
@@ -112,5 +120,9 @@ describe('Test Compile Python', () => {
     expect(code.length).toBeGreaterThan(0);
 
     await submission.compile(code);
+  });
+
+  afterEach(async () => {
+    await submission.clear();
   });
 });
