@@ -13,3 +13,4 @@ services:
       - NODE_ENV=production
     volumes:
       - ./data:/judge/run/data
+      - ./.env:/judge/.env
