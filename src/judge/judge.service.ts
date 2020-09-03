@@ -14,8 +14,7 @@ import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class JudgeService {
-  constructor(private readonly configService: ConfigService) {
-  }
+  constructor(private readonly configService: ConfigService) {}
 
   judge(body: JudgeSubmissionDTO) {
     return new Observable((observer: Observer<ResultMessage>) => {

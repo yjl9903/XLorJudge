@@ -14,11 +14,11 @@ import { PolygonService } from './polygon.service';
 
 @Controller('polygon')
 @UseGuards(AuthGuard)
+@UsePipes(new ValidationPipe({ transform: true }))
 export class PolygonController {
   constructor(private polygonService: PolygonService) {}
 
   @Post('/compile')
-  @UsePipes(new ValidationPipe({ transform: true }))
   async compile(@Body() body: CompileDTO) {
     return this.polygonService.compile(body);
   }

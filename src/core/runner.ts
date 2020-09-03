@@ -6,7 +6,8 @@ import {
   randomString,
   rimraf,
   readFileHead,
-  isDef, isUndef
+  isDef,
+  isUndef
 } from '../utils';
 import { Verdict } from '../verdict';
 
@@ -90,6 +91,8 @@ export class Runner implements IRunner {
 
       if (result.verdict === Verdict.Accepted) {
         if (returnReport) {
+          // TODO: checker not found
+          // Avoid by agreement or error handling?
           result.verdict = await this.check(
             testcase,
             runOut,

@@ -25,13 +25,31 @@ async function bootstrap() {
 
   if (configService.get('USE_RMQ') === 'true') {
     const rmqUrl = configService.get<string>('RMQ_URL');
-    const queue = configService.get<string>('RMQ_QUEUE') || 'judge';
+    const judgeQueue = configService.get<string>('JUDGE_QUEUE') || 'Judge';
+    const polygonQueue =
+      configService.get<string>('POLYGON_QUEUE') || 'Polygon';
     app.connectMicroservice({
       transport: Transport.RMQ,
       options: {
         urls: [rmqUrl],
-        queue,
-        queueOptions: {}
+        queue: judgeQueue,
+        prefetchCount: 2,
+        noACK: false,
+        queueOptions: {
+          durable: true
+        }
+      }
+    });
+    app.connectMicroservice({
+      transport: Transport.RMQ,
+      options: {
+        urls: [rmqUrl],
+        queue: polygonQueue,
+        prefetchCount: 2,
+        noACK: false,
+        queueOptions: {
+          durable: true
+        }
       }
     });
     await app.startAllMicroservicesAsync();

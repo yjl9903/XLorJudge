@@ -14,6 +14,8 @@ export { TestCase } from './testcase';
 
 export { Checker } from './checker';
 
+export { Validator } from './validtor';
+
 export function getRunner(
   type: ProblemType,
   submission: Submission,

@@ -8,6 +8,7 @@ export class Result {
   exitCode: number;
   signal: number;
   verdict: JudgeVerdict;
+  message?: string;
 
   constructor(
     time: number,
