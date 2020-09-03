@@ -11,6 +11,10 @@ import { AuthGuard } from '../guards/auth.guard';
 
 import { CompileDTO } from './types/polygon.dto';
 import { PolygonService } from './polygon.service';
+import { MessagePattern, Payload } from '@nestjs/microservices';
+import { BuildTaskDto } from './types/build-task.dto';
+
+import 'rxjs/add/operator/bufferCount'
 
 @Controller('polygon')
 @UseGuards(AuthGuard)
@@ -21,5 +25,15 @@ export class PolygonController {
   @Post('/compile')
   async compile(@Body() body: CompileDTO) {
     return this.polygonService.compile(body);
+  }
+
+  @MessagePattern('build')
+  build(@Payload() buildTaskDto: BuildTaskDto) {
+    return this.polygonService.build(buildTaskDto);
+  }
+
+  @Post('/build')
+  buildHttp(@Body() buildTaskDto: BuildTaskDto) {
+    return this.polygonService.build(buildTaskDto).bufferCount(9999);
   }
 }
