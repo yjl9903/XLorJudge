@@ -6,7 +6,7 @@
   ],
   "rootDir": "src",
   "testMatch": [
-    "**/core/**/polygon.spec.ts"
+    "**/core/**/validator.spec.ts"
   ],
   "transform": {
     "^.+\\.(t|j)s$": "ts-jest"
