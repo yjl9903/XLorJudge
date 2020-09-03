@@ -16,6 +16,8 @@ export { Checker } from './checker';
 
 export { Validator } from './validtor';
 
+export { Generator } from './generator';
+
 export function getRunner(
   type: ProblemType,
   submission: Submission,

@@ -1,17 +1,18 @@
-import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
-
-import { CompileDTO } from './types/polygon.dto';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 
 import { b64decode } from '../utils';
 import { LangConfig, SUB_PATH } from '../configs';
 import {
-  SubmissionType,
-  Submission,
   Checker,
   CompileError,
-  Validator
+  Submission,
+  SubmissionType,
+  Validator,
+  Generator
 } from '../core';
-import { ConfigService } from '@nestjs/config';
+
+import { CompileDTO } from './types/polygon.dto';
 
 @Injectable()
 export class PolygonService {
@@ -19,16 +20,17 @@ export class PolygonService {
 
   async compile({ type, id, lang, code: b64Code }: CompileDTO) {
     const code = b64decode(b64Code);
-    // TODO
     const sub =
       type === SubmissionType.CHK
         ? new Checker(id, lang)
         : type === SubmissionType.VAL
         ? new Validator(id, lang)
+        : type === SubmissionType.GEN
+        ? new Generator(id, lang)
         : new Submission(lang, type, {
             file: id + '.' + LangConfig[lang].compiledExtension,
             dir: SUB_PATH
-          }); // SUB, GEN, INT
+          }); // SUB, INT
     try {
       await sub.compile(code);
       return {
