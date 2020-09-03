@@ -6,15 +6,14 @@ import {
   UsePipes,
   ValidationPipe
 } from '@nestjs/common';
+import { MessagePattern, Payload } from '@nestjs/microservices';
+import 'rxjs/add/operator/bufferCount';
 
 import { AuthGuard } from '../guards/auth.guard';
 
 import { CompileDTO } from './types/polygon.dto';
 import { PolygonService } from './polygon.service';
-import { MessagePattern, Payload } from '@nestjs/microservices';
 import { BuildTaskDto } from './types/build-task.dto';
-
-import 'rxjs/add/operator/bufferCount'
 
 @Controller('polygon')
 @UseGuards(AuthGuard)
