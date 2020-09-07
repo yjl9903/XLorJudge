@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - master
+      - nest
   schedule:
     - cron: "0 0 * * 1"
 
@@ -16,4 +17,4 @@ jobs:
     steps:
     - uses: actions/checkout@v1
     - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag my-image-name:$(date +%s)
+      run: docker build . --file test/Dockerfile --tag judge-test:$(date +%s)
