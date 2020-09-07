@@ -1,7 +1,7 @@
 #!/bin/bash
 if [ `id -u` -ne 0 ]; then
-    echo "Please re-run ${this_file} as root."
-    exit 1
+  echo "Please re-run ${this_file} as root."
+  exit 1
 fi
 
 mkdir -p /sys/fs/cgroup/memory/NSJAIL /sys/fs/cgroup/cpu/NSJAIL /sys/fs/cgroup/pids/NSJAIL
@@ -14,6 +14,14 @@ chgrp compiler -R /sys/fs/cgroup/memory/NSJAIL /sys/fs/cgroup/cpu/NSJAIL /sys/fs
 chown compiler:compiler ./run/temp ./run/submission
 chown compiler:compiler ./run/checker ./run/interactor ./run/generator ./run/validator
 
-yarn run test:core
+yarn jest --config test-core.config.json
 
-yarn run test:polygon
+if [ $? -ne 0 ]; then
+  exit 1
+fi
+
+yarn jest --config test-polygon.config.json
+
+if [ $? -ne 0 ]; then
+  exit 1
+fi
