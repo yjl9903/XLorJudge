@@ -1,0 +1,15 @@
+version: '2.1'
+
+services:
+  judge:
+    container_name: judge
+    image: xloj-judge-server
+    build:
+      context: .
+    privileged: true
+    environment:
+      - NODE_ENV=production
+    volumes:
+      - ./data:/judge/run/data
+      - ./.env:/judge/.env
+    entrypoint: ./test/run-test.sh

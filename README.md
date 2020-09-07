@@ -1,6 +1,6 @@
 # XLor Judge
 
-[![GitHub](https://img.shields.io/github/license/yjl9903/XLorJudge)](https://github.com/yjl9903/XLorJudge/blob/master/LICENSE) [![Build Status](https://travis-ci.com/yjl9903/XLorJudge.svg?token=yA9RS9wdcppy1BXxiyCQ&branch=master)](https://travis-ci.com/yjl9903/XLorJudge) [![Actions Status](https://github.com/yjl9903/XLorJudge/workflows/Node%20CI/badge.svg)](https://github.com/yjl9903/XLorJudge/actions) [![Actions Status](https://github.com/yjl9903/XLorJudge/workflows/Docker%20Image%20CI/badge.svg)](https://github.com/yjl9903/XLorJudge/actions)
+[![GitHub](https://img.shields.io/github/license/yjl9903/XLorJudge)](https://github.com/yjl9903/XLorJudge/blob/master/LICENSE) [![Actions Status](https://github.com/yjl9903/XLorJudge/workflows/Node%20CI/badge.svg)](https://github.com/yjl9903/XLorJudge/actions) [![Actions Status](https://github.com/yjl9903/XLorJudge/workflows/Docker%20Image%20CI/badge.svg)](https://github.com/yjl9903/XLorJudge/actions)
 
 :tada: XLorJudge v1.0 has now been released.
 
