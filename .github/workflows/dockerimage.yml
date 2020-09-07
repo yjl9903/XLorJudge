@@ -16,5 +16,7 @@ jobs:
  
     steps:
     - uses: actions/checkout@v1
-    - name: Build the Docker image
+    - name: Build Docker image
       run: docker build . --file test/Dockerfile --tag judge-test:$(date +%s)
+    - name: Run Docker image
+      run: docker run judge-test --privileged -v ./data:/judge/run/data

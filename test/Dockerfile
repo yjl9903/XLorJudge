@@ -27,4 +27,4 @@ RUN yarn install --production=false \
     && useradd -r compiler \
     && chmod +x ./test/run-test.sh
 
-RUN ./test/run-test.sh
+CMD ./test/run-test.sh
