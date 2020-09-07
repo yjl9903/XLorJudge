@@ -81,9 +81,9 @@ describe('Test aplusb', () => {
     const result = await runner.run('aplusb1', { returnReport: true });
 
     // Some environments may not support getting user time, and it will return IdlenessLimitExceeded.
-    expect.assertions(
-      Number(result.verdict === Verdict.IdlenessLimitExceeded) +
-        Number(result.verdict === Verdict.TimeLimitExceeded)
-    );
+    expect(
+      result.verdict === Verdict.IdlenessLimitExceeded ||
+        result.verdict === Verdict.TimeLimitExceeded
+    ).toBeTruthy();
   });
 });

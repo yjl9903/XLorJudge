@@ -12,6 +12,8 @@ function readCode(file: string) {
   );
 }
 
+jest.setTimeout(20 * 1000);
+
 describe('Test Val', () => {
   const validator = new Validator('val', 'cpp');
 

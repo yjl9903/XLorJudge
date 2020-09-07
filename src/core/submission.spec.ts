@@ -36,10 +36,10 @@ describe('Test echo', () => {
     expect(readFileSync(outFile, 'utf8')).toEqual('Hello World\n');
   });
 
-  test('Run echo1 fail', async () => {
+  test('Run echo123 fail', async () => {
     const { verdict } = await submission.run({
       workDir,
-      executeCommand: '/bin/echo1',
+      executeCommand: '/bin/echo123',
       executeArgs: ['Hello World'],
       maxTime: 10,
       maxMemory: 128,

@@ -13,9 +13,9 @@ function readCode(file: string) {
   );
 }
 
-jest.setTimeout(10 * 1000);
+jest.setTimeout(20 * 1000);
 
-describe('Test Val', () => {
+describe('Testcase', () => {
   const generatorIn = new Generator('gen', 'cpp');
   const generatorAns = new Generator('std', 'cpp');
   const testcase = new TestCase(randomString(8));
