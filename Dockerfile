@@ -25,7 +25,7 @@ RUN yarn install --production=false \
     && mkdir -p /judge/run/submission /judge/run/temp /judge/run/data \
        /judge/run/checker /judge/run/interactor /judge/run/generator /judge/run/validator \
     && useradd -r compiler \
-    && chmod +x run.sh
+    && chmod +x run.sh \
     && chmod +x test/run.sh
 
 EXPOSE 3000
