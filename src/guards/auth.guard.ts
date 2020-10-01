@@ -22,6 +22,10 @@ export class AuthGuard implements CanActivate {
   }
 
   canActivate(context: ExecutionContext): boolean {
+    if (context.getType() === 'rpc') {
+      // Skip when use Rabbit MQ
+      return true;
+    }
     const auth = AuthGuard.getAuth(context);
     if (
       auth &&

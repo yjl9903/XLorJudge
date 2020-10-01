@@ -1,6 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { PolygonController } from './polygon.controller';
 import { ConfigService } from '@nestjs/config';
+import { HttpService } from '@nestjs/common';
+
+import { PolygonController } from './polygon.controller';
 import { PolygonService } from './polygon.service';
 
 describe('Polygon Controller', () => {
@@ -8,9 +10,12 @@ describe('Polygon Controller', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [ConfigService, PolygonService],
+      providers: [ConfigService, PolygonService, HttpService],
       controllers: [PolygonController]
-    }).compile();
+    })
+      .overrideProvider(HttpService)
+      .useValue({})
+      .compile();
 
     controller = module.get<PolygonController>(PolygonController);
   });

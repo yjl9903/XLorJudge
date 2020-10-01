@@ -1,30 +1,52 @@
-import { Injectable } from '@nestjs/common';
+import { HttpService, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { isDefined } from 'class-validator';
 
-import { EMPTY, Observable } from 'rxjs';
+import { EMPTY, from, Observable, of } from 'rxjs';
 import 'rxjs/add/operator/concat';
 import 'rxjs/add/operator/takeWhile';
 
-import { b64decode } from '../utils';
-import { LangConfig, SUB_PATH } from '../configs';
+import { b64decode, rimraf } from '../utils';
+import {
+  CHK_PATH,
+  DATA_PATH,
+  GEN_PATH,
+  LangConfig,
+  SUB_PATH,
+  VAL_PATH
+} from '../configs';
 import {
   Checker,
   CompileError,
   Generator,
   Submission,
   SubmissionType,
+  TestCase,
   Validator
 } from '../core';
 
 import { CompileDTO } from './types/polygon.dto';
-import { BuildTaskDto } from './types/build-task.dto';
+import {
+  BuildTaskDto,
+  BuildTestcaseDto,
+  CompileResult
+} from './types/build-task.dto';
+import { catchError, map, mergeMap } from 'rxjs/operators';
+import * as path from 'path';
 
 @Injectable()
 export class PolygonService {
-  constructor(private readonly configService: ConfigService) {}
+  constructor(
+    private readonly configService: ConfigService,
+    private readonly httpService: HttpService
+  ) {}
 
-  compile({ type, id, lang, code: b64Code }: CompileDTO) {
+  compile({
+    type,
+    id,
+    lang,
+    code: b64Code
+  }: CompileDTO): Observable<CompileResult> {
     const code = b64decode(b64Code);
     const sub =
       type === SubmissionType.CHK
@@ -37,12 +59,13 @@ export class PolygonService {
             file: id + '.' + LangConfig[lang].compiledExtension,
             dir: SUB_PATH
           }); // SUB, INT
-    return new Observable(subscriber => {
+    return new Observable<CompileResult>(subscriber => {
       sub
         .compile(code)
         .then(() =>
           subscriber.next({
             id,
+            lang,
             type,
             from: this.configService.get<string>('SERVER_NAME'),
             status: 'OK',
@@ -53,6 +76,7 @@ export class PolygonService {
           subscriber.next({
             // Return Bad Request?
             id,
+            lang,
             type,
             from: this.configService.get<string>('SERVER_NAME'),
             status: 'Fail',
@@ -64,16 +88,35 @@ export class PolygonService {
     });
   }
 
-  build(buildTaskDto: BuildTaskDto) {
-    const getId = (id: string) => id + '@' + buildTaskDto.taskId;
-    let isError = false;
+  async clearOldVersion(prefix: string) {
+    await Promise.all([
+      rimraf(path.join(CHK_PATH, prefix + '*')),
+      rimraf(path.join(VAL_PATH, prefix + '*')),
+      rimraf(path.join(SUB_PATH, prefix + '*')),
+      rimraf(path.join(GEN_PATH, prefix + '*')),
+      rimraf(path.join(DATA_PATH, prefix + '*'))
+    ]);
+    return { status: 'OK', action: 'clear' };
+  }
 
-    const compileTask = this.compile({
-      type: SubmissionType.CHK,
-      id: getId(buildTaskDto.checker.id),
-      code: buildTaskDto.checker.code,
-      lang: buildTaskDto.checker.lang
-    })
+  build(buildTaskDto: BuildTaskDto): Observable<any> {
+    const generatorMap = new Map<string, Generator>();
+    let checker: Checker;
+    let validator: Validator;
+
+    const prefix = buildTaskDto.taskId + '-' + buildTaskDto.version + '-';
+    const getId = (id: string) => prefix + id;
+
+    const clearTask = from(this.clearOldVersion(prefix));
+
+    const compileTask = EMPTY.concat(
+      this.compile({
+        type: SubmissionType.CHK,
+        id: getId(buildTaskDto.checker.id),
+        code: buildTaskDto.checker.code,
+        lang: buildTaskDto.checker.lang
+      })
+    )
       .concat(
         isDefined(buildTaskDto.validator)
           ? this.compile({
@@ -86,7 +129,7 @@ export class PolygonService {
       )
       .concat(
         this.compile({
-          type: SubmissionType.SUB,
+          type: SubmissionType.GEN,
           id: getId(buildTaskDto.correctSolution.id),
           code: buildTaskDto.correctSolution.code,
           lang: buildTaskDto.correctSolution.lang
@@ -102,18 +145,119 @@ export class PolygonService {
           })
         )
       )
-      .takeWhile((value: any) => {
-        // If i is error, then i + 1 stop
-        if (isError) {
-          return false;
-        } else if (value.status === 'OK') {
-          return true;
-        } else {
-          isError = true;
-          return true;
+      .map((result: CompileResult) => {
+        if (result.type === SubmissionType.CHK) {
+          checker = new Checker(result.id, result.lang);
+        } else if (result.type === SubmissionType.VAL) {
+          validator = new Validator(result.id, result.lang);
+        } else if (result.type === SubmissionType.GEN) {
+          generatorMap.set(result.id, new Generator(result.id, result.lang));
         }
+        return {
+          ...result,
+          action: 'compile'
+        };
       });
-    // TODO: testcase download and so on.
-    return compileTask;
+
+    // Warning: maybe some bugs in concurrent
+    const testcaseTask = from(buildTaskDto.testcases).pipe(
+      mergeMap((task: BuildTestcaseDto) => {
+        const testcaseId = getId(task.id);
+        const testcase = new TestCase(testcaseId);
+
+        return ('generator' in task
+          ? from(
+              testcase.genIn(
+                generatorMap.get(getId(task.generator)),
+                task.args || []
+              )
+            ).pipe(
+              map(result => {
+                if ('message' in result) {
+                  throw new Error(result.message);
+                }
+                return {
+                  result,
+                  action: 'generate'
+                };
+              })
+            )
+          : this.httpService.get(buildTaskDto.url + task.accessToken).pipe(
+              mergeMap(({ data }) => {
+                return from(testcase.writeIn(data));
+              }),
+              map(() => ({ action: 'download' }))
+            )
+        ).pipe(
+          map(result => ({
+            ...result,
+            testcaseId,
+            status: 'OK'
+          })),
+          catchError((err: any) => {
+            return of({
+              message: err.message,
+              testcaseId,
+              action: 'generator' in task ? 'generate' : 'download',
+              status: 'Fail'
+            });
+          }),
+          mergeMap(inputResult => {
+            return of(inputResult).concat(
+              validator
+                ? from(validator.validate(testcaseId)).pipe(
+                    map(result => {
+                      if ('message' in result) {
+                        throw new Error(result.message);
+                      }
+                      return {
+                        result,
+                        testcaseId,
+                        action: 'validate',
+                        status: 'OK'
+                      };
+                    }),
+                    catchError((err: any) => {
+                      return of({
+                        message: err.message,
+                        testcaseId,
+                        action: 'validate',
+                        status: 'Fail'
+                      });
+                    })
+                  )
+                : EMPTY,
+              from(
+                testcase.genAns(
+                  generatorMap.get(getId(buildTaskDto.correctSolution.id))
+                )
+              ).pipe(
+                map(result => {
+                  if ('message' in result) {
+                    throw new Error(result.message);
+                  }
+                  return {
+                    result,
+                    testcaseId,
+                    action: 'answer',
+                    status: 'OK'
+                  };
+                }),
+                catchError((err: any) => {
+                  return of({
+                    message: err.message,
+                    testcaseId,
+                    action: 'answer',
+                    status: 'Fail'
+                  });
+                })
+              )
+            );
+          })
+        );
+      })
+    );
+
+    return clearTask.concat(compileTask).concat(testcaseTask);
   }
 }

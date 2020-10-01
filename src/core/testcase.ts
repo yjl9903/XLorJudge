@@ -23,8 +23,18 @@ export class TestCase {
   async writeIn(content: string): Promise<void> {
     try {
       await promises.mkdir(path.join(DATA_PATH, this.fingerprint));
+    } catch (err) {
     } finally {
       await promises.writeFile(this.inputFile, content, 'utf8');
+    }
+  }
+
+  private async writeAns(): Promise<void> {
+    try {
+      await promises.mkdir(path.join(DATA_PATH, this.fingerprint));
+    } catch (err) {
+    } finally {
+      await promises.writeFile(this.answerFile, '', 'utf8');
     }
   }
 
@@ -72,7 +82,7 @@ export class TestCase {
   }
 
   async genAns(generator: Generator): Promise<Result> {
-    await promises.writeFile(this.answerFile, '');
+    await this.writeAns();
 
     const runDir = await makeTempDir();
     const genDir = await makeTempDir();
