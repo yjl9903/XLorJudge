@@ -271,6 +271,13 @@ export class PolygonService {
           action: 'finish'
         })
       )
-      .pipe(map(result => ({ ...result, from: this.serverName, taskId: buildTaskDto.taskId, version: buildTaskDto.version })));
+      .pipe(
+        map(result => ({
+          ...result,
+          from: this.serverName,
+          taskId: buildTaskDto.taskId,
+          version: buildTaskDto.version
+        }))
+      );
   }
 }
