@@ -9,16 +9,16 @@ RUN apt-get update \
               libtool make pkg-config bison flex \
               libprotobuf-dev protobuf-compiler libnl-3-dev libnl-route-3-dev libboost-all-dev
 
+ADD . /judge
+
+WORKDIR /judge
+
 RUN wget https://raw.githubusercontent.com/MikeMirzayanov/testlib/master/testlib.h -O /usr/local/include/testlib.h \
     && git submodule update --init --recursive \
     && cd nsjail && make && mv nsjail /bin/nsjail && cd .. \
     && curl -sL https://deb.nodesource.com/setup_14.x | bash - \
     && apt-get install -y nodejs \
     && npm install -g yarn
-
-ADD . /judge
-
-WORKDIR /judge
 
 RUN rm -rf node_modules \
     && yarn install --production=false \
