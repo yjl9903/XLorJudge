@@ -36,10 +36,14 @@ import * as path from 'path';
 
 @Injectable()
 export class PolygonService {
+  private readonly serverName;
+
   constructor(
     private readonly configService: ConfigService,
     private readonly httpService: HttpService
-  ) {}
+  ) {
+    this.serverName = this.configService.get<string>('SERVER_NAME');
+  }
 
   compile({
     type,
@@ -67,7 +71,7 @@ export class PolygonService {
             id,
             lang,
             type,
-            from: this.configService.get<string>('SERVER_NAME'),
+            from: this.serverName,
             status: 'OK',
             timestamp: new Date().toISOString()
           })
@@ -78,7 +82,7 @@ export class PolygonService {
             id,
             lang,
             type,
-            from: this.configService.get<string>('SERVER_NAME'),
+            from: this.serverName,
             status: 'Fail',
             timestamp: new Date().toISOString(),
             ...CompileError.toHttpException(err)
@@ -258,6 +262,15 @@ export class PolygonService {
       })
     );
 
-    return clearTask.concat(compileTask).concat(testcaseTask);
+    return clearTask
+      .concat(compileTask)
+      .concat(testcaseTask)
+      .concat(
+        of({
+          status: 'OK',
+          action: 'finish'
+        })
+      )
+      .pipe(map(result => ({ ...result, from: this.serverName })));
   }
 }
