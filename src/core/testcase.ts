@@ -20,6 +20,22 @@ export class TestCase {
     this.answerFile = path.join(DATA_PATH, fingerprint, 'ans');
   }
 
+  async getInput(): Promise<string> {
+    try {
+      return await promises.readFile(this.inputFile, 'utf8');
+    } catch (err) {
+      return '';
+    }
+  }
+
+  async getAnswer(): Promise<string> {
+    try {
+      return await promises.readFile(this.answerFile, 'utf8');
+    } catch (err) {
+      return '';
+    }
+  }
+
   async writeIn(content: string): Promise<void> {
     try {
       await promises.mkdir(path.join(DATA_PATH, this.fingerprint));

@@ -176,14 +176,17 @@ export class PolygonService {
                 task.args || []
               )
             ).pipe(
-              map(result => {
+              mergeMap(result => {
                 if ('message' in result) {
                   throw new Error(result.message);
                 }
-                return {
-                  result,
-                  action: 'generate'
-                };
+                return from(testcase.getInput()).pipe(
+                  map(data => ({
+                    result,
+                    input: data,
+                    action: 'generate'
+                  }))
+                );
               })
             )
           : this.httpService.get(buildTaskDto.url + task.accessToken).pipe(
@@ -236,16 +239,19 @@ export class PolygonService {
                   generatorMap.get(getId(buildTaskDto.correctSolution.id))
                 )
               ).pipe(
-                map(result => {
+                mergeMap(result => {
                   if ('message' in result) {
                     throw new Error(result.message);
                   }
-                  return {
-                    result,
-                    testcaseId,
-                    action: 'answer',
-                    status: 'OK'
-                  };
+                  return from(testcase.getAnswer()).pipe(
+                    map(data => ({
+                      result,
+                      answer: data,
+                      testcaseId,
+                      action: 'answer',
+                      status: 'OK'
+                    }))
+                  );
                 }),
                 catchError((err: any) => {
                   return of({
