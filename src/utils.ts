@@ -1,17 +1,20 @@
 import { spawn } from 'child_process';
-import { promises, createReadStream } from 'fs';
-import * as cryptoRandomString from 'crypto-random-string';
 import * as path from 'path';
-import * as _rimraf from 'rimraf';
+import { promises, createReadStream } from 'fs';
+
+import cryptoRandomString from 'crypto-random-string';
+import _rimraf from 'rimraf';
 
 import { TEMP_PATH } from './configs';
 
-export function isUndef(x: any) {
-  return x === undefined || x === null;
+export function isUndef<T>(
+  object: T | undefined | null
+): object is undefined | null {
+  return object === undefined || object === null;
 }
 
-export function isDef(x: any) {
-  return x !== undefined && x !== null;
+export function isDef<T>(object: T | undefined | null): object is T {
+  return object !== undefined && object !== null;
 }
 
 export function randomString(length = 32): string {
@@ -32,36 +35,53 @@ export async function makeTempDir(): Promise<string> {
   return dir;
 }
 
+interface IExecResult {
+  code: number;
+  signal: string;
+}
+
 export function exec(
   command: string,
   args: any[] = [],
   options: object = {}
-): Promise<{ code: number; signal: string }> {
+): Promise<IExecResult> {
   return new Promise((res, rej) => {
-    const p = spawn(command, args, options);
-    p.on('close', (code, signal) => {
-      res({ code, signal });
+    const process = spawn(command, args, options);
+    process.on('close', (code, signal) => {
+      if (isDef(code) && isDef(signal)) {
+        res({ code, signal });
+      } else {
+        rej();
+      }
     });
-    p.on('error', rej);
+    process.on('error', rej);
   });
 }
 
-export function rimraf(s: string) {
-  return new Promise(res => _rimraf(s, () => res()));
+export function rimraf(path: string) {
+  return new Promise((res) => _rimraf(path, res));
 }
 
 export function readFileHead(file: string, maxLength = 255): Promise<string> {
   const inputStream = createReadStream(file, {
     start: 0,
     end: maxLength,
-    encoding: 'utf-8'
+    encoding: 'utf-8',
   });
-  const content: string[] = [];
 
-  return new Promise(res => {
-    inputStream.on('data', data => content.push(data));
+  return new Promise((res, rej) => {
+    const content: string[] = [];
+    inputStream.on('data', (data) => {
+      if (typeof data === 'string') {
+        // data is a string
+        content.push(data);
+      } else {
+        // data is a buffer
+      }
+    });
     inputStream.on('close', () => {
       res(content.join(''));
     });
+    inputStream.on('error', rej);
   });
 }

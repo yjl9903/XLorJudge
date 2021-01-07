@@ -10,7 +10,7 @@ import {
   RUN_GROUP_ID,
   OUTPUT_LIMIT,
   ENV,
-  NSJAIL_PATH
+  NSJAIL_PATH,
 } from '../configs';
 import { randomString, makeTempDir, exec, isDef, rimraf } from '../utils';
 import { Verdict } from '../verdict';
@@ -19,7 +19,7 @@ import { SubmissionType, ISubmissionRunParam, IFileBinding } from './type';
 import { TestCaseError, SystemError, CompileError } from './error';
 import { usageToResult } from './result';
 
-const envArgs = [];
+const envArgs: string[] = [];
 for (const env of ENV) {
   envArgs.push('-E', env);
 }
@@ -57,9 +57,9 @@ export class Submission {
         '${executableFile}',
         fileName
       ),
-      args: langConfig.execute.args.map(s =>
+      args: langConfig.execute.args.map((s) =>
         String(s).replace('${executableFile}', fileName)
-      )
+      ),
     };
   }
 
@@ -84,7 +84,7 @@ export class Submission {
         code
       ),
       promises.writeFile(outFile, ''),
-      promises.writeFile(errorFile, '')
+      promises.writeFile(errorFile, ''),
     ]);
 
     const compileConfigs = langConfig.compile;
@@ -96,7 +96,7 @@ export class Submission {
         const result = await this.run({
           workDir: compileDir,
           executeCommand: command,
-          executeArgs: args.map(s => {
+          executeArgs: args.map((s) => {
             if (s === '${sourceFile}') {
               return langConfig.sourceFileName;
             } else if (s === '${compiledFile}') {
@@ -108,7 +108,7 @@ export class Submission {
           maxTime,
           maxMemory: 1024,
           stdoutFile: outFile,
-          stderrFile: errorFile
+          stderrFile: errorFile,
         });
 
         if (result.verdict !== Verdict.Accepted) {
@@ -148,9 +148,9 @@ export class Submission {
     executeArgs = this.execute.args,
     maxTime,
     maxMemory,
-    stdinFile = null,
-    stdoutFile = null,
-    stderrFile = null
+    stdinFile = undefined,
+    stdoutFile = undefined,
+    stderrFile = undefined,
   }: ISubmissionRunParam) {
     const [rootDir, infoDir] = await Submission.prepareWorkDir();
 
@@ -175,12 +175,12 @@ export class Submission {
               maxMemory
             ),
             executeCommand,
-            ...executeArgs
+            ...executeArgs,
           ],
           {
             stdio: [stdin, stdout, stderr],
             uid: 0,
-            gid: 0
+            gid: 0,
           }
         );
 
@@ -236,7 +236,7 @@ export class Submission {
       '-R',
       '/etc',
       trusted ? '-B' : '-R',
-      workDir + ':/app'
+      workDir + ':/app',
     ];
 
     const readlTimeLimit = maxTime * 2;
@@ -257,7 +257,7 @@ export class Submission {
       '--rlimit_stack',
       Math.max(maxMemory + 32, 256),
       '--rlimit_fsize',
-      OUTPUT_LIMIT
+      OUTPUT_LIMIT,
     ];
 
     const extraFiles = [];
@@ -272,7 +272,7 @@ export class Submission {
       '/app',
       ...limitArgs,
       ...envArgs,
-      '--'
+      '--',
     ];
   }
 
@@ -292,7 +292,7 @@ export class Submission {
     const result: Array<'ignore' | promises.FileHandle> = [
       'ignore',
       'ignore',
-      'ignore'
+      'ignore',
     ];
     try {
       if (stdinFile) {

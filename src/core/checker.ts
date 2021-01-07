@@ -10,13 +10,11 @@ export class Checker extends Submission {
   constructor(id: string, lang: string) {
     super(lang, SubmissionType.CHK, {
       file: id + '.' + LangConfig[lang].compiledExtension,
-      dir: CHK_PATH
+      dir: CHK_PATH,
     });
   }
 
-  clear(): Promise<void> {
-    return;
-  }
+  async clear(): Promise<void> {}
 
   static getVerdict({ verdict, exitCode }: Result): JudgeVerdict {
     if (verdict !== Verdict.Accepted) {

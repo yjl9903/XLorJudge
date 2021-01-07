@@ -26,21 +26,31 @@ export class Result {
 }
 
 export class ResultWithReport extends Result {
-  stdout: string;
+  stdout!: string;
   checkerOut?: string;
 }
 
 export class Usage {
-  user: number;
-  pass: number;
-  memory: number;
-  exit: number;
-  signal: number;
+  user!: number;
+  pass!: number;
+  memory!: number;
+  exit!: number;
+  signal!: number;
 
   constructor(file: string) {
     for (const line of file.trim().split('\n')) {
       const [key, val] = line.split(' ');
-      this[key] = Number(val);
+      if (key === 'user') {
+        this.user = +val;
+      } else if (key === 'pass') {
+        this.pass = +val;
+      } else if (key === 'memory') {
+        this.memory = +val;
+      } else if (key === 'exit') {
+        this.exit = +val;
+      } else if (key === 'signal') {
+        this.signal = +val;
+      }
     }
   }
 

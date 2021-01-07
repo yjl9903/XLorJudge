@@ -7,11 +7,9 @@ export class Generator extends Submission {
   constructor(id: string, lang: string) {
     super(lang, SubmissionType.GEN, {
       file: id + '.' + LangConfig[lang].compiledExtension,
-      dir: GEN_PATH
+      dir: GEN_PATH,
     });
   }
 
-  clear(): Promise<void> {
-    return;
-  }
+  async clear(): Promise<void> {}
 }
